@@ -37,6 +37,7 @@ const App = () => (
             <Route path="/categorias" element={<Categorias />} />
             <Route path="/prestadores/:categoria" element={<PrestadoresPorCategoria />} />
             <Route path="/sobre" element={<Sobre />} />
+            <Route path="/contato" element={<Sobre />} /> {/* Temporarily pointing to Sobre until we create the Contact page */}
             <Route path="/dashboard" element={
               <ProtectedRoute>
                 <Dashboard />

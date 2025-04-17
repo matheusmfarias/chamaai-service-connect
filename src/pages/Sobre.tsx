@@ -1,4 +1,3 @@
-
 import React from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
@@ -80,7 +79,7 @@ const Sobre = () => {
             viewport={{ once: true }}
             variants={fadeIn}
           >
-            <h2 className="text-3xl font-bold mb-8">Nossa Missão</h2>
+            <h2 className="text-3xl font-bold">Nossa Missão</h2>
             <p className="text-xl text-gray-700 leading-relaxed">
               Queremos simplificar a vida das pessoas ao conectar clientes a profissionais confiáveis para serviços essenciais. Do conserto ao cuidado, oferecemos uma ponte segura e prática para resolver tarefas do dia a dia.
             </p>
