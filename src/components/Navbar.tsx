@@ -1,26 +1,34 @@
-
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Menu, X } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import AuthenticatedNavbar from "./AuthenticatedNavbar";
 
 const Navbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [searchOpen, setSearchOpen] = useState(false);
   const { user } = useAuth();
   const location = useLocation();
   
   const isDashboard = location.pathname.startsWith("/dashboard");
+  const isHome = location.pathname === "/";
 
   const publicLinks = [
     { name: "Início", path: "/" },
-    { name: "Categorias", path: "/categorias" },
-    { name: "Como Funciona", path: "/como-funciona" },
+    ...(isHome ? [
+      { name: "Categorias", path: "#categorias" },
+      { name: "Como Funciona", path: "#como-funciona" }
+    ] : []),
     { name: "Sobre Nós", path: "/sobre" },
   ];
+
+  const handleSmoothScroll = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
+    e.preventDefault();
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({ behavior: "smooth" });
+    }
+  };
 
   return (
     <nav className="bg-white shadow-sm sticky top-0 z-50">
@@ -35,6 +43,7 @@ const Navbar = () => {
               <Link 
                 key={link.path}
                 to={link.path} 
+                onClick={(e) => link.path.startsWith('#') ? handleSmoothScroll(e, link.path.substring(1)) : undefined}
                 className="text-gray-600 hover:text-chamaai-blue transition-colors"
               >
                 {link.name}
@@ -73,8 +82,13 @@ const Navbar = () => {
               <Link 
                 key={link.path}
                 to={link.path} 
+                onClick={(e) => {
+                  setMobileMenuOpen(false);
+                  if (link.path.startsWith('#')) {
+                    handleSmoothScroll(e, link.path.substring(1));
+                  }
+                }}
                 className="flex items-center py-2 text-gray-600 hover:text-chamaai-blue transition-colors"
-                onClick={() => setMobileMenuOpen(false)}
               >
                 {link.name}
               </Link>
