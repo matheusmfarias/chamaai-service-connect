@@ -1,7 +1,7 @@
 
 import { ReactNode } from "react";
 import { Link } from "react-router-dom";
-import { Layout } from "@/components/ui/layout";
+import Layout from "@/components/Layout";
 
 interface DashboardLayoutProps {
   children: ReactNode;

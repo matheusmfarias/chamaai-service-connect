@@ -1,4 +1,3 @@
-
 import { useNavigate } from "react-router-dom";
 import { Star, Clock, CheckCircle, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -88,7 +87,7 @@ const RecentRequests = () => {
           </CardContent>
           
           <CardFooter className="border-t pt-4 flex justify-between">
-            {request.status === "done" && !request.is_rated && (
+            {request.status === "done" && request.is_rated === false && (
               <Button
                 size="sm"
                 className="bg-chamaai-blue hover:bg-chamaai-lightblue"
