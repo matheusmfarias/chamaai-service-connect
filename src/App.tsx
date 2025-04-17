@@ -19,6 +19,7 @@ import Categorias from "./pages/Categorias";
 import PrestadoresPorCategoria from "./pages/PrestadoresPorCategoria";
 import Sobre from "./pages/Sobre";
 import FAQ from "./pages/FAQ";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
 
 const queryClient = new QueryClient();
 
@@ -50,6 +51,7 @@ const App = () => (
               </ProtectedRoute>
             } />
             <Route path="/prestador/:id" element={<PerfilPrestador />} />
+            <Route path="/privacidade" element={<PrivacyPolicy />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>

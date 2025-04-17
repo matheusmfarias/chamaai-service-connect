@@ -49,7 +49,7 @@ const Footer = () => {
               <li><Link to="/cadastro" className="text-gray-600 hover:text-chamaai-blue" onClick={() => window.scrollTo(0, 0)}>Seja um Prestador</Link></li>
               <li><Link to="/sobre" className="text-gray-600 hover:text-chamaai-blue" onClick={() => window.scrollTo(0, 0)}>Sobre Nós</Link></li>
               <li><Link to="/faq" className="text-gray-600 hover:text-chamaai-blue" onClick={() => window.scrollTo(0, 0)}>Perguntas Frequentes</Link></li>
-              <li><span className="text-gray-400 cursor-not-allowed">Política de Privacidade</span></li>
+              <li><Link to="/privacidade" className="text-gray-600 hover:text-chamaai-blue" onClick={() => window.scrollTo(0, 0)}>Política de Privacidade</Link></li>
             </ul>
           </div>
           <div>
