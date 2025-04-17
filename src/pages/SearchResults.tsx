@@ -1,6 +1,5 @@
-
 import { useState, useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { Search } from "lucide-react";
 import { motion } from "framer-motion";
 import Layout from "@/components/Layout";
@@ -27,27 +26,27 @@ const fadeIn = {
 };
 
 const SearchResults = () => {
-  const location = useLocation();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { user } = useAuth();
   
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState(searchParams.get("q") || "");
   const [filteredProviders, setFilteredProviders] = useState<ServiceProvider[]>([]);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [selectedProviderId, setSelectedProviderId] = useState<string | null>(null);
   
   const { providers, isLoading, error } = useServiceProviders();
   
-  // Extract search query from URL
   useEffect(() => {
-    const params = new URLSearchParams(location.search);
-    const query = params.get("q");
-    if (query) {
-      setSearchQuery(query);
+    const params = new URLSearchParams(searchParams);
+    if (searchQuery) {
+      params.set("q", searchQuery);
+    } else {
+      params.delete("q");
     }
-  }, [location.search]);
+    setSearchParams(params);
+  }, [searchQuery, setSearchParams]);
   
-  // Filter providers based on search query
   useEffect(() => {
     if (!searchQuery || !providers.length) {
       setFilteredProviders(providers);
@@ -68,12 +67,26 @@ const SearchResults = () => {
   
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    const params = new URLSearchParams();
-    if (searchQuery) {
-      params.set("q", searchQuery);
+    if (!searchQuery || !providers.length) {
+      setFilteredProviders(providers);
+      return;
     }
-    navigate(`/busca?${params.toString()}`);
+    
+    const query = searchQuery.toLowerCase();
+    const filtered = providers.filter(provider => {
+      const categoryMatch = provider.category.toLowerCase().includes(query);
+      const descriptionMatch = provider.description?.toLowerCase().includes(query) || false;
+      const nameMatch = provider.profiles.full_name.toLowerCase().includes(query);
+      
+      return categoryMatch || descriptionMatch || nameMatch;
+    });
+    
+    setFilteredProviders(filtered);
   };
+  
+  useEffect(() => {
+    handleSearch(new Event('submit') as any);
+  }, [providers]);
   
   const handleViewProfile = (providerId: string) => {
     if (user) {
