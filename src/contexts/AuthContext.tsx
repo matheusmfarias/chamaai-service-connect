@@ -1,4 +1,3 @@
-
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { User, Session } from "@supabase/supabase-js";
@@ -66,7 +65,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // Configura o listener para mudanças de estado de autenticação
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
         setSession(session);
@@ -76,7 +74,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           setUserProfile(null);
           setIsServiceProvider(false);
         } else {
-          // Defer fetching profile data to avoid auth deadlocks
           setTimeout(() => {
             fetchUserProfile(session.user.id);
             checkServiceProviderStatus(session.user.id);
@@ -85,7 +82,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       }
     );
 
-    // Verifica a sessão existente
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
@@ -125,12 +121,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     try {
       const { data, error } = await supabase
         .from("service_providers")
-        .select("id")
+        .select("id, category")
         .eq("id", userId)
         .single();
 
       if (error && error.code !== "PGRST116") {
-        // PGRST116 é o código para "não encontrado"
         console.error("Erro ao verificar status de prestador:", error);
         return;
       }
@@ -274,7 +269,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         return;
       }
 
-      // Atualiza o perfil localmente
       if (userProfile) {
         setUserProfile({
           ...userProfile,
@@ -303,6 +297,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     try {
       setIsLoading(true);
       
+      const searchTags = [
+        data.category.toLowerCase(),
+        ...data.description.toLowerCase().split(' ')
+      ].filter(tag => tag.length > 3);
+
       const { error } = await supabase
         .from("service_providers")
         .insert({
@@ -310,9 +309,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           category: data.category,
           description: data.description,
           rate_per_hour: data.rate_per_hour,
+          search_tags: searchTags
         });
 
       if (error) {
+        console.error("Erro ao criar perfil de prestador:", error);
         toast({
           title: "Erro ao criar perfil de prestador",
           description: error.message,
@@ -344,7 +345,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     try {
       const { data, error } = await supabase
         .from("service_providers")
-        .select("id")
+        .select("id, category")
         .eq("id", user.id)
         .single();
 
