@@ -15,6 +15,7 @@ import Dashboard from "./pages/Dashboard";
 import SolicitarServico from "./pages/SolicitarServico";
 import PerfilPrestador from "./pages/PerfilPrestador";
 import NotFound from "./pages/NotFound";
+import ComoFunciona from "./pages/ComoFunciona";
 
 const queryClient = new QueryClient();
 
@@ -29,6 +30,7 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/login" element={<Login />} />
             <Route path="/cadastro" element={<Cadastro />} />
+            <Route path="/como-funciona" element={<ComoFunciona />} />
             <Route path="/dashboard" element={
               <ProtectedRoute>
                 <Dashboard />
