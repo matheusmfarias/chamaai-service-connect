@@ -1,5 +1,5 @@
 
-import { Layout } from "@/components/Layout";
+import Layout from "@/components/Layout";
 import { Shield, Database, Users, Share2, Lock, User, Cookie, FileText, Mail } from "lucide-react";
 
 const PrivacyPolicy = () => {
@@ -84,3 +84,4 @@ const Section = ({ icon, title, children }: { icon: React.ReactNode, title: stri
 };
 
 export default PrivacyPolicy;
+
