@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { Search } from "lucide-react";
@@ -47,19 +48,50 @@ const SearchResults = () => {
     setSearchParams(params);
   }, [searchQuery, setSearchParams]);
   
+  // Atualiza os resultados filtrados sempre que providers ou searchQuery mudam
   useEffect(() => {
-    if (!searchQuery || !providers.length) {
+    if (!providers.length) {
+      setFilteredProviders([]);
+      return;
+    }
+    
+    if (!searchQuery) {
       setFilteredProviders(providers);
       return;
     }
     
     const query = searchQuery.toLowerCase();
+    
+    // Melhoria na lógica de busca para incluir termos relacionados
     const filtered = providers.filter(provider => {
       const categoryMatch = provider.category.toLowerCase().includes(query);
       const descriptionMatch = provider.description?.toLowerCase().includes(query) || false;
       const nameMatch = provider.profiles.full_name.toLowerCase().includes(query);
       
-      return categoryMatch || descriptionMatch || nameMatch;
+      // Termos relacionados para categorias específicas
+      const relatedTerms: Record<string, string[]> = {
+        "faxina": ["faxineira", "limpeza", "limpador", "diarista"],
+        "eletrica": ["eletricista", "eletrico", "instalação"],
+        "pintura": ["pintor", "pintora"]
+      };
+      
+      // Verifica se o termo buscado está relacionado à categoria do provider
+      let relatedMatch = false;
+      
+      for (const [category, terms] of Object.entries(relatedTerms)) {
+        if (provider.category.toLowerCase() === category && 
+            terms.some(term => query.includes(term))) {
+          relatedMatch = true;
+          break;
+        }
+        
+        if (terms.includes(query) && provider.category.toLowerCase() === category) {
+          relatedMatch = true;
+          break;
+        }
+      }
+      
+      return categoryMatch || descriptionMatch || nameMatch || relatedMatch;
     });
     
     setFilteredProviders(filtered);
@@ -67,26 +99,8 @@ const SearchResults = () => {
   
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!searchQuery || !providers.length) {
-      setFilteredProviders(providers);
-      return;
-    }
-    
-    const query = searchQuery.toLowerCase();
-    const filtered = providers.filter(provider => {
-      const categoryMatch = provider.category.toLowerCase().includes(query);
-      const descriptionMatch = provider.description?.toLowerCase().includes(query) || false;
-      const nameMatch = provider.profiles.full_name.toLowerCase().includes(query);
-      
-      return categoryMatch || descriptionMatch || nameMatch;
-    });
-    
-    setFilteredProviders(filtered);
+    // A pesquisa agora é automática via useEffect, mas mantemos esse handler para o form
   };
-  
-  useEffect(() => {
-    handleSearch(new Event('submit') as any);
-  }, [providers]);
   
   const handleViewProfile = (providerId: string) => {
     if (user) {
