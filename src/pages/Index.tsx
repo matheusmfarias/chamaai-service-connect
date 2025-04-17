@@ -13,7 +13,7 @@ import {
   MessageCircle,
   Trash2,
   Leaf,
-  Hammer
+  Tool
 } from "lucide-react";
 import { motion } from "framer-motion";
 import Layout from "@/components/Layout";
@@ -24,7 +24,7 @@ const serviceCategories = [
   { name: "Elétrica", icon: Wrench, path: "/prestadores/eletrica" },
   { name: "Hidráulica", icon: ShowerHead, path: "/prestadores/hidraulica" },
   { name: "Jardinagem", icon: Leaf, path: "/prestadores/jardinagem" },
-  { name: "Montagem de Móveis", icon: Hammer, path: "/prestadores/montagem-moveis" }
+  { name: "Montagem de Móveis", icon: Tool, path: "/prestadores/montagem-moveis" }
 ];
 
 const howItWorks = [
