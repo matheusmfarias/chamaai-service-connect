@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -19,6 +18,7 @@ import ComoFunciona from "./pages/ComoFunciona";
 import Categorias from "./pages/Categorias";
 import PrestadoresPorCategoria from "./pages/PrestadoresPorCategoria";
 import Sobre from "./pages/Sobre";
+import FAQ from "./pages/FAQ";
 
 const queryClient = new QueryClient();
 
@@ -37,7 +37,8 @@ const App = () => (
             <Route path="/categorias" element={<Categorias />} />
             <Route path="/prestadores/:categoria" element={<PrestadoresPorCategoria />} />
             <Route path="/sobre" element={<Sobre />} />
-            <Route path="/contato" element={<Sobre />} /> {/* Temporarily pointing to Sobre until we create the Contact page */}
+            <Route path="/contato" element={<Sobre />} />
+            <Route path="/faq" element={<FAQ />} />
             <Route path="/dashboard" element={
               <ProtectedRoute>
                 <Dashboard />
@@ -49,7 +50,6 @@ const App = () => (
               </ProtectedRoute>
             } />
             <Route path="/prestador/:id" element={<PerfilPrestador />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>
