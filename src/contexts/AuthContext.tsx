@@ -4,43 +4,9 @@ import { supabase } from "@/integrations/supabase/client";
 import { User, Session } from "@supabase/supabase-js";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
-
-interface AuthContextType {
-  user: User | null;
-  session: Session | null;
-  isLoading: boolean;
-  userProfile: UserProfile | null;
-  isServiceProvider: boolean;
-  signUp: (email: string, password: string, userData: UserSignUpData) => Promise<void>;
-  signIn: (email: string, password: string) => Promise<void>;
-  signOut: () => Promise<void>;
-  updateProfile: (data: Partial<UserProfile>) => Promise<void>;
-  createServiceProvider: (data: ServiceProviderData) => Promise<void>;
-  checkIsServiceProvider: () => Promise<boolean>;
-}
-
-export interface UserProfile {
-  id: string;
-  full_name: string;
-  phone: string | null;
-  city: string | null;
-  state: string | null;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface UserSignUpData {
-  full_name: string;
-  phone?: string;
-  city?: string;
-  state?: string;
-}
-
-export interface ServiceProviderData {
-  category: string;
-  description: string;
-  rate_per_hour: number;
-}
+import { AuthContextType, UserSignUpData } from "./types/auth";
+import { useProfile } from "./hooks/useProfile";
+import { useServiceProvider } from "./hooks/useServiceProvider";
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -60,13 +26,25 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
-  const [isServiceProvider, setIsServiceProvider] = useState<boolean>(false);
   const { toast } = useToast();
   const navigate = useNavigate();
 
+  const { 
+    userProfile,
+    setUserProfile,
+    fetchUserProfile,
+    updateProfile 
+  } = useProfile();
+
+  const {
+    isServiceProvider,
+    setIsServiceProvider,
+    checkServiceProviderStatus,
+    createServiceProvider,
+    checkIsServiceProvider
+  } = useServiceProvider();
+
   useEffect(() => {
-    // Configura o listener para mudanças de estado de autenticação
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
         setSession(session);
@@ -76,7 +54,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           setUserProfile(null);
           setIsServiceProvider(false);
         } else {
-          // Defer fetching profile data to avoid auth deadlocks
           setTimeout(() => {
             fetchUserProfile(session.user.id);
             checkServiceProviderStatus(session.user.id);
@@ -85,7 +62,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       }
     );
 
-    // Verifica a sessão existente
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
@@ -101,45 +77,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       subscription.unsubscribe();
     };
   }, []);
-
-  const fetchUserProfile = async (userId: string) => {
-    try {
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("id", userId)
-        .single();
-
-      if (error) {
-        console.error("Erro ao buscar perfil:", error);
-        return;
-      }
-
-      setUserProfile(data);
-    } catch (error) {
-      console.error("Erro ao buscar perfil:", error);
-    }
-  };
-
-  const checkServiceProviderStatus = async (userId: string) => {
-    try {
-      const { data, error } = await supabase
-        .from("service_providers")
-        .select("id")
-        .eq("id", userId)
-        .single();
-
-      if (error && error.code !== "PGRST116") {
-        // PGRST116 é o código para "não encontrado"
-        console.error("Erro ao verificar status de prestador:", error);
-        return;
-      }
-
-      setIsServiceProvider(!!data);
-    } catch (error) {
-      console.error("Erro ao verificar status de prestador:", error);
-    }
-  };
 
   const signUp = async (email: string, password: string, userData: UserSignUpData) => {
     try {
@@ -248,116 +185,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       });
     } finally {
       setIsLoading(false);
-    }
-  };
-
-  const updateProfile = async (data: Partial<UserProfile>) => {
-    if (!user) return;
-
-    try {
-      setIsLoading(true);
-      
-      const { error } = await supabase
-        .from("profiles")
-        .update({
-          ...data,
-          updated_at: new Date().toISOString(),
-        })
-        .eq("id", user.id);
-
-      if (error) {
-        toast({
-          title: "Erro ao atualizar perfil",
-          description: error.message,
-          variant: "destructive",
-        });
-        return;
-      }
-
-      // Atualiza o perfil localmente
-      if (userProfile) {
-        setUserProfile({
-          ...userProfile,
-          ...data,
-        });
-      }
-
-      toast({
-        title: "Perfil atualizado",
-        description: "Seu perfil foi atualizado com sucesso.",
-      });
-    } catch (error: any) {
-      toast({
-        title: "Erro ao atualizar perfil",
-        description: error.message || "Ocorreu um erro ao atualizar seu perfil. Tente novamente mais tarde.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const createServiceProvider = async (data: ServiceProviderData) => {
-    if (!user) return;
-
-    try {
-      setIsLoading(true);
-      
-      const { error } = await supabase
-        .from("service_providers")
-        .insert({
-          id: user.id,
-          category: data.category,
-          description: data.description,
-          rate_per_hour: data.rate_per_hour,
-        });
-
-      if (error) {
-        toast({
-          title: "Erro ao criar perfil de prestador",
-          description: error.message,
-          variant: "destructive",
-        });
-        return;
-      }
-
-      setIsServiceProvider(true);
-
-      toast({
-        title: "Perfil de prestador criado",
-        description: "Seu perfil de prestador foi criado com sucesso.",
-      });
-    } catch (error: any) {
-      toast({
-        title: "Erro ao criar perfil de prestador",
-        description: error.message || "Ocorreu um erro ao criar seu perfil de prestador. Tente novamente mais tarde.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const checkIsServiceProvider = async (): Promise<boolean> => {
-    if (!user) return false;
-    
-    try {
-      const { data, error } = await supabase
-        .from("service_providers")
-        .select("id")
-        .eq("id", user.id)
-        .single();
-
-      if (error && error.code !== "PGRST116") {
-        console.error("Erro ao verificar status de prestador:", error);
-        return false;
-      }
-
-      setIsServiceProvider(!!data);
-      return !!data;
-    } catch (error) {
-      console.error("Erro ao verificar status de prestador:", error);
-      return false;
     }
   };
 
