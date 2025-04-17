@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -20,6 +21,7 @@ import PrestadoresPorCategoria from "./pages/PrestadoresPorCategoria";
 import Sobre from "./pages/Sobre";
 import FAQ from "./pages/FAQ";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermosDeUso from "./pages/TermosDeUso";
 
 const queryClient = new QueryClient();
 
@@ -52,6 +54,7 @@ const App = () => (
             } />
             <Route path="/prestador/:id" element={<PerfilPrestador />} />
             <Route path="/privacidade" element={<PrivacyPolicy />} />
+            <Route path="/termos" element={<TermosDeUso />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>

@@ -1,16 +1,7 @@
-import { Link, useNavigate } from "react-router-dom";
-import { Facebook, Instagram, Twitter } from "lucide-react";
-import { useEffect } from "react";
+import { Link } from "react-router-dom";
+import { Facebook, Instagram, WhatsApp } from "lucide-react";
 
 const Footer = () => {
-  const navigate = useNavigate();
-
-  // Function to handle navigation and scroll to top
-  const handleNavigation = (path: string) => {
-    navigate(path);
-    window.scrollTo(0, 0);
-  };
-
   return (
     <footer className="bg-gray-50 border-t">
       <div className="container-custom py-12">
@@ -28,7 +19,7 @@ const Footer = () => {
                 <Instagram size={20} />
               </a>
               <a href="#" className="text-gray-500 hover:text-chamaai-blue">
-                <Twitter size={20} />
+                <WhatsApp size={20} />
               </a>
             </div>
           </div>
@@ -46,10 +37,10 @@ const Footer = () => {
             <h4 className="font-semibold text-gray-800 mb-4">Links Úteis</h4>
             <ul className="space-y-2">
               <li><Link to="/como-funciona" className="text-gray-600 hover:text-chamaai-blue" onClick={() => window.scrollTo(0, 0)}>Como Funciona</Link></li>
-              <li><Link to="/cadastro" className="text-gray-600 hover:text-chamaai-blue" onClick={() => window.scrollTo(0, 0)}>Seja um Prestador</Link></li>
               <li><Link to="/sobre" className="text-gray-600 hover:text-chamaai-blue" onClick={() => window.scrollTo(0, 0)}>Sobre Nós</Link></li>
               <li><Link to="/faq" className="text-gray-600 hover:text-chamaai-blue" onClick={() => window.scrollTo(0, 0)}>Perguntas Frequentes</Link></li>
               <li><Link to="/privacidade" className="text-gray-600 hover:text-chamaai-blue" onClick={() => window.scrollTo(0, 0)}>Política de Privacidade</Link></li>
+              <li><Link to="/termos" className="text-gray-600 hover:text-chamaai-blue" onClick={() => window.scrollTo(0, 0)}>Termos de Uso</Link></li>
             </ul>
           </div>
           <div>

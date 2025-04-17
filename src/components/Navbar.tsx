@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -16,12 +15,10 @@ const Navbar = () => {
     <nav className="bg-white shadow-sm sticky top-0 z-50">
       <div className="container-custom">
         <div className="flex items-center justify-between py-4">
-          {/* Logo */}
           <Link to="/" className="font-bold text-2xl text-chamaai-blue">
             ChamaAí
           </Link>
 
-          {/* Desktop Navigation */}
           <div className="hidden md:flex items-center space-x-6">
             <Link to="/" className="text-gray-600 hover:text-chamaai-blue transition-colors">
               Início
@@ -37,23 +34,24 @@ const Navbar = () => {
             </Link>
           </div>
 
-          {/* Desktop Actions */}
           <div className="hidden md:flex items-center space-x-4">
-            {searchOpen ? (
-              <div className="relative">
-                <Input 
-                  type="text"
-                  placeholder="Pesquisar serviços..."
-                  className="pr-8"
-                  autoFocus
-                  onBlur={() => setSearchOpen(false)}
-                />
-                <Search className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-              </div>
-            ) : (
-              <Button variant="ghost" size="sm" onClick={() => setSearchOpen(true)}>
-                <Search className="w-5 h-5 text-gray-600" />
-              </Button>
+            {user && (
+              searchOpen ? (
+                <div className="relative">
+                  <Input 
+                    type="text"
+                    placeholder="Pesquisar serviços..."
+                    className="pr-8"
+                    autoFocus
+                    onBlur={() => setSearchOpen(false)}
+                  />
+                  <Search className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                </div>
+              ) : (
+                <Button variant="ghost" size="sm" onClick={() => setSearchOpen(true)}>
+                  <Search className="w-5 h-5 text-gray-600" />
+                </Button>
+              )
             )}
             
             {user ? (
@@ -70,19 +68,19 @@ const Navbar = () => {
             )}
           </div>
 
-          {/* Mobile Menu Button */}
           <div className="md:hidden flex items-center space-x-2">
-            <Button variant="ghost" size="sm" onClick={() => setSearchOpen(!searchOpen)}>
-              <Search className="w-5 h-5 text-gray-600" />
-            </Button>
+            {user && (
+              <Button variant="ghost" size="sm" onClick={() => setSearchOpen(!searchOpen)}>
+                <Search className="w-5 h-5 text-gray-600" />
+              </Button>
+            )}
             <Button variant="ghost" size="sm" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
               {mobileMenuOpen ? <X /> : <Menu />}
             </Button>
           </div>
         </div>
 
-        {/* Mobile Search Bar */}
-        {searchOpen && (
+        {searchOpen && user && (
           <div className="md:hidden pb-4">
             <Input 
               type="text"
@@ -93,7 +91,6 @@ const Navbar = () => {
           </div>
         )}
 
-        {/* Mobile Menu */}
         {mobileMenuOpen && (
           <div className="md:hidden pb-4 space-y-4">
             <Link to="/" className="block py-2 text-gray-600 hover:text-chamaai-blue transition-colors">
@@ -119,7 +116,6 @@ const Navbar = () => {
                     variant="ghost" 
                     className="justify-start p-0 h-auto text-red-500 hover:text-red-600 hover:bg-transparent"
                     onClick={() => {
-                      // Aqui seria a lógica de logout
                       setMobileMenuOpen(false);
                     }}
                   >
