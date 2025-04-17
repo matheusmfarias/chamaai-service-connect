@@ -18,6 +18,7 @@ import NotFound from "./pages/NotFound";
 import ComoFunciona from "./pages/ComoFunciona";
 import Categorias from "./pages/Categorias";
 import PrestadoresPorCategoria from "./pages/PrestadoresPorCategoria";
+import Sobre from "./pages/Sobre";
 
 const queryClient = new QueryClient();
 
@@ -35,6 +36,7 @@ const App = () => (
             <Route path="/como-funciona" element={<ComoFunciona />} />
             <Route path="/categorias" element={<Categorias />} />
             <Route path="/prestadores/:categoria" element={<PrestadoresPorCategoria />} />
+            <Route path="/sobre" element={<Sobre />} />
             <Route path="/dashboard" element={
               <ProtectedRoute>
                 <Dashboard />
