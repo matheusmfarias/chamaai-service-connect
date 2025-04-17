@@ -1,6 +1,6 @@
-
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { 
@@ -12,7 +12,8 @@ import {
   FileCheck,
   MessageCircle,
   Trash2,
-  Leaf 
+  Leaf,
+  Tool
 } from "lucide-react";
 import { motion } from "framer-motion";
 import Layout from "@/components/Layout";
@@ -22,7 +23,8 @@ const serviceCategories = [
   { name: "Pintura", icon: Paintbrush, path: "/prestadores/pintura" },
   { name: "Elétrica", icon: Wrench, path: "/prestadores/eletrica" },
   { name: "Hidráulica", icon: ShowerHead, path: "/prestadores/hidraulica" },
-  { name: "Jardinagem", icon: Leaf, path: "/prestadores/jardinagem" }
+  { name: "Jardinagem", icon: Leaf, path: "/prestadores/jardinagem" },
+  { name: "Montagem de Móveis", icon: Tool, path: "/prestadores/montagem-moveis" }
 ];
 
 const howItWorks = [
@@ -61,6 +63,13 @@ const staggerContainer = {
 const Index = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const navigate = useNavigate();
+  const { user } = useAuth();
+
+  useEffect(() => {
+    if (user) {
+      navigate('/dashboard');
+    }
+  }, [user, navigate]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();

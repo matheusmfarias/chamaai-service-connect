@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import Layout from "@/components/Layout";
@@ -20,10 +19,8 @@ const PrestadoresPorCategoria = () => {
       "pintura": "Pintura",
       "eletrica": "Elétrica",
       "hidraulica": "Hidráulica",
-      "reforma": "Reforma",
       "jardinagem": "Jardinagem",
-      "montagem-moveis": "Montagem de Móveis",
-      "servicos-gerais": "Serviços Gerais"
+      "montagem-moveis": "Montagem de Móveis"
     };
     
     setCategoryName(categoryNames[categoria || ""] || categoria || "");

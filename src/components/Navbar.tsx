@@ -1,6 +1,6 @@
 
-import { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Menu, X } from "lucide-react";
@@ -10,16 +10,22 @@ import AuthenticatedNavbar from "./AuthenticatedNavbar";
 const Navbar = () => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
   
   const isDashboard = location.pathname.startsWith("/dashboard");
+
+  useEffect(() => {
+    if (user && location.pathname === "/") {
+      signOut();
+    }
+  }, [user, location.pathname, signOut]);
 
   const publicLinks = [
     { name: "Início", path: "/" },
     { name: "Categorias", path: "/categorias" },
     { name: "Como Funciona", path: "/como-funciona" },
-    { name: "Sobre Nós", path: "/sobre" },
   ];
 
   return (

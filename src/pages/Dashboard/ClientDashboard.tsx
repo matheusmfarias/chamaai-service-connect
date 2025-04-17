@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import SearchSection from "@/components/dashboard/SearchSection";
 import RecentRequests from "@/components/dashboard/RecentRequests";
@@ -13,11 +12,13 @@ const ClientDashboard = () => {
   const { userProfile } = useAuth();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  const firstName = userProfile?.full_name?.split(' ')[0] || 'Usuário';
+
   return (
     <div className="container-custom py-8">
       <div className="flex items-center justify-between mb-8">
         <h1 className="text-2xl font-bold">
-          {userProfile ? `Olá, ${userProfile.full_name?.split(' ')[0]}!` : "Olá!"}
+          Olá, {firstName}!
         </h1>
         <Button 
           onClick={() => setIsModalOpen(true)} 
