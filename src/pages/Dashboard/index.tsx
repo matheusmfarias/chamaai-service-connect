@@ -2,7 +2,7 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import ClientDashboardHome from "./Home";
+import ClientDashboard from "./ClientDashboard";
 import ProviderDashboard from "./ProviderDashboard";
 
 const Dashboard = () => {
@@ -16,7 +16,7 @@ const Dashboard = () => {
     }
   }, [navigate]);
 
-  return isServiceProvider ? <ProviderDashboard /> : <ClientDashboardHome />;
+  return isServiceProvider ? <ProviderDashboard /> : <ClientDashboard />;
 };
 
 export default Dashboard;
