@@ -53,11 +53,18 @@ const SearchResultsContainer = ({
     }
   };
   
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    // Update URL parameters if needed
+    console.log("Search form submitted with query:", searchQuery);
+  };
+  
   return (
     <>
       <SearchHeader 
         searchQuery={searchQuery}
         onSearchChange={onSearchChange}
+        onSubmit={handleSubmit}
       />
       
       <SearchResultsSection
