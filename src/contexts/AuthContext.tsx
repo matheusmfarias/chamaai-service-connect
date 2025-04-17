@@ -1,3 +1,4 @@
+
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { User, Session } from "@supabase/supabase-js";
@@ -10,7 +11,7 @@ interface AuthContextType {
   isLoading: boolean;
   userProfile: UserProfile | null;
   isServiceProvider: boolean;
-  signUp: (email: string, password: string, userData: UserSignUpData) => Promise<void>;
+  signUp: (email: string, password: string, userData: UserSignUpData, isProvider: boolean) => Promise<void>;
   signIn: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
   updateProfile: (data: Partial<UserProfile>) => Promise<void>;
@@ -24,6 +25,7 @@ export interface UserProfile {
   phone: string | null;
   city: string | null;
   state: string | null;
+  provider_type: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -33,6 +35,7 @@ export interface UserSignUpData {
   phone?: string;
   city?: string;
   state?: string;
+  provider_type?: string;
 }
 
 export interface ServiceProviderData {
@@ -111,7 +114,16 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         return;
       }
 
+      console.log("Perfil do usuário carregado:", data);
       setUserProfile(data);
+      
+      // Check if user is a service provider based on provider_type
+      if (data.provider_type === 'service_provider') {
+        setIsServiceProvider(true);
+      } else {
+        // Double check by querying the service_providers table
+        checkServiceProviderStatus(userId);
+      }
     } catch (error) {
       console.error("Erro ao buscar perfil:", error);
     }
@@ -130,15 +142,36 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         return;
       }
 
+      console.log("Status de prestador verificado:", !!data);
       setIsServiceProvider(!!data);
+      
+      // If user is a service provider but provider_type is not set, update it
+      if (!!data && userProfile && userProfile.provider_type !== 'service_provider') {
+        await supabase
+          .from("profiles")
+          .update({
+            provider_type: 'service_provider',
+            updated_at: new Date().toISOString(),
+          })
+          .eq("id", userId);
+        
+        // Update local userProfile state
+        setUserProfile({
+          ...userProfile,
+          provider_type: 'service_provider'
+        });
+      }
     } catch (error) {
       console.error("Erro ao verificar status de prestador:", error);
     }
   };
 
-  const signUp = async (email: string, password: string, userData: UserSignUpData) => {
+  const signUp = async (email: string, password: string, userData: UserSignUpData, isProvider: boolean = false) => {
     try {
       setIsLoading(true);
+      
+      // Set provider_type based on registration choice
+      const providerType = isProvider ? 'service_provider' : 'client';
       
       const { data, error } = await supabase.auth.signUp({
         email,
@@ -148,7 +181,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             full_name: userData.full_name,
             phone: userData.phone || null,
             city: userData.city || null,
-            state: userData.state || null
+            state: userData.state || null,
+            provider_type: providerType
           }
         }
       });
@@ -302,6 +336,28 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         ...data.description.toLowerCase().split(' ')
       ].filter(tag => tag.length > 3);
 
+      console.log("Criando perfil de prestador com tags:", searchTags);
+      
+      // Update the user's provider_type in profiles table
+      const { error: profileError } = await supabase
+        .from("profiles")
+        .update({
+          provider_type: 'service_provider',
+          updated_at: new Date().toISOString(),
+        })
+        .eq("id", user.id);
+        
+      if (profileError) {
+        console.error("Erro ao atualizar perfil como prestador:", profileError);
+        toast({
+          title: "Erro ao atualizar perfil",
+          description: profileError.message,
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Create service provider entry
       const { error } = await supabase
         .from("service_providers")
         .insert({
@@ -322,7 +378,14 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         return;
       }
 
+      // Update local state
       setIsServiceProvider(true);
+      if (userProfile) {
+        setUserProfile({
+          ...userProfile,
+          provider_type: 'service_provider'
+        });
+      }
 
       toast({
         title: "Perfil de prestador criado",
@@ -343,6 +406,12 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     if (!user) return false;
     
     try {
+      // First check profile's provider_type
+      if (userProfile && userProfile.provider_type === 'service_provider') {
+        return true;
+      }
+      
+      // Double-check in the service_providers table
       const { data, error } = await supabase
         .from("service_providers")
         .select("id, category")
@@ -354,8 +423,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         return false;
       }
 
-      setIsServiceProvider(!!data);
-      return !!data;
+      const isProvider = !!data;
+      setIsServiceProvider(isProvider);
+      return isProvider;
     } catch (error) {
       console.error("Erro ao verificar status de prestador:", error);
       return false;

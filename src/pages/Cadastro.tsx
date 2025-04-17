@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -88,19 +87,20 @@ const Cadastro = () => {
     
     try {
       console.log("Iniciando cadastro do usuário...");
+      const isProvider = activeTab === "prestador";
       
-      // Registra o usuário
+      // Register the user with provider type information
       await signUp(email, password, {
         full_name: fullName,
         phone,
         city,
         state
-      });
+      }, isProvider);
 
       console.log("Usuário cadastrado com sucesso!");
       
-      // Se for prestador, cria o perfil de prestador
-      if (activeTab === "prestador") {
+      // If provider, create the service provider profile
+      if (isProvider) {
         console.log("Cadastrando como prestador de serviço...", {
           category,
           description,
@@ -116,7 +116,7 @@ const Cadastro = () => {
         console.log("Perfil de prestador criado com sucesso!");
       }
       
-      // O redirecionamento é feito dentro do signUp
+      // Redirect is handled in signUp
     } catch (error: any) {
       console.error("Erro ao registrar:", error);
       toast({

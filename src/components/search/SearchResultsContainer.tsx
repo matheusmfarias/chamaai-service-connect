@@ -34,6 +34,7 @@ const SearchResultsContainer = ({
   useEffect(() => {
     if (providers) {
       console.log("Número de prestadores antes da filtragem:", providers.length);
+      console.log("Prestadores encontrados:", providers);
       const filtered = filterProviders(providers, filters);
       console.log("Número de prestadores após a filtragem:", filtered.length);
       setFilteredProviders(filtered);

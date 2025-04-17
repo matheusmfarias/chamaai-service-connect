@@ -21,6 +21,7 @@ export interface ServiceProvider {
     phone: string | null;
     city: string | null;
     state: string | null;
+    provider_type?: string | null;
   };
 }
 
@@ -53,6 +54,48 @@ export const useServiceProviders = (category?: string, searchQuery?: string) => 
           console.log(`Resultados da busca:`, data);
           query = data;
           
+          // If no results found, check profiles with provider_type
+          if (!data || data.length === 0) {
+            console.log("Nenhum resultado encontrado. Buscando por provider_type na tabela profiles...");
+            
+            const { data: profilesData, error: profilesError } = await supabase
+              .from('profiles')
+              .select(`
+                id,
+                full_name,
+                city,
+                state,
+                provider_type
+              `)
+              .eq('provider_type', 'service_provider');
+              
+            if (profilesError) {
+              console.error("Erro na busca por profiles:", profilesError);
+              // Don't throw, continue with empty results
+            } else if (profilesData && profilesData.length > 0) {
+              console.log("Encontrados perfis de prestadores:", profilesData);
+              
+              // For each matching profile, get the service provider details
+              const providerPromises = profilesData.map(async (profile) => {
+                const { data: providerData } = await supabase
+                  .from('service_providers')
+                  .select('*')
+                  .eq('id', profile.id)
+                  .single();
+                  
+                if (providerData) {
+                  return { ...providerData, profiles: profile };
+                }
+                return null;
+              });
+              
+              const providerResults = await Promise.all(providerPromises);
+              const validProviders = providerResults.filter(Boolean) as ServiceProvider[];
+              console.log("Prestadores encontrados via profiles:", validProviders);
+              
+              query = validProviders;
+            }
+          }
         } else if (category) {
           console.log(`Buscando prestadores por categoria: "${category.toLowerCase()}"`);
           
@@ -65,7 +108,8 @@ export const useServiceProviders = (category?: string, searchQuery?: string) => 
                 full_name,
                 phone,
                 city,
-                state
+                state,
+                provider_type
               )
             `)
             .eq('category', category.toLowerCase());
@@ -90,7 +134,8 @@ export const useServiceProviders = (category?: string, searchQuery?: string) => 
                 full_name,
                 phone,
                 city,
-                state
+                state,
+                provider_type
               )
             `);
             
@@ -142,7 +187,8 @@ export const useServiceProvider = (id: string) => {
               full_name,
               phone,
               city,
-              state
+              state,
+              provider_type
             )
           `)
           .eq('id', id)
@@ -152,6 +198,7 @@ export const useServiceProvider = (id: string) => {
           throw error;
         }
         
+        console.log("Detalhes do prestador carregados:", data);
         setProvider(data as unknown as ServiceProvider);
       } catch (err: any) {
         setError(err.message);
