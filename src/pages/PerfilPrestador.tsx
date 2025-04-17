@@ -23,67 +23,144 @@ import {
   MessageCircle
 } from "lucide-react";
 import Layout from "@/components/Layout";
+import { useServiceProvider } from "@/hooks/useServiceProviders";
+import { useReviews, Review } from "@/hooks/useReviews";
+import { useAuth } from "@/contexts/AuthContext";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
 
-// Mock data for the service provider
-const mockProvider = {
-  id: "1",
-  name: "João Pereira",
-  avatar: "https://i.pravatar.cc/300?u=1",
-  email: "joao.pereira@example.com",
-  phone: "(11) 98765-4321",
-  city: "São Paulo",
-  state: "SP",
-  category: "pintura",
-  categoryName: "Pintura",
-  ratePerHour: 50,
-  rating: 4.8,
-  totalReviews: 47,
-  isVerified: true,
-  description: "Pintor profissional com mais de 10 anos de experiência em pinturas residenciais e comerciais. Especializado em técnicas de acabamento, texturização e efeitos especiais. Trabalho com tintas acrílicas, látex e esmaltes. Atendimento personalizado, orçamento sem compromisso e garantia de satisfação.",
-  servicesCompleted: 124,
-  responseTime: "2 horas",
-  joinedDate: "Janeiro 2022"
+interface CreateReviewParams {
+  rating: number;
+  comment: string;
+  providerId: string;
+  onSuccess: () => void;
+}
+
+const CreateReviewForm = ({ rating, comment, providerId, onSuccess }: CreateReviewParams) => {
+  const [reviewComment, setReviewComment] = useState(comment);
+  const [reviewRating, setReviewRating] = useState(rating);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const { createReview } = useReviews(providerId);
+  const { toast } = useToast();
+
+  const handleSubmit = async () => {
+    if (reviewRating < 1) {
+      toast({
+        title: "Avaliação inválida",
+        description: "Por favor, selecione uma classificação de 1 a 5 estrelas.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
+    const success = await createReview({
+      service_provider_id: providerId,
+      rating: reviewRating,
+      comment: reviewComment,
+    });
+
+    setIsSubmitting(false);
+    if (success) {
+      onSuccess();
+    }
+  };
+
+  return (
+    <div className="space-y-4">
+      <div>
+        <div className="mb-2 font-medium">Sua avaliação</div>
+        <div className="flex items-center">
+          {[1, 2, 3, 4, 5].map((value) => (
+            <Star 
+              key={value}
+              className={`w-8 h-8 cursor-pointer ${
+                value <= reviewRating ? "fill-amber-500 text-amber-500" : "text-gray-300"
+              }`}
+              onClick={() => setReviewRating(value)}
+            />
+          ))}
+        </div>
+      </div>
+      
+      <div>
+        <label htmlFor="comment" className="block mb-2 font-medium">
+          Comentário (opcional)
+        </label>
+        <Textarea
+          id="comment"
+          placeholder="Compartilhe sua experiência com este prestador..."
+          value={reviewComment}
+          onChange={(e) => setReviewComment(e.target.value)}
+          rows={4}
+        />
+      </div>
+      
+      <Button 
+        onClick={handleSubmit} 
+        className="w-full bg-chamaai-blue hover:bg-chamaai-lightblue"
+        disabled={isSubmitting}
+      >
+        {isSubmitting ? "Enviando..." : "Enviar Avaliação"}
+      </Button>
+    </div>
+  );
 };
 
-// Mock data for reviews
-const mockReviews = [
-  {
-    id: "1",
-    reviewer: "Maria Silva",
-    avatar: "https://i.pravatar.cc/150?u=5",
-    rating: 5,
-    date: "2025-03-15T10:30:00Z",
-    comment: "Excelente trabalho! O João foi muito profissional e atencioso. Pintou minha sala e corredor em um dia, com um acabamento perfeito. Recomendo demais!"
-  },
-  {
-    id: "2",
-    reviewer: "Carlos Santos",
-    avatar: "https://i.pravatar.cc/150?u=6",
-    rating: 5,
-    date: "2025-02-28T14:45:00Z",
-    comment: "Contratei o João para pintar meu apartamento e fiquei muito satisfeito. Ele foi pontual, organizado e o serviço ficou impecável. Certamente vou chamá-lo novamente."
-  },
-  {
-    id: "3",
-    reviewer: "Ana Oliveira",
-    avatar: "https://i.pravatar.cc/150?u=7",
-    rating: 4,
-    date: "2025-02-10T09:15:00Z",
-    comment: "Bom trabalho, mas demorou um pouco mais do que o combinado. O resultado final ficou ótimo e ele foi muito educado e prestativo."
-  }
-];
+const ReviewItem = ({ review }: { review: Review }) => {
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return new Intl.DateTimeFormat('pt-BR', { dateStyle: 'long' }).format(date);
+  };
+
+  return (
+    <div className="border-b pb-6 last:border-b-0 last:pb-0">
+      <div className="flex items-start">
+        <Avatar className="w-10 h-10 mr-3">
+          <AvatarFallback>{review.profiles.full_name.substring(0, 2)}</AvatarFallback>
+        </Avatar>
+        <div className="flex-1">
+          <div className="flex items-center justify-between">
+            <h4 className="font-semibold">{review.profiles.full_name}</h4>
+            <span className="text-sm text-gray-500">
+              {formatDate(review.created_at)}
+            </span>
+          </div>
+          <div className="flex items-center my-1">
+            {[...Array(5)].map((_, i) => (
+              <Star 
+                key={i} 
+                className={`w-4 h-4 ${i < review.rating ? "fill-amber-500 text-amber-500" : "text-gray-300"}`} 
+              />
+            ))}
+          </div>
+          {review.comment && <p className="text-gray-700 mt-1">{review.comment}</p>}
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const PerfilPrestador = () => {
-  const { id } = useParams();
+  const { id } = useParams<{id: string}>();
   const { toast } = useToast();
-  // In a real application, we would fetch the provider data based on the ID
-  // For now, we'll just use our mock data
-  const provider = mockProvider;
+  const { provider, isLoading: isProviderLoading } = useServiceProvider(id || "");
+  const { reviews, isLoading: areReviewsLoading } = useReviews(id);
+  const { user, userProfile } = useAuth();
+  const [dialogOpen, setDialogOpen] = useState(false);
   
   const handleContactProvider = () => {
     toast({
       title: "Mensagem enviada",
-      description: `Sua mensagem foi enviada para ${provider.name}. Aguarde o retorno.`,
+      description: `Sua mensagem foi enviada para ${provider?.profiles.full_name}. Aguarde o retorno.`,
     });
   };
   
@@ -97,9 +174,54 @@ const PerfilPrestador = () => {
     return new Intl.DateTimeFormat('pt-BR', { dateStyle: 'long' }).format(date);
   };
 
-  if (!provider) {
-    return <div>Carregando...</div>;
+  if (isProviderLoading) {
+    return (
+      <Layout>
+        <div className="container-custom py-12">
+          <div className="flex items-center justify-center min-h-[50vh]">
+            <div className="text-center space-y-4">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-chamaai-blue mx-auto"></div>
+              <p className="text-gray-600">Carregando informações do prestador...</p>
+            </div>
+          </div>
+        </div>
+      </Layout>
+    );
   }
+
+  if (!provider) {
+    return (
+      <Layout>
+        <div className="container-custom py-12">
+          <div className="text-center">
+            <h2 className="text-2xl font-semibold mb-2">Prestador não encontrado</h2>
+            <p className="text-gray-600 mb-6">O prestador que você está procurando não foi encontrado.</p>
+            <Button onClick={() => window.history.back()}>Voltar</Button>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
+
+  // Definir o nome da categoria
+  const getCategoryName = (categoryId: string) => {
+    const categories: {[key: string]: string} = {
+      "faxina": "Faxina",
+      "pintura": "Pintura",
+      "eletrica": "Elétrica",
+      "hidraulica": "Hidráulica",
+      "reforma": "Reforma",
+      "jardinagem": "Jardinagem"
+    };
+    
+    return categories[categoryId] || categoryId;
+  };
+
+  const formatJoinedDate = () => {
+    const date = new Date(provider.created_at);
+    const month = new Intl.DateTimeFormat('pt-BR', { month: 'long' }).format(date);
+    return `${month} ${date.getFullYear()}`;
+  };
 
   return (
     <Layout>
@@ -111,17 +233,16 @@ const PerfilPrestador = () => {
               <CardContent className="p-6">
                 <div className="flex flex-col items-center text-center">
                   <Avatar className="w-32 h-32 mb-4">
-                    <AvatarImage src={provider.avatar} alt={provider.name} />
-                    <AvatarFallback>{provider.name.substring(0, 2)}</AvatarFallback>
+                    <AvatarFallback>{provider.profiles.full_name.substring(0, 2)}</AvatarFallback>
                   </Avatar>
                   
-                  <h1 className="text-2xl font-bold mb-1">{provider.name}</h1>
+                  <h1 className="text-2xl font-bold mb-1">{provider.profiles.full_name}</h1>
                   
                   <div className="flex items-center mb-2">
                     <Badge className="bg-chamaai-blue hover:bg-chamaai-lightblue">
-                      {provider.categoryName}
+                      {getCategoryName(provider.category)}
                     </Badge>
-                    {provider.isVerified && (
+                    {provider.is_verified && (
                       <Badge className="ml-2 bg-green-100 text-green-800 hover:bg-green-100">
                         Verificado
                       </Badge>
@@ -131,21 +252,21 @@ const PerfilPrestador = () => {
                   <div className="flex items-center text-amber-500 mb-4">
                     <Star className="w-5 h-5 fill-amber-500" />
                     <span className="ml-1 font-medium">{provider.rating}</span>
-                    <span className="text-gray-600 text-sm ml-1">({provider.totalReviews} avaliações)</span>
+                    <span className="text-gray-600 text-sm ml-1">({provider.total_reviews} avaliações)</span>
                   </div>
                   
                   <div className="space-y-3 w-full mb-6">
                     <div className="flex items-center text-gray-600">
                       <MapPin className="w-4 h-4 mr-2 flex-shrink-0" />
-                      <span>{provider.city}, {provider.state}</span>
+                      <span>{provider.profiles.city || 'Não informado'}, {provider.profiles.state || 'Não informado'}</span>
                     </div>
                     <div className="flex items-center text-gray-600">
                       <Clock className="w-4 h-4 mr-2 flex-shrink-0" />
-                      <span>Responde em {provider.responseTime}</span>
+                      <span>Responde em {provider.response_time || '24 horas'}</span>
                     </div>
                     <div className="flex items-center text-gray-600">
                       <CheckCircle className="w-4 h-4 mr-2 flex-shrink-0" />
-                      <span>{provider.servicesCompleted} serviços realizados</span>
+                      <span>{provider.services_completed} serviços realizados</span>
                     </div>
                   </div>
                   
@@ -167,22 +288,47 @@ const PerfilPrestador = () => {
                     </Button>
                   </div>
                   
-                  <div className="mt-6 border-t pt-4 w-full">
-                    <h3 className="font-semibold mb-2 text-left">Informações de Contato</h3>
-                    <div className="space-y-2 text-left">
-                      <div className="flex items-center text-gray-600">
-                        <Mail className="w-4 h-4 mr-2" />
-                        <span>{provider.email}</span>
-                      </div>
-                      <div className="flex items-center text-gray-600">
-                        <Phone className="w-4 h-4 mr-2" />
-                        <span>{provider.phone}</span>
+                  {user && user.id !== provider.id && (
+                    <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+                      <DialogTrigger asChild>
+                        <Button 
+                          variant="ghost" 
+                          className="mt-4 text-chamaai-blue hover:text-chamaai-lightblue hover:bg-transparent p-0 h-auto"
+                        >
+                          Avaliar prestador
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent>
+                        <DialogHeader>
+                          <DialogTitle>Avaliar {provider.profiles.full_name}</DialogTitle>
+                          <DialogDescription>
+                            Compartilhe sua experiência com este prestador de serviços para ajudar outros usuários.
+                          </DialogDescription>
+                        </DialogHeader>
+                        <CreateReviewForm 
+                          rating={3} 
+                          comment="" 
+                          providerId={provider.id}
+                          onSuccess={() => setDialogOpen(false)} 
+                        />
+                      </DialogContent>
+                    </Dialog>
+                  )}
+                  
+                  {provider.profiles.phone && (
+                    <div className="mt-6 border-t pt-4 w-full">
+                      <h3 className="font-semibold mb-2 text-left">Informações de Contato</h3>
+                      <div className="space-y-2 text-left">
+                        <div className="flex items-center text-gray-600">
+                          <Phone className="w-4 h-4 mr-2" />
+                          <span>{provider.profiles.phone}</span>
+                        </div>
                       </div>
                     </div>
-                  </div>
+                  )}
                   
                   <div className="w-full text-left text-sm text-gray-500 mt-4">
-                    <p>Membro desde {provider.joinedDate}</p>
+                    <p>Membro desde {formatJoinedDate()}</p>
                   </div>
                 </div>
               </CardContent>
@@ -201,7 +347,7 @@ const PerfilPrestador = () => {
               </CardHeader>
               <CardContent>
                 <p className="text-gray-700 whitespace-pre-line">
-                  {provider.description}
+                  {provider.description || "Este prestador ainda não adicionou uma descrição."}
                 </p>
                 
                 <div className="mt-6 pt-6 border-t">
@@ -209,7 +355,7 @@ const PerfilPrestador = () => {
                     <div className="mb-4 md:mb-0">
                       <h3 className="font-semibold mb-2">Taxa Horária</h3>
                       <p className="text-xl font-medium text-chamaai-blue">
-                        R$ {provider.ratePerHour.toFixed(2)}<span className="text-sm text-gray-600">/hora</span>
+                        R$ {provider.rate_per_hour.toFixed(2)}<span className="text-sm text-gray-600">/hora</span>
                       </p>
                     </div>
                     <div>
@@ -229,47 +375,34 @@ const PerfilPrestador = () => {
                 <div>
                   <CardTitle>Avaliações</CardTitle>
                   <CardDescription>
-                    O que os clientes estão dizendo sobre {provider.name}
+                    O que os clientes estão dizendo sobre {provider.profiles.full_name}
                   </CardDescription>
                 </div>
                 <div className="flex items-center">
                   <Star className="w-5 h-5 fill-amber-500 text-amber-500" />
                   <span className="ml-1 font-medium">{provider.rating}</span>
-                  <span className="text-gray-600 text-sm ml-1">({provider.totalReviews})</span>
+                  <span className="text-gray-600 text-sm ml-1">({provider.total_reviews})</span>
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="space-y-6">
-                  {mockReviews.map((review) => (
-                    <div key={review.id} className="border-b pb-6 last:border-b-0 last:pb-0">
-                      <div className="flex items-start">
-                        <Avatar className="w-10 h-10 mr-3">
-                          <AvatarImage src={review.avatar} alt={review.reviewer} />
-                          <AvatarFallback>{review.reviewer.substring(0, 2)}</AvatarFallback>
-                        </Avatar>
-                        <div className="flex-1">
-                          <div className="flex items-center justify-between">
-                            <h4 className="font-semibold">{review.reviewer}</h4>
-                            <span className="text-sm text-gray-500">
-                              {formatDate(review.date)}
-                            </span>
-                          </div>
-                          <div className="flex items-center my-1">
-                            {[...Array(5)].map((_, i) => (
-                              <Star 
-                                key={i} 
-                                className={`w-4 h-4 ${i < review.rating ? "fill-amber-500 text-amber-500" : "text-gray-300"}`} 
-                              />
-                            ))}
-                          </div>
-                          <p className="text-gray-700 mt-1">{review.comment}</p>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+                {areReviewsLoading ? (
+                  <div className="text-center py-8">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-chamaai-blue mx-auto"></div>
+                    <p className="text-gray-600 mt-2">Carregando avaliações...</p>
+                  </div>
+                ) : reviews && reviews.length > 0 ? (
+                  <div className="space-y-6">
+                    {reviews.slice(0, 3).map((review) => (
+                      <ReviewItem key={review.id} review={review} />
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-8">
+                    <p className="text-gray-500">Este prestador ainda não tem avaliações.</p>
+                  </div>
+                )}
                 
-                {mockReviews.length > 3 && (
+                {reviews && reviews.length > 3 && (
                   <div className="mt-6 text-center">
                     <Button variant="outline">Ver Todas as Avaliações</Button>
                   </div>

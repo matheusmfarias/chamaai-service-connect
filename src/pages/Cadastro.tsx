@@ -17,7 +17,7 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs";
-import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
 import Layout from "@/components/Layout";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
@@ -44,69 +44,54 @@ const Cadastro = () => {
   const [category, setCategory] = useState("");
   const [description, setDescription] = useState("");
   const [ratePerHour, setRatePerHour] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
   const [activeTab, setActiveTab] = useState(defaultTab);
   
   const navigate = useNavigate();
-  const { toast } = useToast();
+  const { signUp, createServiceProvider, isLoading, user } = useAuth();
+
+  // Redirecionamento se já estiver autenticado
+  if (user) {
+    navigate("/dashboard");
+    return null;
+  }
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Basic validation
+    // Validação básica
     if (!fullName || !email || !password || !confirmPassword || !phone || !city || !state) {
-      toast({
-        title: "Campos obrigatórios",
-        description: "Por favor, preencha todos os campos obrigatórios.",
-        variant: "destructive",
-      });
       return;
     }
     
     if (password !== confirmPassword) {
-      toast({
-        title: "Senhas não conferem",
-        description: "A senha e a confirmação de senha devem ser idênticas.",
-        variant: "destructive",
-      });
       return;
     }
     
     if (activeTab === "prestador" && (!category || !description || !ratePerHour)) {
-      toast({
-        title: "Informações do prestador",
-        description: "Por favor, preencha todas as informações do prestador.",
-        variant: "destructive",
-      });
       return;
     }
     
-    setIsLoading(true);
-    
-    // This would be replaced with actual Supabase auth and database operations
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      // Simulate successful registration
-      toast({
-        title: "Cadastro realizado com sucesso!",
-        description: "Sua conta foi criada. Faça login para continuar.",
+      // Registra o usuário
+      await signUp(email, password, {
+        full_name: fullName,
+        phone,
+        city,
+        state
       });
+
+      // Se for prestador, cria o perfil de prestador
+      if (activeTab === "prestador") {
+        await createServiceProvider({
+          category,
+          description,
+          rate_per_hour: parseFloat(ratePerHour)
+        });
+      }
       
-      // Redirect to login
-      setTimeout(() => {
-        navigate("/login");
-      }, 1500);
-      
+      // O redirecionamento é feito dentro do signUp
     } catch (error) {
-      toast({
-        title: "Erro ao criar conta",
-        description: "Ocorreu um erro ao criar sua conta. Tente novamente mais tarde.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
+      console.error("Erro ao registrar:", error);
     }
   };
 

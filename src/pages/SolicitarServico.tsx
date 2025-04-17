@@ -12,7 +12,6 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { useToast } from "@/hooks/use-toast";
 import { 
   Calendar as CalendarIcon,
   Clock,
@@ -37,6 +36,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useServiceRequests } from "@/hooks/useServiceRequests";
 
 const categories = [
   { id: "faxina", name: "Faxina" },
@@ -58,49 +58,33 @@ const SolicitarServico = () => {
   const [category, setCategory] = useState("");
   const [date, setDate] = useState<Date | undefined>(undefined);
   const [time, setTime] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
   const [isImproving, setIsImproving] = useState(false);
   const navigate = useNavigate();
-  const { toast } = useToast();
+  const { createRequest, isLoading } = useServiceRequests();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!title || !description || !category || !date || !time) {
-      toast({
-        title: "Campos obrigatórios",
-        description: "Por favor, preencha todos os campos.",
-        variant: "destructive",
-      });
       return;
     }
     
-    setIsLoading(true);
+    // Combina a data e hora em um objeto Date
+    const scheduledDate = new Date(date);
+    const [hours, minutes] = time.split(':').map(Number);
+    scheduledDate.setHours(hours, minutes, 0, 0);
     
-    // This would be replaced with actual Supabase database operations
-    try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      // Simulate successful service request
-      toast({
-        title: "Serviço solicitado com sucesso!",
-        description: "Agora é só esperar pelos orçamentos dos prestadores.",
-      });
-      
-      // Redirect to dashboard
-      setTimeout(() => {
-        navigate("/dashboard");
-      }, 1500);
-      
-    } catch (error) {
-      toast({
-        title: "Erro ao solicitar serviço",
-        description: "Ocorreu um erro ao solicitar o serviço. Tente novamente mais tarde.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
+    const requestId = await createRequest({
+      title,
+      description,
+      category,
+      status: "pending",
+      estimated_price: null,
+      scheduled_date: scheduledDate.toISOString()
+    });
+    
+    if (requestId) {
+      navigate("/dashboard");
     }
   };
 
@@ -123,11 +107,6 @@ const SolicitarServico = () => {
       
       setDescription(improvedDesc);
       setIsImproving(false);
-      
-      toast({
-        title: "Descrição melhorada!",
-        description: "Sua descrição foi aprimorada com IA para melhor entendimento dos prestadores.",
-      });
     }, 2000);
   };
 
