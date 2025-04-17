@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/contexts/AuthContext';
 
 export interface Review {
   id: string;
@@ -20,6 +21,7 @@ export const useReviews = (providerId?: string) => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
+  const { user } = useAuth();
   
   useEffect(() => {
     if (!providerId) return;
@@ -64,10 +66,22 @@ export const useReviews = (providerId?: string) => {
     rating: number;
     comment?: string;
   }): Promise<boolean> => {
+    if (!user) {
+      toast({
+        title: 'Erro ao enviar avaliação',
+        description: 'Você precisa estar logado para avaliar um prestador.',
+        variant: 'destructive',
+      });
+      return false;
+    }
+    
     try {
       const { error } = await supabase
         .from('reviews')
-        .insert(reviewData);
+        .insert({
+          ...reviewData,
+          reviewer_id: user.id
+        });
       
       if (error) {
         throw error;
@@ -82,7 +96,7 @@ export const useReviews = (providerId?: string) => {
     } catch (err: any) {
       toast({
         title: 'Erro ao enviar avaliação',
-        description: 'Não foi possível enviar sua avaliação. Tente novamente mais tarde.',
+        description: err.message || 'Não foi possível enviar sua avaliação. Tente novamente mais tarde.',
         variant: 'destructive',
       });
       return false;
