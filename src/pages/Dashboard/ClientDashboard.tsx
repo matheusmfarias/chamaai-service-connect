@@ -6,17 +6,17 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 
 const ClientDashboard = () => {
-  const { user, loading } = useAuth();
+  const { user, isLoading } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
     // Se não está carregando e não tem usuário, redireciona para login
-    if (!loading && !user) {
+    if (!isLoading && !user) {
       navigate("/login");
     }
-  }, [user, loading, navigate]);
+  }, [user, isLoading, navigate]);
 
-  if (loading) {
+  if (isLoading) {
     return <div className="flex justify-center items-center h-screen">Carregando...</div>;
   }
 
