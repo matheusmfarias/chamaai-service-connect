@@ -1,9 +1,8 @@
-
 import { motion } from "framer-motion";
 import { ServiceProvider } from "@/hooks/useServiceProviders";
 import SearchFilters from "@/components/SearchFilters";
 import ProviderCard from "@/components/ProviderCard";
-import type { FilterValues } from "@/components/SearchFilters";
+import type { FilterValues } from "@/components/search/types";
 
 interface SearchResultsSectionProps {
   isLoading: boolean;

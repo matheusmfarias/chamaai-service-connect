@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -8,7 +7,7 @@ import SearchHeader from "@/components/SearchHeader";
 import SearchResultsSection from "@/components/SearchResultsSection";
 import { useServiceProviders } from "@/hooks/useServiceProviders";
 import { filterProviders } from "@/utils/searchUtils";
-import type { FilterValues } from "@/components/SearchFilters";
+import type { FilterValues } from "@/components/search/types";
 
 const SearchResults = () => {
   const navigate = useNavigate();

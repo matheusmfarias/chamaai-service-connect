@@ -1,6 +1,5 @@
-
 import { ServiceProvider } from "@/hooks/useServiceProviders";
-import { FilterValues } from "@/components/SearchFilters";
+import type { FilterValues } from "@/components/search/types";
 
 export const filterProviders = (
   providers: ServiceProvider[],
