@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { Search } from "lucide-react";
@@ -33,7 +32,6 @@ const SearchResults = () => {
   const { user } = useAuth();
   
   const [searchQuery, setSearchQuery] = useState(searchParams.get("q") || "");
-  const [filteredProviders, setFilteredProviders] = useState<ServiceProvider[]>([]);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [selectedProviderId, setSelectedProviderId] = useState<string | null>(null);
   const [filters, setFilters] = useState<FilterValues>({
@@ -43,7 +41,8 @@ const SearchResults = () => {
     sortBy: "relevance"
   });
   
-  const { providers, isLoading, error } = useServiceProviders();
+  const { providers, isLoading, error } = useServiceProviders(undefined, searchQuery);
+  const [filteredProviders, setFilteredProviders] = useState<ServiceProvider[]>([]);
   
   useEffect(() => {
     const params = new URLSearchParams(searchParams);
@@ -55,33 +54,28 @@ const SearchResults = () => {
     setSearchParams(params);
   }, [searchQuery, setSearchParams]);
   
-  // Apply both search query and filters
   useEffect(() => {
     if (!providers.length) {
       setFilteredProviders([]);
       return;
     }
     
-    // Step 1: Filter by search query
-    let results = providers;
+    let results = [...providers];
     
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
       
-      // Search logic with related terms
       results = providers.filter(provider => {
         const categoryMatch = provider.category.toLowerCase().includes(query);
         const descriptionMatch = provider.description?.toLowerCase().includes(query) || false;
         const nameMatch = provider.profiles.full_name.toLowerCase().includes(query);
         
-        // Termos relacionados para categorias específicas
         const relatedTerms: Record<string, string[]> = {
           "faxina": ["faxineira", "limpeza", "limpador", "diarista"],
           "eletrica": ["eletricista", "eletrico", "instalação"],
           "pintura": ["pintor", "pintora"]
         };
         
-        // Verifica se o termo buscado está relacionado à categoria do provider
         let relatedMatch = false;
         
         for (const [category, terms] of Object.entries(relatedTerms)) {
@@ -101,9 +95,6 @@ const SearchResults = () => {
       });
     }
     
-    // Step 2: Apply additional filters
-    
-    // Filter by location
     if (filters.location !== "all") {
       results = results.filter(provider => {
         const locationKey = filters.location === "sao_paulo" ? "São Paulo" :
@@ -114,13 +105,11 @@ const SearchResults = () => {
       });
     }
     
-    // Filter by rating
     if (filters.rating !== "all") {
       const minRating = parseInt(filters.rating.replace("+", ""));
       results = results.filter(provider => provider.rating >= minRating);
     }
     
-    // Filter by price (simplified implementation)
     if (filters.priceRange !== "all") {
       results = results.filter(provider => {
         if (filters.priceRange === "low" && provider.rate_per_hour < 40) return true;
@@ -130,7 +119,6 @@ const SearchResults = () => {
       });
     }
     
-    // Apply sorting
     if (filters.sortBy === "rating") {
       results = [...results].sort((a, b) => b.rating - a.rating);
     } else if (filters.sortBy === "recent") {
@@ -138,14 +126,12 @@ const SearchResults = () => {
         new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
       );
     }
-    // "relevance" is the default order from the API
     
     setFilteredProviders(results);
-  }, [searchQuery, providers, filters]);
+  }, [providers, filters]);
   
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    // A pesquisa agora é automática via useEffect, mas mantemos esse handler para o form
   };
   
   const handleFilterChange = (newFilters: FilterValues) => {
@@ -210,7 +196,6 @@ const SearchResults = () => {
         className="py-12 bg-gray-50"
       >
         <div className="container-custom">
-          {/* New Filters Component */}
           {!isLoading && !error && filteredProviders.length > 0 && (
             <SearchFilters onFilterChange={handleFilterChange} />
           )}

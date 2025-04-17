@@ -169,6 +169,7 @@ export type Database = {
           rate_per_hour: number | null
           rating: number | null
           response_time: string | null
+          search_tags: string[] | null
           services_completed: number | null
           total_reviews: number | null
           updated_at: string
@@ -182,6 +183,7 @@ export type Database = {
           rate_per_hour?: number | null
           rating?: number | null
           response_time?: string | null
+          search_tags?: string[] | null
           services_completed?: number | null
           total_reviews?: number | null
           updated_at?: string
@@ -195,6 +197,7 @@ export type Database = {
           rate_per_hour?: number | null
           rating?: number | null
           response_time?: string | null
+          search_tags?: string[] | null
           services_completed?: number | null
           total_reviews?: number | null
           updated_at?: string
@@ -261,7 +264,22 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      search_service_providers: {
+        Args: { search_term: string }
+        Returns: {
+          id: string
+          category: string
+          description: string
+          rate_per_hour: number
+          is_verified: boolean
+          rating: number
+          total_reviews: number
+          services_completed: number
+          response_time: string
+          search_tags: string[]
+          profiles: Json
+        }[]
+      }
     }
     Enums: {
       [_ in never]: never
