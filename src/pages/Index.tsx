@@ -49,7 +49,6 @@ const Index = () => {
 
   return (
     <Layout>
-      {/* Hero Section */}
       <section className="bg-gradient-to-r from-chamaai-blue to-chamaai-lightblue text-white py-16">
         <div className="container-custom">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
@@ -95,7 +94,6 @@ const Index = () => {
         </div>
       </section>
 
-      {/* Categories Section */}
       <section className="py-16 bg-white">
         <div className="container-custom">
           <h2 className="text-3xl font-bold text-center mb-12">Categorias Populares</h2>
@@ -114,7 +112,6 @@ const Index = () => {
         </div>
       </section>
 
-      {/* How It Works Section */}
       <section className="py-16 bg-gray-50">
         <div className="container-custom">
           <h2 className="text-3xl font-bold text-center mb-4">Como Funciona</h2>
@@ -144,7 +141,6 @@ const Index = () => {
         </div>
       </section>
 
-      {/* CTA Section */}
       <section className="py-16 bg-gradient-to-r from-chamaai-blue to-chamaai-lightblue text-white">
         <div className="container-custom text-center">
           <h2 className="text-3xl font-bold mb-6">Pronto para simplificar sua vida?</h2>
@@ -153,7 +149,11 @@ const Index = () => {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link to="/cadastro?type=cliente">
-              <Button size="lg" variant="secondary" className="bg-white text-chamaai-blue hover:bg-gray-100">
+              <Button 
+                size="lg" 
+                variant="secondary" 
+                className="bg-white text-chamaai-blue hover:bg-gray-100"
+              >
                 Quero Contratar Serviços
               </Button>
             </Link>
@@ -161,7 +161,7 @@ const Index = () => {
               <Button 
                 size="lg" 
                 variant="outline" 
-                className="border-white text-white hover:bg-white hover:text-chamaai-blue"
+                className="border-white text-chamaai-blue hover:bg-white hover:text-chamaai-blue"
               >
                 Quero Oferecer Serviços
               </Button>
