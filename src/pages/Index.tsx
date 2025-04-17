@@ -95,10 +95,10 @@ const Index = () => {
       <section className="py-16 bg-white">
         <div className="container-custom">
           <h2 className="text-3xl font-bold text-center mb-12">Categorias Populares</h2>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 justify-center">
             {serviceCategories.map((category, index) => (
-              <Link key={index} to={category.path}>
-                <div className="flex flex-col items-center p-6 bg-white rounded-lg shadow-md border border-gray-100 card-hover text-center">
+              <Link key={index} to={category.path} className="flex justify-center">
+                <div className="flex flex-col items-center p-6 bg-white rounded-lg shadow-md border border-gray-100 card-hover text-center w-full max-w-[200px]">
                   <div className="bg-chamaai-lightgray p-4 rounded-full mb-4">
                     <category.icon className="w-8 h-8 text-chamaai-blue" />
                   </div>
