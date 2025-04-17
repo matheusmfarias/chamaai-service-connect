@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -77,7 +77,7 @@ const Index = () => {
                   </Button>
                 </Link>
                 <Link to="/cadastro?type=prestador">
-                  <Button variant="outline" className="border-white text-white hover:bg-white hover:text-chamaai-blue">
+                  <Button variant="secondary" className="bg-white text-chamaai-blue hover:bg-gray-100">
                     Sou Prestador de Serviço
                   </Button>
                 </Link>
