@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import ClientDashboard from "./ClientDashboard";
 import ProviderDashboard from "./ProviderDashboard";
+import DashboardLayout from "@/components/DashboardLayout";
 
 const Dashboard = () => {
   const navigate = useNavigate();
@@ -16,7 +17,11 @@ const Dashboard = () => {
     }
   }, [navigate]);
 
-  return isServiceProvider ? <ProviderDashboard /> : <ClientDashboard />;
+  return (
+    <DashboardLayout>
+      {isServiceProvider ? <ProviderDashboard /> : <ClientDashboard />}
+    </DashboardLayout>
+  );
 };
 
 export default Dashboard;
