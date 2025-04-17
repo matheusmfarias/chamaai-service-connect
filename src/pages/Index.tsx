@@ -18,12 +18,12 @@ import { motion } from "framer-motion";
 import Layout from "@/components/Layout";
 
 const serviceCategories = [
-  { name: "Faxina", icon: Sparkles, path: "/categorias/faxina" },
-  { name: "Pintura", icon: Paintbrush, path: "/categorias/pintura" },
-  { name: "Elétrica", icon: Wrench, path: "/categorias/eletrica" },
-  { name: "Hidráulica", icon: ShowerHead, path: "/categorias/hidraulica" },
-  { name: "Reforma", icon: Hammer, path: "/categorias/reforma" },
-  { name: "Jardinagem", icon: Leaf, path: "/categorias/jardinagem" }
+  { name: "Faxina", icon: Sparkles, path: "/prestadores/faxina" },
+  { name: "Pintura", icon: Paintbrush, path: "/prestadores/pintura" },
+  { name: "Elétrica", icon: Wrench, path: "/prestadores/eletrica" },
+  { name: "Hidráulica", icon: ShowerHead, path: "/prestadores/hidraulica" },
+  { name: "Reforma", icon: Hammer, path: "/prestadores/reforma" },
+  { name: "Jardinagem", icon: Leaf, path: "/prestadores/jardinagem" }
 ];
 
 const howItWorks = [

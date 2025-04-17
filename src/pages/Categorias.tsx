@@ -10,7 +10,7 @@ import {
   Leaf, 
   Wrench, 
   Briefcase, 
-  Scan 
+  Sparkles 
 } from "lucide-react";
 
 interface CategoryItem {
@@ -24,7 +24,7 @@ const categories: CategoryItem[] = [
   {
     id: "faxina",
     name: "Faxina",
-    icon: <Scan className="h-10 w-10" />,
+    icon: <Sparkles className="h-10 w-10" />,
     description: "Serviços de limpeza para residências e escritórios"
   },
   {
