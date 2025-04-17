@@ -8,7 +8,7 @@ import Layout from "@/components/Layout";
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const { user, isLoading, checkIsServiceProvider } = useAuth();
+  const { user, isLoading, isServiceProvider, checkIsServiceProvider } = useAuth();
   
   useEffect(() => {
     const checkUserType = async () => {
@@ -18,8 +18,7 @@ const Dashboard = () => {
       }
       
       try {
-        const isProvider = await checkIsServiceProvider();
-        console.log("User is service provider:", isProvider);
+        await checkIsServiceProvider();
       } catch (error) {
         console.error("Error checking if user is service provider:", error);
       }
@@ -34,7 +33,10 @@ const Dashboard = () => {
   if (isLoading) {
     return (
       <div className="flex justify-center items-center h-screen">
-        Carregando...
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-chamaai-blue mx-auto mb-4"></div>
+          <p>Carregando...</p>
+        </div>
       </div>
     );
   }
@@ -46,7 +48,7 @@ const Dashboard = () => {
 
   return (
     <Layout>
-      <ClientDashboard />
+      {isServiceProvider ? <ProviderDashboard /> : <ClientDashboard />}
     </Layout>
   );
 };
