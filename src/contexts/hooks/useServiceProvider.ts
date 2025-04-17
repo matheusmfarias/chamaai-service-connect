@@ -14,7 +14,7 @@ export const useServiceProvider = () => {
         .from("service_providers")
         .select("id")
         .eq("id", userId)
-        .single();
+        .maybeSingle();
 
       if (error && error.code !== "PGRST116") {
         console.error("Erro ao verificar status de prestador:", error);
@@ -22,6 +22,7 @@ export const useServiceProvider = () => {
       }
 
       setIsServiceProvider(!!data);
+      return !!data;
     } catch (error) {
       console.error("Erro ao verificar status de prestador:", error);
     }
@@ -74,7 +75,7 @@ export const useServiceProvider = () => {
         .from("service_providers")
         .select("id")
         .eq("id", session.session.user.id)
-        .single();
+        .maybeSingle();
 
       if (error && error.code !== "PGRST116") {
         console.error("Erro ao verificar status de prestador:", error);

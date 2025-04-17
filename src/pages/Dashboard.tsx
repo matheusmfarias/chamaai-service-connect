@@ -2,24 +2,52 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
+import ClientDashboard from "./Dashboard/ClientDashboard";
+import ProviderDashboard from "./Dashboard/ProviderDashboard";
+import Layout from "@/components/Layout";
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const { user } = useAuth();
-
+  const { user, isLoading, checkIsServiceProvider } = useAuth();
+  
   useEffect(() => {
-    // Redireciona para o dashboard apropriado
-    if (user) {
-      navigate("/dashboard");
-    } else {
-      navigate("/login");
+    const checkUserType = async () => {
+      if (!user) {
+        navigate("/login");
+        return;
+      }
+      
+      try {
+        const isProvider = await checkIsServiceProvider();
+        console.log("User is service provider:", isProvider);
+      } catch (error) {
+        console.error("Error checking if user is service provider:", error);
+      }
+    };
+    
+    if (!isLoading) {
+      checkUserType();
     }
-  }, [navigate, user]);
+  }, [user, isLoading, navigate, checkIsServiceProvider]);
+
+  // Mostrar loading enquanto verifica o status
+  if (isLoading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        Carregando...
+      </div>
+    );
+  }
+
+  // Redirecionar para login se não estiver autenticado
+  if (!user) {
+    return null; // não renderiza nada enquanto redireciona
+  }
 
   return (
-    <div className="flex justify-center items-center h-screen">
-      Redirecionando...
-    </div>
+    <Layout>
+      <ClientDashboard />
+    </Layout>
   );
 };
 

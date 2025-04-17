@@ -14,14 +14,18 @@ export const useProfile = () => {
         .from("profiles")
         .select("*")
         .eq("id", userId)
-        .single();
+        .maybeSingle();
 
-      if (error) {
+      if (error && error.code !== "PGRST116") {
         console.error("Erro ao buscar perfil:", error);
         return;
       }
 
-      setUserProfile(data);
+      if (data) {
+        setUserProfile(data as UserProfile);
+      } else {
+        console.log("Perfil não encontrado para o usuário:", userId);
+      }
     } catch (error) {
       console.error("Erro ao buscar perfil:", error);
     }
