@@ -9,6 +9,7 @@ export interface UserProfile {
   state: string | null;
   created_at: string;
   updated_at: string;
+  avatar_url?: string | null;
 }
 
 export interface UserSignUpData {
