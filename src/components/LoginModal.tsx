@@ -26,23 +26,32 @@ const LoginModal = ({ isOpen, onClose, onLogin, onSignUp }: LoginModalProps) => 
           </div>
           <DialogTitle className="text-2xl">Acesse para ver mais!</DialogTitle>
           <DialogDescription className="text-base mt-2">
-            Crie sua conta gratuitamente ou faça login para visualizar o perfil completo e entrar em contato com este profissional.
+            Visualize avaliações completas, fotos, contatos e agende com segurança.
           </DialogDescription>
         </DialogHeader>
         
         <div className="flex flex-col sm:flex-row gap-4 justify-center mt-4">
           <Button 
             onClick={onLogin} 
-            className="bg-chamaai-blue hover:bg-chamaai-lightblue sm:min-w-[120px]"
+            className="bg-chamaai-blue hover:bg-chamaai-lightblue sm:min-w-[150px]"
           >
-            Entrar
+            Já tenho conta
           </Button>
           <Button 
             onClick={onSignUp} 
-            className="bg-chamaai-blue hover:bg-chamaai-lightblue sm:min-w-[120px]"
+            className="bg-chamaai-blue hover:bg-chamaai-lightblue sm:min-w-[150px]"
           >
-            Cadastrar-se
+            Quero me cadastrar
           </Button>
+        </div>
+        
+        <div className="mt-4 text-center">
+          <button 
+            onClick={onClose}
+            className="text-sm text-gray-500 hover:text-chamaai-blue hover:underline"
+          >
+            Prefiro continuar navegando
+          </button>
         </div>
       </DialogContent>
     </Dialog>

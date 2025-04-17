@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import ProviderCard from "@/components/ProviderCard";
 import LoginModal from "@/components/LoginModal";
+import SearchFilters, { FilterValues } from "@/components/SearchFilters";
 import { useServiceProviders, ServiceProvider } from "@/hooks/useServiceProviders";
 import { useAuth } from "@/contexts/AuthContext";
 
@@ -35,6 +36,12 @@ const SearchResults = () => {
   const [filteredProviders, setFilteredProviders] = useState<ServiceProvider[]>([]);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [selectedProviderId, setSelectedProviderId] = useState<string | null>(null);
+  const [filters, setFilters] = useState<FilterValues>({
+    location: "all",
+    rating: "all",
+    priceRange: "all",
+    sortBy: "relevance"
+  });
   
   const { providers, isLoading, error } = useServiceProviders();
   
@@ -48,58 +55,101 @@ const SearchResults = () => {
     setSearchParams(params);
   }, [searchQuery, setSearchParams]);
   
-  // Atualiza os resultados filtrados sempre que providers ou searchQuery mudam
+  // Apply both search query and filters
   useEffect(() => {
     if (!providers.length) {
       setFilteredProviders([]);
       return;
     }
     
-    if (!searchQuery) {
-      setFilteredProviders(providers);
-      return;
-    }
+    // Step 1: Filter by search query
+    let results = providers;
     
-    const query = searchQuery.toLowerCase();
-    
-    // Melhoria na lógica de busca para incluir termos relacionados
-    const filtered = providers.filter(provider => {
-      const categoryMatch = provider.category.toLowerCase().includes(query);
-      const descriptionMatch = provider.description?.toLowerCase().includes(query) || false;
-      const nameMatch = provider.profiles.full_name.toLowerCase().includes(query);
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
       
-      // Termos relacionados para categorias específicas
-      const relatedTerms: Record<string, string[]> = {
-        "faxina": ["faxineira", "limpeza", "limpador", "diarista"],
-        "eletrica": ["eletricista", "eletrico", "instalação"],
-        "pintura": ["pintor", "pintora"]
-      };
-      
-      // Verifica se o termo buscado está relacionado à categoria do provider
-      let relatedMatch = false;
-      
-      for (const [category, terms] of Object.entries(relatedTerms)) {
-        if (provider.category.toLowerCase() === category && 
-            terms.some(term => query.includes(term))) {
-          relatedMatch = true;
-          break;
+      // Search logic with related terms
+      results = providers.filter(provider => {
+        const categoryMatch = provider.category.toLowerCase().includes(query);
+        const descriptionMatch = provider.description?.toLowerCase().includes(query) || false;
+        const nameMatch = provider.profiles.full_name.toLowerCase().includes(query);
+        
+        // Termos relacionados para categorias específicas
+        const relatedTerms: Record<string, string[]> = {
+          "faxina": ["faxineira", "limpeza", "limpador", "diarista"],
+          "eletrica": ["eletricista", "eletrico", "instalação"],
+          "pintura": ["pintor", "pintora"]
+        };
+        
+        // Verifica se o termo buscado está relacionado à categoria do provider
+        let relatedMatch = false;
+        
+        for (const [category, terms] of Object.entries(relatedTerms)) {
+          if (provider.category.toLowerCase() === category && 
+              terms.some(term => query.includes(term))) {
+            relatedMatch = true;
+            break;
+          }
+          
+          if (terms.includes(query) && provider.category.toLowerCase() === category) {
+            relatedMatch = true;
+            break;
+          }
         }
         
-        if (terms.includes(query) && provider.category.toLowerCase() === category) {
-          relatedMatch = true;
-          break;
-        }
-      }
-      
-      return categoryMatch || descriptionMatch || nameMatch || relatedMatch;
-    });
+        return categoryMatch || descriptionMatch || nameMatch || relatedMatch;
+      });
+    }
     
-    setFilteredProviders(filtered);
-  }, [searchQuery, providers]);
+    // Step 2: Apply additional filters
+    
+    // Filter by location
+    if (filters.location !== "all") {
+      results = results.filter(provider => {
+        const locationKey = filters.location === "sao_paulo" ? "São Paulo" :
+                          filters.location === "guarulhos" ? "Guarulhos" :
+                          filters.location === "osasco" ? "Osasco" : "";
+        
+        return provider.profiles.city?.includes(locationKey);
+      });
+    }
+    
+    // Filter by rating
+    if (filters.rating !== "all") {
+      const minRating = parseInt(filters.rating.replace("+", ""));
+      results = results.filter(provider => provider.rating >= minRating);
+    }
+    
+    // Filter by price (simplified implementation)
+    if (filters.priceRange !== "all") {
+      results = results.filter(provider => {
+        if (filters.priceRange === "low" && provider.rate_per_hour < 40) return true;
+        if (filters.priceRange === "medium" && provider.rate_per_hour >= 40 && provider.rate_per_hour <= 80) return true;
+        if (filters.priceRange === "high" && provider.rate_per_hour > 80) return true;
+        return false;
+      });
+    }
+    
+    // Apply sorting
+    if (filters.sortBy === "rating") {
+      results = [...results].sort((a, b) => b.rating - a.rating);
+    } else if (filters.sortBy === "recent") {
+      results = [...results].sort((a, b) => 
+        new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      );
+    }
+    // "relevance" is the default order from the API
+    
+    setFilteredProviders(results);
+  }, [searchQuery, providers, filters]);
   
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     // A pesquisa agora é automática via useEffect, mas mantemos esse handler para o form
+  };
+  
+  const handleFilterChange = (newFilters: FilterValues) => {
+    setFilters(newFilters);
   };
   
   const handleViewProfile = (providerId: string) => {
@@ -160,6 +210,11 @@ const SearchResults = () => {
         className="py-12 bg-gray-50"
       >
         <div className="container-custom">
+          {/* New Filters Component */}
+          {!isLoading && !error && filteredProviders.length > 0 && (
+            <SearchFilters onFilterChange={handleFilterChange} />
+          )}
+          
           {isLoading ? (
             <div className="flex justify-center items-center py-16">
               <p className="text-xl text-gray-500">Carregando resultados...</p>
