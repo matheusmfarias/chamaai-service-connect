@@ -4,11 +4,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { 
   Search, 
-  Hammer, 
   Paintbrush, 
   Wrench, 
   ShowerHead, 
-  Sparkles, 
+  Sparkles,
   FileCheck,
   MessageCircle,
   Trash2,
@@ -22,7 +21,6 @@ const serviceCategories = [
   { name: "Pintura", icon: Paintbrush, path: "/prestadores/pintura" },
   { name: "Elétrica", icon: Wrench, path: "/prestadores/eletrica" },
   { name: "Hidráulica", icon: ShowerHead, path: "/prestadores/hidraulica" },
-  { name: "Reforma", icon: Hammer, path: "/prestadores/reforma" },
   { name: "Jardinagem", icon: Leaf, path: "/prestadores/jardinagem" }
 ];
 
