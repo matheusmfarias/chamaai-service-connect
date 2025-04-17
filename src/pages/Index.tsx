@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -107,8 +108,8 @@ const Index = () => {
             </motion.div>
             <div className="hidden md:block">
               <img 
-                src="https://images.unsplash.com/photo-1581578731548-c64695cc6952?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" 
-                alt="Serviços domésticos" 
+                src="/lovable-uploads/0b558c87-f585-4b75-bdd7-c07dd66894d3.png" 
+                alt="Serviços e Prestadores" 
                 className="rounded-lg shadow-lg"
               />
             </div>
