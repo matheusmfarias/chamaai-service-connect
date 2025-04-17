@@ -1,6 +1,6 @@
 
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { 
@@ -60,6 +60,14 @@ const staggerContainer = {
 
 const Index = () => {
   const [searchQuery, setSearchQuery] = useState("");
+  const navigate = useNavigate();
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      navigate(`/busca?q=${encodeURIComponent(searchQuery.trim())}`);
+    }
+  };
 
   return (
     <Layout>
@@ -80,7 +88,7 @@ const Index = () => {
               <p className="text-xl">
                 Conectamos você com os melhores profissionais da sua região para resolver qualquer problema do dia a dia.
               </p>
-              <div className="relative">
+              <form onSubmit={handleSearch} className="relative">
                 <Input
                   type="text"
                   placeholder="O que você precisa? Ex: Pintura, Faxina, Elétrica..."
@@ -89,10 +97,13 @@ const Index = () => {
                   onChange={(e) => setSearchQuery(e.target.value)}
                 />
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                <Button className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-chamaai-blue hover:bg-chamaai-lightblue">
+                <Button 
+                  type="submit" 
+                  className="absolute right-2 top-1/2 transform -translate-y-1/2 bg-chamaai-blue hover:bg-chamaai-lightblue"
+                >
                   Buscar
                 </Button>
-              </div>
+              </form>
               <div className="flex flex-wrap gap-4">
                 <Link to="/cadastro?type=cliente">
                   <Button variant="secondary" className="bg-white text-chamaai-blue hover:bg-gray-100">

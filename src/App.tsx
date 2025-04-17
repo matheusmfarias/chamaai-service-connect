@@ -22,6 +22,7 @@ import Sobre from "./pages/Sobre";
 import FAQ from "./pages/FAQ";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermosDeUso from "./pages/TermosDeUso";
+import SearchResults from "./pages/SearchResults";
 
 const queryClient = new QueryClient();
 
@@ -42,6 +43,7 @@ const App = () => (
             <Route path="/sobre" element={<Sobre />} />
             <Route path="/contato" element={<Sobre />} />
             <Route path="/faq" element={<FAQ />} />
+            <Route path="/busca" element={<SearchResults />} />
             <Route path="/dashboard" element={
               <ProtectedRoute>
                 <Dashboard />
