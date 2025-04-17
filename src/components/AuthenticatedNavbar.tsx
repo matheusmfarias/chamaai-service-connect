@@ -11,11 +11,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
-import { User, LogOut, Settings, Home, Briefcase, Bell, HelpCircle, FileText } from "lucide-react";
+import { Bell } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 
 const AuthenticatedNavbar = () => {
-  const { user, userProfile, signOut, isServiceProvider } = useAuth();
+  const { user, userProfile, signOut } = useAuth();
 
   if (!user) return null;
 
@@ -29,7 +29,16 @@ const AuthenticatedNavbar = () => {
     : "U";
 
   return (
-    <div className="flex items-center space-x-4">
+    <div className="flex items-center space-x-6">
+      <div className="hidden md:flex items-center space-x-6">
+        <Link to="/busca" className="text-gray-600 hover:text-chamaai-blue transition-colors">
+          Buscar Serviços
+        </Link>
+        <Link to="/minhas-solicitacoes" className="text-gray-600 hover:text-chamaai-blue transition-colors">
+          Solicitações
+        </Link>
+      </div>
+      
       <Button variant="ghost" size="sm" className="relative h-8 w-8 rounded-full p-0 text-gray-600" asChild>
         <Link to="/notificacoes">
           <Bell className="h-5 w-5" />
@@ -62,48 +71,23 @@ const AuthenticatedNavbar = () => {
           <DropdownMenuSeparator />
           <DropdownMenuGroup>
             <DropdownMenuItem asChild>
-              <Link to="/dashboard" className="flex w-full cursor-pointer">
-                <Home className="mr-2 h-4 w-4" />
-                <span>Dashboard</span>
+              <Link to="/perfil" className="flex w-full cursor-pointer">
+                Perfil
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
               <Link to="/minhas-solicitacoes" className="flex w-full cursor-pointer">
-                <FileText className="mr-2 h-4 w-4" />
-                <span>Minhas Solicitações</span>
+                Solicitações
               </Link>
             </DropdownMenuItem>
-            <DropdownMenuItem asChild>
-              <Link to="/perfil" className="flex w-full cursor-pointer">
-                <User className="mr-2 h-4 w-4" />
-                <span>Perfil</span>
-              </Link>
-            </DropdownMenuItem>
-            {isServiceProvider ? (
-              <DropdownMenuItem asChild>
-                <Link to={`/prestador/${user.id}`} className="flex w-full cursor-pointer">
-                  <Briefcase className="mr-2 h-4 w-4" />
-                  <span>Meu Perfil de Prestador</span>
-                </Link>
-              </DropdownMenuItem>
-            ) : (
-              <DropdownMenuItem asChild>
-                <Link to="/solicitar-servico" className="flex w-full cursor-pointer">
-                  <Briefcase className="mr-2 h-4 w-4" />
-                  <span>Solicitar Serviço</span>
-                </Link>
-              </DropdownMenuItem>
-            )}
             <DropdownMenuItem asChild>
               <Link to="/ajuda" className="flex w-full cursor-pointer">
-                <HelpCircle className="mr-2 h-4 w-4" />
-                <span>Ajuda</span>
+                Ajuda
               </Link>
             </DropdownMenuItem>
             <DropdownMenuItem asChild>
               <Link to="/configuracoes" className="flex w-full cursor-pointer">
-                <Settings className="mr-2 h-4 w-4" />
-                <span>Configurações</span>
+                Configurações
               </Link>
             </DropdownMenuItem>
           </DropdownMenuGroup>
@@ -113,8 +97,7 @@ const AuthenticatedNavbar = () => {
               onClick={() => signOut()}
               className="flex w-full cursor-pointer text-red-500"
             >
-              <LogOut className="mr-2 h-4 w-4" />
-              <span>Sair</span>
+              Sair
             </button>
           </DropdownMenuItem>
         </DropdownMenuContent>
