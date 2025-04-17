@@ -160,8 +160,8 @@ const Index = () => {
             <Link to="/cadastro?type=prestador">
               <Button 
                 size="lg" 
-                variant="outline" 
-                className="border-white text-chamaai-blue hover:bg-white hover:text-chamaai-blue"
+                variant="secondary" 
+                className="bg-white text-chamaai-blue hover:bg-gray-100"
               >
                 Quero Oferecer Serviços
               </Button>
