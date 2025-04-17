@@ -1,7 +1,7 @@
-
 import { ChevronDown, User, Wrench } from "lucide-react";
 import Layout from "@/components/Layout";
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
+import FAQQuestionForm from "@/components/FAQQuestionForm";
 
 const FAQ = () => {
   return (
@@ -126,6 +126,8 @@ const FAQ = () => {
             </AccordionItem>
           </Accordion>
         </div>
+
+        <FAQQuestionForm />
       </div>
     </Layout>
   );

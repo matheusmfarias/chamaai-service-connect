@@ -1,4 +1,3 @@
-
 import { Link, useNavigate } from "react-router-dom";
 import { Facebook, Instagram, Twitter } from "lucide-react";
 import { useEffect } from "react";
@@ -49,7 +48,7 @@ const Footer = () => {
               <li><Link to="/como-funciona" className="text-gray-600 hover:text-chamaai-blue" onClick={() => window.scrollTo(0, 0)}>Como Funciona</Link></li>
               <li><Link to="/cadastro" className="text-gray-600 hover:text-chamaai-blue" onClick={() => window.scrollTo(0, 0)}>Seja um Prestador</Link></li>
               <li><Link to="/sobre" className="text-gray-600 hover:text-chamaai-blue" onClick={() => window.scrollTo(0, 0)}>Sobre Nós</Link></li>
-              <li><span className="text-gray-400 cursor-not-allowed">Perguntas Frequentes</span></li>
+              <li><Link to="/faq" className="text-gray-600 hover:text-chamaai-blue" onClick={() => window.scrollTo(0, 0)}>Perguntas Frequentes</Link></li>
               <li><span className="text-gray-400 cursor-not-allowed">Política de Privacidade</span></li>
             </ul>
           </div>
