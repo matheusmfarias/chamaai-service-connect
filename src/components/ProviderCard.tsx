@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Star, MapPin, Clock, Check, X, Paintbrush, Plug, ShowerHead, Hammer, Broom } from "lucide-react";
+import { Star, MapPin, Clock, Check, X, Paintbrush, Plug, ShowerHead, Hammer, Brush } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -22,12 +22,11 @@ const fadeIn = {
   visible: { opacity: 1, y: 0 }
 };
 
-// Map category to color classes and icons
 const getCategoryData = (category: string) => {
   const categoryMap: Record<string, { color: string; icon: JSX.Element }> = {
     "faxina": {
       color: "border-blue-300 bg-blue-50",
-      icon: <Broom className="w-4 h-4 text-blue-500" />
+      icon: <Brush className="w-4 h-4 text-blue-500" />
     },
     "pintura": {
       color: "border-orange-300 bg-orange-50",
@@ -49,21 +48,17 @@ const getCategoryData = (category: string) => {
   
   return categoryMap[category.toLowerCase()] || { 
     color: "border-gray-200",
-    icon: <Hammer className="w-4 h-4 text-gray-500" />
+    icon: <Brush className="w-4 h-4 text-gray-500" />
   };
 };
 
-// Mock function to get provider availability status
 const getProviderAvailability = (provider: ServiceProvider) => {
-  // In a real app, this would come from the provider data
   const statusOptions = ["available", "busy", "unavailable"];
   const randomIndex = Math.floor(provider.id.charCodeAt(0) % 3);
   return statusOptions[randomIndex];
 };
 
-// Mock function to get response time
 const getResponseTime = (provider: ServiceProvider) => {
-  // In a real app, this would come from the provider data
   const times = [30, 60, 120, 240];
   const randomIndex = Math.floor(provider.id.charCodeAt(0) % times.length);
   return times[randomIndex];
@@ -103,7 +98,6 @@ const ProviderCard = ({ provider, onViewProfile }: ProviderCardProps) => {
     <motion.div variants={fadeIn}>
       <Card className={`overflow-hidden hover:shadow-lg transition-shadow duration-300 border-2 ${categoryData.color}`}>
         <CardContent className="pt-6 pb-6">
-          {/* Availability Badge */}
           <div className="absolute top-2 right-2">
             {availability === "available" && (
               <Badge variant="default" className="bg-green-500 hover:bg-green-600">
