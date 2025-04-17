@@ -14,7 +14,8 @@ import {
   Trash2,
   Leaf,
   Lightbulb,
-  Droplet
+  Droplet,
+  Shield
 } from "lucide-react";
 import { motion } from "framer-motion";
 import Layout from "@/components/Layout";
@@ -88,17 +89,17 @@ const clientSteps = [
   {
     title: "Descreva o serviço",
     description: "Conte-nos o que precisa ser feito e encontre profissionais qualificados.",
-    icon: FileCheck
+    icon: <FileCheck className="h-10 w-10" />
   },
   {
     title: "Compare orçamentos",
     description: "Receba e compare propostas de prestadores verificados.",
-    icon: MessageCircle
+    icon: <MessageCircle className="h-10 w-10" />
   },
   {
     title: "Contrate com segurança",
     description: "Escolha o melhor prestador e agende o serviço rapidamente.",
-    icon: Trash2
+    icon: <Trash2 className="h-10 w-10" />
   }
 ];
 

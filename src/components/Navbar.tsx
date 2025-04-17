@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -10,7 +11,6 @@ const Navbar = () => {
   const { user } = useAuth();
   const location = useLocation();
   
-  const isDashboard = location.pathname.startsWith("/dashboard");
   const isHome = location.pathname === "/";
 
   const publicLinks = [
