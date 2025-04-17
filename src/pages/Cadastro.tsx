@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -19,7 +20,6 @@ import {
 import { useAuth } from "@/contexts/AuthContext";
 import Layout from "@/components/Layout";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useToast } from "@/hooks/use-toast";
 
 const categories = [
   { id: "faxina", name: "Faxina" },
@@ -45,11 +45,9 @@ const Cadastro = () => {
   const [description, setDescription] = useState("");
   const [ratePerHour, setRatePerHour] = useState("");
   const [activeTab, setActiveTab] = useState(defaultTab);
-  const [error, setError] = useState<string | null>(null);
   
   const navigate = useNavigate();
   const { signUp, createServiceProvider, isLoading, user } = useAuth();
-  const { toast } = useToast();
 
   // Redirecionamento se já estiver autenticado
   if (user) {
@@ -57,73 +55,43 @@ const Cadastro = () => {
     return null;
   }
 
-  const validateForm = () => {
-    // Validação básica
-    if (!fullName || !email || !password || !confirmPassword || !phone || !city || !state) {
-      setError("Todos os campos marcados com * são obrigatórios");
-      return false;
-    }
-    
-    if (password !== confirmPassword) {
-      setError("As senhas não coincidem");
-      return false;
-    }
-    
-    if (activeTab === "prestador" && (!category || !description || !ratePerHour)) {
-      setError("Todos os campos de prestador são obrigatórios");
-      return false;
-    }
-
-    setError(null);
-    return true;
-  };
-
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!validateForm()) {
+    // Validação básica
+    if (!fullName || !email || !password || !confirmPassword || !phone || !city || !state) {
+      return;
+    }
+    
+    if (password !== confirmPassword) {
+      return;
+    }
+    
+    if (activeTab === "prestador" && (!category || !description || !ratePerHour)) {
       return;
     }
     
     try {
-      console.log("Iniciando cadastro do usuário...");
-      const isProvider = activeTab === "prestador";
-      
-      // Register the user with provider type information
+      // Registra o usuário
       await signUp(email, password, {
         full_name: fullName,
         phone,
         city,
         state
-      }, isProvider);
+      });
 
-      console.log("Usuário cadastrado com sucesso!");
-      
-      // If provider, create the service provider profile
-      if (isProvider) {
-        console.log("Cadastrando como prestador de serviço...", {
-          category,
-          description,
-          rate_per_hour: parseFloat(ratePerHour)
-        });
-        
+      // Se for prestador, cria o perfil de prestador
+      if (activeTab === "prestador") {
         await createServiceProvider({
           category,
           description,
           rate_per_hour: parseFloat(ratePerHour)
         });
-        
-        console.log("Perfil de prestador criado com sucesso!");
       }
       
-      // Redirect is handled in signUp
-    } catch (error: any) {
+      // O redirecionamento é feito dentro do signUp
+    } catch (error) {
       console.error("Erro ao registrar:", error);
-      toast({
-        title: "Erro no cadastro",
-        description: error.message || "Ocorreu um erro durante o cadastro",
-        variant: "destructive"
-      });
     }
   };
 
@@ -145,12 +113,6 @@ const Cadastro = () => {
                   <TabsTrigger value="prestador">Sou Prestador</TabsTrigger>
                 </TabsList>
               </Tabs>
-              
-              {error && (
-                <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-2 rounded mb-4">
-                  {error}
-                </div>
-              )}
               
               <form onSubmit={handleRegister}>
                 <div className="space-y-4">

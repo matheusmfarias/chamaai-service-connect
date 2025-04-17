@@ -15,7 +15,6 @@ export interface ServiceRequest {
   scheduled_date: string;
   created_at: string;
   updated_at: string;
-  is_rated?: boolean;
   profiles?: {
     full_name: string;
   };

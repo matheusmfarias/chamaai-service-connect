@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -15,146 +14,131 @@ export interface ServiceProvider {
   response_time: string | null;
   created_at: string;
   updated_at: string;
-  search_tags?: string[];
   profiles: {
     full_name: string;
     phone: string | null;
     city: string | null;
     state: string | null;
-    provider_type?: string | null;
   };
 }
 
-export const useServiceProviders = (category?: string, searchQuery?: string) => {
+// Mock data for testing purposes
+const mockProviders: ServiceProvider[] = [
+  {
+    id: "1",
+    category: "Faxina",
+    description: "Especialista em limpeza residencial com mais de 5 anos de experiência. Atendo apartamentos e casas.",
+    rate_per_hour: 35,
+    is_verified: true,
+    rating: 4.8,
+    total_reviews: 127,
+    services_completed: 156,
+    response_time: "30 minutos",
+    created_at: "2024-01-15",
+    updated_at: "2024-04-17",
+    profiles: {
+      full_name: "Maria Silva",
+      phone: "(11) 98765-4321",
+      city: "São Paulo",
+      state: "SP"
+    }
+  },
+  {
+    id: "2",
+    category: "Faxina",
+    description: "Faxineira profissional com experiência em limpeza pós-obra e limpeza pesada.",
+    rate_per_hour: 40,
+    is_verified: true,
+    rating: 4.9,
+    total_reviews: 89,
+    services_completed: 102,
+    response_time: "45 minutos",
+    created_at: "2024-02-01",
+    updated_at: "2024-04-17",
+    profiles: {
+      full_name: "Ana Santos",
+      phone: "(11) 91234-5678",
+      city: "Guarulhos",
+      state: "SP"
+    }
+  },
+  {
+    id: "3",
+    category: "Faxina",
+    description: "Especializada em limpeza de escritórios e ambientes comerciais. Experiência com produtos específicos.",
+    rate_per_hour: 45,
+    is_verified: true,
+    rating: 4.7,
+    total_reviews: 64,
+    services_completed: 78,
+    response_time: "1 hora",
+    created_at: "2024-03-10",
+    updated_at: "2024-04-17",
+    profiles: {
+      full_name: "Joana Oliveira",
+      phone: "(11) 97777-8888",
+      city: "São Paulo",
+      state: "SP"
+    }
+  },
+  {
+    id: "4",
+    category: "Faxina",
+    description: "Atendo com limpeza residencial, especialista em organização e limpeza de rotina.",
+    rate_per_hour: 38,
+    is_verified: false,
+    rating: 4.6,
+    total_reviews: 32,
+    services_completed: 45,
+    response_time: "2 horas",
+    created_at: "2024-03-15",
+    updated_at: "2024-04-17",
+    profiles: {
+      full_name: "Beatriz Lima",
+      phone: "(11) 96666-5555",
+      city: "Osasco",
+      state: "SP"
+    }
+  },
+  {
+    id: "5",
+    category: "Faxina",
+    description: "Realizo limpeza completa, incluindo janelas, cortinas e armários. Organização de ambientes.",
+    rate_per_hour: 42,
+    is_verified: true,
+    rating: 5.0,
+    total_reviews: 28,
+    services_completed: 35,
+    response_time: "1 hora",
+    created_at: "2024-03-20",
+    updated_at: "2024-04-17",
+    profiles: {
+      full_name: "Regina Costa",
+      phone: "(11) 95555-4444",
+      city: "São Paulo",
+      state: "SP"
+    }
+  }
+];
+
+export const useServiceProviders = (category?: string) => {
   const [providers, setProviders] = useState<ServiceProvider[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
   
   useEffect(() => {
+    // Simulando um delay de carregamento para testar estados de loading
     const fetchProviders = async () => {
       setIsLoading(true);
+      
       try {
-        let query: ServiceProvider[] | null = null;
+        // Simula uma chamada à API
+        await new Promise(resolve => setTimeout(resolve, 1000));
         
-        if (searchQuery) {
-          console.log(`Buscando prestadores com termo: "${searchQuery.toLowerCase()}"`);
-          
-          // Use the search_service_providers function for search queries
-          const { data, error: searchError } = await supabase
-            .rpc('search_service_providers', {
-              search_term: searchQuery.toLowerCase()
-            });
-            
-          if (searchError) {
-            console.error("Erro na busca:", searchError);
-            throw searchError;
-          }
-          
-          console.log(`Resultados da busca:`, data);
-          query = data as ServiceProvider[];
-          
-          // If no results found, check profiles with provider_type
-          if (!data || data.length === 0) {
-            console.log("Nenhum resultado encontrado. Buscando por provider_type na tabela profiles...");
-            
-            const { data: profilesData, error: profilesError } = await supabase
-              .from('profiles')
-              .select(`
-                id,
-                full_name,
-                city,
-                state,
-                provider_type,
-                phone
-              `)
-              .eq('provider_type', 'service_provider');
-              
-            if (profilesError) {
-              console.error("Erro na busca por profiles:", profilesError);
-              // Don't throw, continue with empty results
-            } else if (profilesData && profilesData.length > 0) {
-              console.log("Encontrados perfis de prestadores:", profilesData);
-              
-              // For each matching profile, get the service provider details
-              const providerPromises = profilesData.map(async (profile) => {
-                const { data: providerData } = await supabase
-                  .from('service_providers')
-                  .select('*')
-                  .eq('id', profile.id)
-                  .single();
-                  
-                if (providerData) {
-                  return { 
-                    ...providerData, 
-                    profiles: profile 
-                  } as ServiceProvider;
-                }
-                return null;
-              });
-              
-              const providerResults = await Promise.all(providerPromises);
-              const validProviders = providerResults.filter(Boolean) as ServiceProvider[];
-              console.log("Prestadores encontrados via profiles:", validProviders);
-              
-              query = validProviders;
-            }
-          }
-        } else if (category) {
-          console.log(`Buscando prestadores por categoria: "${category.toLowerCase()}"`);
-          
-          // If no search query but category is specified, filter by category
-          const { data, error: categoryError } = await supabase
-            .from('service_providers')
-            .select(`
-              *,
-              profiles (
-                full_name,
-                phone,
-                city,
-                state,
-                provider_type
-              )
-            `)
-            .eq('category', category.toLowerCase());
-            
-          if (categoryError) {
-            console.error("Erro na busca por categoria:", categoryError);
-            throw categoryError;
-          }
-          
-          console.log(`Resultados da busca por categoria:`, data);
-          query = data as ServiceProvider[];
-          
-        } else {
-          console.log("Buscando todos os prestadores");
-          
-          // If no search query and no category, get all providers
-          const { data, error: allError } = await supabase
-            .from('service_providers')
-            .select(`
-              *,
-              profiles (
-                full_name,
-                phone,
-                city,
-                state,
-                provider_type
-              )
-            `);
-            
-          if (allError) {
-            console.error("Erro na busca de todos os prestadores:", allError);
-            throw allError;
-          }
-          
-          console.log(`Total de prestadores encontrados:`, data?.length || 0);
-          query = data as ServiceProvider[];
-        }
-        
-        setProviders(query || []);
+        // Por enquanto, retornamos os dados mockados
+        setProviders(mockProviders);
       } catch (err: any) {
-        console.error("Erro completo:", err);
         setError(err.message);
         toast({
           title: 'Erro ao carregar prestadores',
@@ -167,7 +151,7 @@ export const useServiceProviders = (category?: string, searchQuery?: string) => 
     };
     
     fetchProviders();
-  }, [category, searchQuery, toast]);
+  }, [category, toast]);
   
   return { providers, isLoading, error };
 };
@@ -191,8 +175,7 @@ export const useServiceProvider = (id: string) => {
               full_name,
               phone,
               city,
-              state,
-              provider_type
+              state
             )
           `)
           .eq('id', id)
@@ -202,7 +185,6 @@ export const useServiceProvider = (id: string) => {
           throw error;
         }
         
-        console.log("Detalhes do prestador carregados:", data);
         setProvider(data as unknown as ServiceProvider);
       } catch (err: any) {
         setError(err.message);
