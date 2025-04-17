@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -59,7 +60,7 @@ const Navbar = () => {
             ) : (
               <>
                 <Link to="/login">
-                  <Button variant="ghost" size="sm">Entrar</Button>
+                  <Button size="sm" className="bg-chamaai-blue hover:bg-chamaai-lightblue">Entrar</Button>
                 </Link>
                 <Link to="/cadastro">
                   <Button size="sm" className="bg-chamaai-blue hover:bg-chamaai-lightblue">Cadastrar</Button>
@@ -125,7 +126,7 @@ const Navbar = () => {
               ) : (
                 <div className="flex flex-col space-y-2">
                   <Link to="/login" className="block py-2 text-gray-600 hover:text-chamaai-blue transition-colors">
-                    Entrar
+                    <Button className="w-full bg-chamaai-blue hover:bg-chamaai-lightblue">Entrar</Button>
                   </Link>
                   <Link to="/cadastro">
                     <Button className="w-full bg-chamaai-blue hover:bg-chamaai-lightblue">Cadastrar</Button>
