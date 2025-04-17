@@ -15,7 +15,13 @@ import {
   Leaf,
   Lightbulb,
   Droplet,
-  Shield
+  Shield,
+  UserCheck,
+  FileText,
+  ClipboardList,
+  Briefcase,
+  Bell,
+  Star
 } from "lucide-react";
 import { motion } from "framer-motion";
 import Layout from "@/components/Layout";
@@ -87,19 +93,37 @@ const categories = [
 
 const clientSteps = [
   {
-    title: "Descreva o serviço",
-    description: "Conte-nos o que precisa ser feito e encontre profissionais qualificados.",
-    icon: <FileCheck className="h-10 w-10" />
+    title: "Crie sua conta",
+    description: "Cadastre-se gratuitamente com seus dados básicos e comece a buscar serviços.",
+    icon: <UserCheck className="h-10 w-10" />
   },
   {
-    title: "Compare orçamentos",
-    description: "Receba e compare propostas de prestadores verificados.",
-    icon: <MessageCircle className="h-10 w-10" />
+    title: "Descreva sua necessidade",
+    description: "Explique o que você precisa e encontre profissionais qualificados na sua região.",
+    icon: <FileText className="h-10 w-10" />
   },
   {
-    title: "Contrate com segurança",
-    description: "Escolha o melhor prestador e agende o serviço rapidamente.",
-    icon: <Trash2 className="h-10 w-10" />
+    title: "Compare propostas",
+    description: "Receba orçamentos de diferentes prestadores e escolha a melhor opção.",
+    icon: <ClipboardList className="h-10 w-10" />
+  }
+];
+
+const providerSteps = [
+  {
+    title: "Cadastre-se como profissional",
+    description: "Crie sua conta profissional e destaque suas habilidades e experiências.",
+    icon: <Briefcase className="h-10 w-10" />
+  },
+  {
+    title: "Receba solicitações",
+    description: "Encontre oportunidades de trabalho na sua região e área de atuação.",
+    icon: <Bell className="h-10 w-10" />
+  },
+  {
+    title: "Conquiste clientes",
+    description: "Envie propostas, realize serviços e construa sua reputação na plataforma.",
+    icon: <Star className="h-10 w-10" />
   }
 ];
 
@@ -276,41 +300,64 @@ const Index = () => {
             transition={{ duration: 0.5 }}
             className="text-center mb-12"
           >
-            <h1 className="text-4xl md:text-5xl font-bold mb-4 text-chamaai-blue">Como Funciona o ChamaAí</h1>
+            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-chamaai-blue">
+              Como Funciona o ChamaAí
+            </h2>
             <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-              Conectamos clientes a prestadores de serviços de forma simples, segura e eficiente.
-              Veja como nosso sistema funciona na prática.
+              Uma plataforma desenvolvida para conectar clientes e profissionais de forma simples e segura.
             </p>
           </motion.div>
 
-          {/* Client Steps */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
-            {clientSteps.map((step, index) => (
-              <motion.div
-                key={index}
-                initial="hidden"
-                whileInView="visible"
-                variants={fadeIn}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                className="relative"
-              >
-                <Card className="h-full card-hover">
-                  <div className="absolute -top-4 -left-4 w-10 h-10 rounded-full bg-chamaai-blue text-white flex items-center justify-center font-bold text-lg">
-                    {index + 1}
-                  </div>
-                  <CardContent className="p-6">
-                    <div className="w-16 h-16 rounded-full bg-chamaai-lightblue/20 flex items-center justify-center text-chamaai-blue mb-4">
-                      {step.icon}
-                    </div>
-                    <h3 className="text-xl font-semibold mb-3">{step.title}</h3>
-                    <p className="text-gray-600">{step.description}</p>
-                  </CardContent>
-                </Card>
-              </motion.div>
-            ))}
+          <div className="mb-16">
+            <h3 className="text-2xl font-semibold mb-8 text-center">Para Clientes</h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {clientSteps.map((step, index) => (
+                <motion.div
+                  key={index}
+                  initial="hidden"
+                  whileInView="visible"
+                  variants={fadeIn}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                >
+                  <Card className="h-full hover:shadow-lg transition-shadow">
+                    <CardContent className="p-6 text-center">
+                      <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-chamaai-lightblue/20 flex items-center justify-center text-chamaai-blue">
+                        {step.icon}
+                      </div>
+                      <h4 className="text-xl font-semibold mb-2">{step.title}</h4>
+                      <p className="text-gray-600">{step.description}</p>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              ))}
+            </div>
           </div>
 
-          {/* Security Features */}
+          <div className="mb-16">
+            <h3 className="text-2xl font-semibold mb-8 text-center">Para Prestadores de Serviço</h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {providerSteps.map((step, index) => (
+                <motion.div
+                  key={index}
+                  initial="hidden"
+                  whileInView="visible"
+                  variants={fadeIn}
+                  transition={{ duration: 0.5, delay: index * 0.1 }}
+                >
+                  <Card className="h-full hover:shadow-lg transition-shadow">
+                    <CardContent className="p-6 text-center">
+                      <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-chamaai-lightblue/20 flex items-center justify-center text-chamaai-blue">
+                        {step.icon}
+                      </div>
+                      <h4 className="text-xl font-semibold mb-2">{step.title}</h4>
+                      <p className="text-gray-600">{step.description}</p>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+
           <motion.div 
             initial="hidden"
             whileInView="visible"

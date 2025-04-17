@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -18,8 +17,7 @@ const Navbar = () => {
     ...(isHome ? [
       { name: "Categorias", path: "#categorias" },
       { name: "Como Funciona", path: "#como-funciona" }
-    ] : []),
-    { name: "Sobre Nós", path: "/sobre" },
+    ] : [])
   ];
 
   const handleSmoothScroll = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
