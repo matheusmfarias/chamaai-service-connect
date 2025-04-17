@@ -1,27 +1,18 @@
+
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent } from "@/components/ui/card";
-import {
-  Search,
-  Paintbrush,
-  Wrench,
-  ShowerHead,
+import { 
+  Search, 
+  Paintbrush, 
+  Wrench, 
+  ShowerHead, 
   Sparkles,
   FileCheck,
   MessageCircle,
   Trash2,
-  Leaf,
-  Lightbulb,
-  Droplet,
-  Shield,
-  UserCheck,
-  FileText,
-  ClipboardList,
-  Briefcase,
-  Bell,
-  Star
+  Leaf 
 } from "lucide-react";
 import { motion } from "framer-motion";
 import Layout from "@/components/Layout";
@@ -49,99 +40,6 @@ const howItWorks = [
     title: "Contrate com segurança",
     description: "Escolha o melhor prestador e agende o serviço rapidamente.",
     icon: Trash2
-  }
-];
-
-const categories = [
-  {
-    id: "faxina",
-    name: "Faxina",
-    icon: <Sparkles className="h-10 w-10" />,
-    description: "Serviços de limpeza para residências e escritórios"
-  },
-  {
-    id: "pintura",
-    name: "Pintura",
-    icon: <Paintbrush className="h-10 w-10" />,
-    description: "Serviços de pintura interna e externa"
-  },
-  {
-    id: "eletrica",
-    name: "Elétrica",
-    icon: <Lightbulb className="h-10 w-10" />,
-    description: "Instalações e reparos elétricos"
-  },
-  {
-    id: "hidraulica",
-    name: "Hidráulica",
-    icon: <Droplet className="h-10 w-10" />,
-    description: "Reparos e instalações hidráulicas"
-  },
-  {
-    id: "jardinagem",
-    name: "Jardinagem",
-    icon: <Leaf className="h-10 w-10" />,
-    description: "Manutenção e criação de jardins"
-  },
-  {
-    id: "montagem-moveis",
-    name: "Montagem de Móveis",
-    icon: <Wrench className="h-10 w-10" />,
-    description: "Montagem e desmontagem de móveis"
-  }
-];
-
-const clientSteps = [
-  {
-    title: "Crie sua conta",
-    description: "Cadastre-se gratuitamente com seus dados básicos e comece a buscar serviços.",
-    icon: <UserCheck className="h-10 w-10" />
-  },
-  {
-    title: "Descreva sua necessidade",
-    description: "Explique o que você precisa e encontre profissionais qualificados na sua região.",
-    icon: <FileText className="h-10 w-10" />
-  },
-  {
-    title: "Compare propostas",
-    description: "Receba orçamentos de diferentes prestadores e escolha a melhor opção.",
-    icon: <ClipboardList className="h-10 w-10" />
-  }
-];
-
-const providerSteps = [
-  {
-    title: "Cadastre-se como profissional",
-    description: "Crie sua conta profissional e destaque suas habilidades e experiências.",
-    icon: <Briefcase className="h-10 w-10" />
-  },
-  {
-    title: "Receba solicitações",
-    description: "Encontre oportunidades de trabalho na sua região e área de atuação.",
-    icon: <Bell className="h-10 w-10" />
-  },
-  {
-    title: "Conquiste clientes",
-    description: "Envie propostas, realize serviços e construa sua reputação na plataforma.",
-    icon: <Star className="h-10 w-10" />
-  }
-];
-
-const securityFeatures = [
-  {
-    title: "Segurança",
-    description: "Todos os profissionais são verificados e certificados.",
-    icon: <Lightbulb className="h-10 w-10" />
-  },
-  {
-    title: "Qualidade",
-    description: "Os serviços são garantidos e de alta qualidade.",
-    icon: <Droplet className="h-10 w-10" />
-  },
-  {
-    title: "Confiabilidade",
-    description: "O sistema é seguro e protege suas informações.",
-    icon: <Leaf className="h-10 w-10" />
   }
 ];
 
@@ -231,7 +129,6 @@ const Index = () => {
       </motion.section>
 
       <motion.section 
-        id="categorias"
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true }}
@@ -239,145 +136,75 @@ const Index = () => {
         className="py-16 bg-white"
       >
         <div className="container-custom">
+          <h2 className="text-3xl font-bold text-center mb-12">Categorias Populares</h2>
           <motion.div 
-            initial="hidden"
-            animate="visible"
-            variants={fadeIn}
-            transition={{ duration: 0.5 }}
-            className="text-center mb-10"
+            className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 justify-center"
+            variants={staggerContainer}
           >
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mb-4">
-              Encontre o serviço ideal para você
-            </h2>
-            <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-              Explore as categorias disponíveis e conecte-se com profissionais qualificados.
-            </p>
-          </motion.div>
-
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 gap-4 md:gap-6">
-            {categories.map((category, index) => (
+            {serviceCategories.map((category, index) => (
               <motion.div
-                key={category.id}
-                initial="hidden"
-                whileInView="visible"
+                key={index}
                 variants={fadeIn}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
+                transition={{ delay: index * 0.1 }}
               >
-                <Link to={`/prestadores/${category.id}`}>
-                  <Card className="h-full card-hover transition-all border border-gray-200 hover:border-chamaai-blue overflow-hidden">
-                    <CardContent className="flex flex-col items-center justify-center p-6 h-full text-center">
-                      <div className="w-16 h-16 mb-4 rounded-full bg-chamaai-lightblue/20 flex items-center justify-center text-chamaai-blue">
-                        {category.icon}
-                      </div>
-                      <h3 className="font-semibold text-gray-800">
-                        {category.name}
-                      </h3>
-                      <p className="text-gray-600 text-sm mt-2">
-                        {category.description}
-                      </p>
-                    </CardContent>
-                  </Card>
+                <Link key={index} to={category.path} className="flex justify-center">
+                  <div className="flex flex-col items-center p-6 bg-white rounded-lg shadow-md border border-gray-100 card-hover text-center w-full max-w-[200px]">
+                    <div className="bg-chamaai-lightgray p-4 rounded-full mb-4">
+                      <category.icon className="w-8 h-8 text-chamaai-blue" />
+                    </div>
+                    <h3 className="font-medium">{category.name}</h3>
+                  </div>
                 </Link>
               </motion.div>
             ))}
-          </div>
+          </motion.div>
         </div>
       </motion.section>
 
       <motion.section 
-        id="como-funciona"
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true }}
         variants={fadeIn}
-        className="py-16 bg-gradient-to-b from-chamaai-lightblue/10 to-white"
+        className="py-16 bg-gray-50"
       >
         <div className="container-custom">
-          <motion.div 
-            initial="hidden"
-            animate="visible"
+          <h2 className="text-3xl font-bold text-center mb-4">Como Funciona</h2>
+          <motion.p 
             variants={fadeIn}
-            transition={{ duration: 0.5 }}
-            className="text-center mb-12"
+            className="text-gray-600 text-center max-w-2xl mx-auto mb-12"
           >
-            <h2 className="text-3xl md:text-4xl font-bold mb-4 text-chamaai-blue">
-              Como Funciona o ChamaAí
-            </h2>
-            <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-              Uma plataforma desenvolvida para conectar clientes e profissionais de forma simples e segura.
-            </p>
-          </motion.div>
-
-          <div className="mb-16">
-            <h3 className="text-2xl font-semibold mb-8 text-center">Para Clientes</h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {clientSteps.map((step, index) => (
-                <motion.div
-                  key={index}
-                  initial="hidden"
-                  whileInView="visible"
-                  variants={fadeIn}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                >
-                  <Card className="h-full hover:shadow-lg transition-shadow">
-                    <CardContent className="p-6 text-center">
-                      <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-chamaai-lightblue/20 flex items-center justify-center text-chamaai-blue">
-                        {step.icon}
-                      </div>
-                      <h4 className="text-xl font-semibold mb-2">{step.title}</h4>
-                      <p className="text-gray-600">{step.description}</p>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-
-          <div className="mb-16">
-            <h3 className="text-2xl font-semibold mb-8 text-center">Para Prestadores de Serviço</h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {providerSteps.map((step, index) => (
-                <motion.div
-                  key={index}
-                  initial="hidden"
-                  whileInView="visible"
-                  variants={fadeIn}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                >
-                  <Card className="h-full hover:shadow-lg transition-shadow">
-                    <CardContent className="p-6 text-center">
-                      <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-chamaai-lightblue/20 flex items-center justify-center text-chamaai-blue">
-                        {step.icon}
-                      </div>
-                      <h4 className="text-xl font-semibold mb-2">{step.title}</h4>
-                      <p className="text-gray-600">{step.description}</p>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              ))}
-            </div>
-          </div>
+            Encontrar o profissional certo nunca foi tão fácil. Com o ChamaAí, você está a apenas alguns cliques de resolver seu problema.
+          </motion.p>
 
           <motion.div 
-            initial="hidden"
-            whileInView="visible"
-            variants={fadeIn}
-            transition={{ duration: 0.5, delay: 0.3 }}
-            className="bg-white rounded-xl shadow-lg p-8 mb-16"
+            className="grid grid-cols-1 md:grid-cols-3 gap-8"
+            variants={staggerContainer}
           >
-            <h2 className="text-2xl font-bold mb-6 text-center">Segurança e Qualidade</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {securityFeatures.map((feature, index) => (
-                <div key={index} className="flex flex-col items-center text-center">
-                  <div className="w-16 h-16 rounded-full bg-chamaai-lightblue/20 flex items-center justify-center text-chamaai-blue mb-4">
-                    {feature.icon}
+            {howItWorks.map((step, index) => (
+              <motion.div
+                key={index}
+                variants={fadeIn}
+                transition={{ delay: index * 0.1 }}
+              >
+                <div className="bg-white p-8 rounded-lg shadow-md border border-gray-100 card-hover">
+                  <div className="bg-chamaai-lightgray p-4 rounded-full inline-block mb-4">
+                    <step.icon className="w-6 h-6 text-chamaai-blue" />
                   </div>
-                  <h3 className="text-lg font-semibold mt-4 mb-2">{feature.title}</h3>
-                  <p className="text-gray-600">{feature.description}</p>
+                  <h3 className="text-xl font-semibold mb-3">{step.title}</h3>
+                  <p className="text-gray-600">{step.description}</p>
                 </div>
-              ))}
-            </div>
+              </motion.div>
+            ))}
           </motion.div>
+
+          <div className="mt-12 text-center">
+            <Link to="/como-funciona">
+              <Button variant="outline" className="border-chamaai-blue text-chamaai-blue">
+                Saiba Mais
+              </Button>
+            </Link>
+          </div>
         </div>
       </motion.section>
 
