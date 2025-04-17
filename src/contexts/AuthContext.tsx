@@ -1,4 +1,3 @@
-
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { User, Session } from "@supabase/supabase-js";
@@ -115,7 +114,12 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       }
 
       console.log("Perfil do usuário carregado:", data);
-      setUserProfile(data);
+      const userProfileData: UserProfile = {
+        ...data,
+        provider_type: data.provider_type || null
+      };
+      
+      setUserProfile(userProfileData);
       
       // Check if user is a service provider based on provider_type
       if (data.provider_type === 'service_provider') {

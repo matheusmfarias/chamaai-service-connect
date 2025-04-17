@@ -46,6 +46,7 @@ export type Database = {
           full_name: string
           id: string
           phone: string | null
+          provider_type: string | null
           state: string | null
           updated_at: string
         }
@@ -55,6 +56,7 @@ export type Database = {
           full_name: string
           id: string
           phone?: string | null
+          provider_type?: string | null
           state?: string | null
           updated_at?: string
         }
@@ -64,6 +66,7 @@ export type Database = {
           full_name?: string
           id?: string
           phone?: string | null
+          provider_type?: string | null
           state?: string | null
           updated_at?: string
         }

@@ -35,7 +35,7 @@ export const useServiceProviders = (category?: string, searchQuery?: string) => 
     const fetchProviders = async () => {
       setIsLoading(true);
       try {
-        let query;
+        let query: ServiceProvider[] | null = null;
         
         if (searchQuery) {
           console.log(`Buscando prestadores com termo: "${searchQuery.toLowerCase()}"`);
@@ -52,7 +52,7 @@ export const useServiceProviders = (category?: string, searchQuery?: string) => 
           }
           
           console.log(`Resultados da busca:`, data);
-          query = data;
+          query = data as ServiceProvider[];
           
           // If no results found, check profiles with provider_type
           if (!data || data.length === 0) {
@@ -65,7 +65,8 @@ export const useServiceProviders = (category?: string, searchQuery?: string) => 
                 full_name,
                 city,
                 state,
-                provider_type
+                provider_type,
+                phone
               `)
               .eq('provider_type', 'service_provider');
               
@@ -84,7 +85,10 @@ export const useServiceProviders = (category?: string, searchQuery?: string) => 
                   .single();
                   
                 if (providerData) {
-                  return { ...providerData, profiles: profile };
+                  return { 
+                    ...providerData, 
+                    profiles: profile 
+                  } as ServiceProvider;
                 }
                 return null;
               });
@@ -120,7 +124,7 @@ export const useServiceProviders = (category?: string, searchQuery?: string) => 
           }
           
           console.log(`Resultados da busca por categoria:`, data);
-          query = data;
+          query = data as ServiceProvider[];
           
         } else {
           console.log("Buscando todos os prestadores");
@@ -145,7 +149,7 @@ export const useServiceProviders = (category?: string, searchQuery?: string) => 
           }
           
           console.log(`Total de prestadores encontrados:`, data?.length || 0);
-          query = data;
+          query = data as ServiceProvider[];
         }
         
         setProviders(query || []);
