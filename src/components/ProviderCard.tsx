@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Star, MapPin, Clock, BadgeCheck, Tag, Paintbrush, Plug, ShowerHead, Hammer, Broom } from "lucide-react";
+import { Star, MapPin, Clock, BadgeCheck, Tag, Paintbrush, Plug, ShowerHead, Hammer, Sparkles, Leaf, Wrench } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -26,7 +26,7 @@ const getCategoryData = (category: string) => {
   const categoryMap: Record<string, { color: string; icon: JSX.Element }> = {
     "limpeza": {
       color: "border-blue-300 bg-blue-50",
-      icon: <Broom className="w-3 h-3 text-blue-500" />
+      icon: <Sparkles className="w-3 h-3 text-blue-500" />
     },
     "pintura": {
       color: "border-orange-300 bg-orange-50",
@@ -34,11 +34,19 @@ const getCategoryData = (category: string) => {
     },
     "eletrica": {
       color: "border-yellow-300 bg-yellow-50",
-      icon: <Plug className="w-3 h-3 text-yellow-600" />
+      icon: <Wrench className="w-3 h-3 text-yellow-600" />
     },
     "hidraulica": {
       color: "border-green-300 bg-green-50",
       icon: <ShowerHead className="w-3 h-3 text-green-500" />
+    },
+    "jardinagem": {
+      color: "border-emerald-300 bg-emerald-50",
+      icon: <Leaf className="w-3 h-3 text-emerald-500" />
+    },
+    "montagem de móveis": {
+      color: "border-gray-300 bg-gray-50",
+      icon: <Hammer className="w-3 h-3 text-gray-500" />
     },
     "reforma": {
       color: "border-gray-300 bg-gray-50",
@@ -49,7 +57,7 @@ const getCategoryData = (category: string) => {
   const key = category.toLowerCase();
   return categoryMap[key] || { 
     color: "border-gray-200",
-    icon: <Broom className="w-3 h-3 text-gray-500" />
+    icon: <Tag className="w-3 h-3 text-gray-500" />
   };
 };
 
