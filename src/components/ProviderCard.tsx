@@ -1,6 +1,5 @@
-
 import { motion } from "framer-motion";
-import { Star, MapPin, Clock, BadgeCheck, Tag, Paintbrush, Plug, ShowerHead, Hammer } from "lucide-react";
+import { Star, MapPin, Clock, BadgeCheck, Tag, Paintbrush, Plug, ShowerHead, Hammer, Broom } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -27,7 +26,7 @@ const getCategoryData = (category: string) => {
   const categoryMap: Record<string, { color: string; icon: JSX.Element }> = {
     "limpeza": {
       color: "border-blue-300 bg-blue-50",
-      icon: <Tag className="w-3 h-3 text-blue-500" />
+      icon: <Broom className="w-3 h-3 text-blue-500" />
     },
     "pintura": {
       color: "border-orange-300 bg-orange-50",
@@ -50,7 +49,7 @@ const getCategoryData = (category: string) => {
   const key = category.toLowerCase();
   return categoryMap[key] || { 
     color: "border-gray-200",
-    icon: <Tag className="w-3 h-3 text-gray-500" />
+    icon: <Broom className="w-3 h-3 text-gray-500" />
   };
 };
 
