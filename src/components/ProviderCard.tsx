@@ -1,3 +1,4 @@
+
 import { motion } from "framer-motion";
 import { Star, MapPin, Clock, BadgeCheck, Tag, Paintbrush, Plug, ShowerHead, Hammer, Sparkles, Leaf, Wrench } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
@@ -98,6 +99,9 @@ const ProviderCard = ({ provider, onViewProfile }: ProviderCardProps) => {
   const availability = getProviderAvailability(provider);
   const responseTime = getResponseTime(provider);
   
+  // Get the category data for this provider
+  const categoryData = getCategoryData(provider.category);
+  
   return (
     <motion.div variants={fadeIn}>
       <Card className="overflow-hidden hover:shadow-lg transition-shadow duration-300">
@@ -125,8 +129,8 @@ const ProviderCard = ({ provider, onViewProfile }: ProviderCardProps) => {
               </div>
               
               <div className="flex flex-wrap gap-2 mb-3">
-                <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
-                  <Tag className="w-3 h-3 mr-1" />
+                <Badge variant="outline" className={categoryData.color}>
+                  {React.cloneElement(categoryData.icon, { className: "w-3 h-3 mr-1" })}
                   {provider.category}
                 </Badge>
                 {provider.is_verified && (
