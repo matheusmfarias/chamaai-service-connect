@@ -1,7 +1,7 @@
 
 import Layout from "@/components/Layout";
 import ServiceDescriptionLayout from "@/components/ServiceDescriptionLayout";
-import { Hammer, Sofa, Clock, Tool } from "lucide-react";
+import { Hammer, Sofa, Clock } from "lucide-react";
 
 const MontagemMoveisService = () => {
   const benefits = [
@@ -18,7 +18,7 @@ const MontagemMoveisService = () => {
     {
       title: "Ferramentas adequadas",
       description: "Nossos profissionais possuem todas as ferramentas necessárias para montagem eficiente.",
-      icon: <Tool className="w-8 h-8 text-chamaai-blue" />
+      icon: <Hammer className="w-8 h-8 text-chamaai-blue" />
     }
   ];
 

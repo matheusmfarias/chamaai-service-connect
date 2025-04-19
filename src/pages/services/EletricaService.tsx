@@ -1,7 +1,7 @@
 
 import Layout from "@/components/Layout";
 import ServiceDescriptionLayout from "@/components/ServiceDescriptionLayout";
-import { Lightbulb, Zap, Tool, ShieldCheck } from "lucide-react";
+import { Lightbulb, Zap, Hammer, ShieldCheck } from "lucide-react";
 
 const EletricaService = () => {
   const benefits = [

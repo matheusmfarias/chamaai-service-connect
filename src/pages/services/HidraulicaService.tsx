@@ -1,7 +1,7 @@
 
 import Layout from "@/components/Layout";
 import ServiceDescriptionLayout from "@/components/ServiceDescriptionLayout";
-import { Droplet, ShowerHead, Tool, ThumbsUp } from "lucide-react";
+import { Droplet, ShowerHead, Hammer, ThumbsUp } from "lucide-react";
 
 const HidraulicaService = () => {
   const benefits = [
@@ -18,7 +18,7 @@ const HidraulicaService = () => {
     {
       title: "Materiais de qualidade",
       description: "Utilizamos peças e materiais confiáveis para garantir durabilidade e evitar problemas futuros.",
-      icon: <Tool className="w-8 h-8 text-chamaai-blue" />
+      icon: <Hammer className="w-8 h-8 text-chamaai-blue" />
     }
   ];
 
