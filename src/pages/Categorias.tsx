@@ -17,44 +17,51 @@ interface CategoryItem {
   name: string;
   icon: React.ReactNode;
   description: string;
+  path: string;
 }
 
 const categories: CategoryItem[] = [
   {
-    id: "faxina",
-    name: "Faxina",
+    id: "limpeza",
+    name: "Limpeza",
     icon: <Sparkles className="h-10 w-10" />,
-    description: "Serviços de limpeza para residências e escritórios"
+    description: "Serviços de limpeza para residências e escritórios",
+    path: "/servicos/limpeza"
   },
   {
     id: "pintura",
     name: "Pintura",
     icon: <Paintbrush className="h-10 w-10" />,
-    description: "Serviços de pintura interna e externa"
+    description: "Serviços de pintura interna e externa",
+    path: "/servicos/pintura"
   },
   {
     id: "eletrica",
     name: "Elétrica",
     icon: <Lightbulb className="h-10 w-10" />,
-    description: "Instalações e reparos elétricos"
+    description: "Instalações e reparos elétricos",
+    path: "/servicos/eletrica"
   },
   {
     id: "hidraulica",
     name: "Hidráulica",
     icon: <Droplet className="h-10 w-10" />,
-    description: "Reparos e instalações hidráulicas"
+    description: "Reparos e instalações hidráulicas",
+    path: "/servicos/hidraulica"
   },
   {
     id: "jardinagem",
     name: "Jardinagem",
     icon: <Leaf className="h-10 w-10" />,
-    description: "Manutenção e criação de jardins"
+    description: "Manutenção e criação de jardins",
+    path: "/servicos/jardinagem"
   },
   {
     id: "montagem-moveis",
     name: "Montagem de Móveis",
     icon: <Wrench className="h-10 w-10" />,
-    description: "Montagem e desmontagem de móveis"
+    description: "Montagem e desmontagem de móveis",
+    path: "/servicos/montagem-moveis"
   },
 ];
 
@@ -91,7 +98,7 @@ const Categorias = () => {
               variants={fadeIn}
               transition={{ duration: 0.5, delay: index * 0.1 }}
             >
-              <Link to={`/prestadores/${category.id}`}>
+              <Link to={category.path}>
                 <Card className="h-full card-hover transition-all border border-gray-200 hover:border-chamaai-blue overflow-hidden">
                   <CardContent className="flex flex-col items-center justify-center p-6 h-full text-center">
                     <div className="w-16 h-16 mb-4 rounded-full bg-chamaai-lightblue/20 flex items-center justify-center text-chamaai-blue">
