@@ -47,7 +47,7 @@ const CategoriesSection = () => {
       <div className="container-custom">
         <h2 className="text-3xl font-bold text-center mb-12">Categorias Populares</h2>
         <motion.div 
-          className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6 justify-center"
+          className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 justify-items-center"
           variants={staggerContainer}
         >
           {serviceCategories.map((category, index) => (
@@ -55,13 +55,14 @@ const CategoriesSection = () => {
               key={index}
               variants={fadeIn}
               transition={{ delay: index * 0.1 }}
+              className="w-full max-w-[200px]"
             >
-              <Link to={category.path} className="flex justify-center">
-                <div className="flex flex-col items-center p-6 bg-white rounded-lg shadow-md border border-gray-100 card-hover text-center w-full max-w-[200px]">
+              <Link to={category.path} className="block h-full">
+                <div className="flex flex-col items-center p-6 bg-white rounded-lg shadow-md border border-gray-100 hover:shadow-lg transition-all duration-200 h-full">
                   <div className="bg-chamaai-lightgray p-4 rounded-full mb-4">
                     <category.icon className="w-8 h-8 text-chamaai-blue" />
                   </div>
-                  <h3 className="font-medium">{category.name}</h3>
+                  <h3 className="font-medium text-center">{category.name}</h3>
                 </div>
               </Link>
             </motion.div>

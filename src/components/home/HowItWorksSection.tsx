@@ -58,7 +58,7 @@ const HowItWorksSection = () => {
           </motion.p>
 
           <motion.div 
-            className="grid grid-cols-1 md:grid-cols-3 gap-8"
+            className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 justify-items-center"
             variants={staggerContainer}
           >
             {howItWorks.map((step, index) => (
@@ -66,9 +66,10 @@ const HowItWorksSection = () => {
                 key={index}
                 variants={fadeIn}
                 transition={{ delay: index * 0.1 }}
+                className="w-full max-w-[350px]"
               >
-                <div className="bg-white p-8 rounded-lg shadow-md border border-gray-100 card-hover">
-                  <div className="bg-chamaai-lightgray p-4 rounded-full inline-block mb-4">
+                <div className="bg-white p-8 rounded-lg shadow-md border border-gray-100 h-full flex flex-col">
+                  <div className="bg-chamaai-lightgray p-4 rounded-full inline-block mb-4 self-start">
                     <step.icon className="w-6 h-6 text-chamaai-blue" />
                   </div>
                   <h3 className="text-xl font-semibold mb-3">{step.title}</h3>
