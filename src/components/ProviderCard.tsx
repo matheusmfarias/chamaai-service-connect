@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Star, MapPin, Clock, BadgeCheck, Tag, Paintbrush, Wrench, Hammer, Droplets, Scan } from "lucide-react";
+import { Star, MapPin, Clock, BadgeCheck, Tag, Paintbrush, Plug, ShowerHead, Hammer, Scan } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -34,11 +34,11 @@ const getCategoryData = (category: string) => {
     },
     "eletrica": {
       color: "border-yellow-300 bg-yellow-50",
-      icon: <Wrench className="w-4 h-4 text-yellow-600" />
+      icon: <Plug className="w-4 h-4 text-yellow-600" />
     },
     "hidraulica": {
       color: "border-green-300 bg-green-50",
-      icon: <Droplets className="w-4 h-4 text-green-500" />
+      icon: <ShowerHead className="w-4 h-4 text-green-500" />
     },
     "reforma": {
       color: "border-gray-300 bg-gray-50",

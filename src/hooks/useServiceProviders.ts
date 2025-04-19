@@ -307,6 +307,158 @@ const mockProviders: ServiceProvider[] = [
       city: "Guarulhos",
       state: "SP"
     }
+  },
+  {
+    id: "p1",
+    category: "Pintura",
+    description: "Pintor profissional especializado em pinturas residenciais e comerciais.",
+    rate_per_hour: 45,
+    is_verified: true,
+    rating: 4.7,
+    total_reviews: 85,
+    services_completed: 98,
+    response_time: "30 minutos",
+    created_at: "2024-01-15",
+    updated_at: "2024-04-17",
+    profiles: {
+      full_name: "Carlos Pinturas",
+      phone: "(11) 97777-8888",
+      city: "São Paulo",
+      state: "SP"
+    }
+  },
+  {
+    id: "p2",
+    category: "Pintura",
+    description: "Especialista em pinturas decorativas e texturas.",
+    rate_per_hour: 55,
+    is_verified: true,
+    rating: 4.9,
+    total_reviews: 92,
+    services_completed: 110,
+    response_time: "1 hora",
+    created_at: "2024-02-01",
+    updated_at: "2024-04-17",
+    profiles: {
+      full_name: "André Tintas",
+      phone: "(11) 96666-5555",
+      city: "Guarulhos",
+      state: "SP"
+    }
+  },
+  {
+    id: "e1",
+    category: "Eletrica",
+    description: "Eletricista com mais de 10 anos de experiência em instalações residenciais.",
+    rate_per_hour: 60,
+    is_verified: true,
+    rating: 4.8,
+    total_reviews: 120,
+    services_completed: 150,
+    response_time: "45 minutos",
+    created_at: "2024-01-20",
+    updated_at: "2024-04-17",
+    profiles: {
+      full_name: "Roberto Eletro",
+      phone: "(11) 95555-4444",
+      city: "São Paulo",
+      state: "SP"
+    }
+  },
+  {
+    id: "e2",
+    category: "Eletrica",
+    description: "Especialista em instalação e manutenção elétrica predial.",
+    rate_per_hour: 65,
+    is_verified: true,
+    rating: 4.7,
+    total_reviews: 88,
+    services_completed: 105,
+    response_time: "1 hora",
+    created_at: "2024-02-15",
+    updated_at: "2024-04-17",
+    profiles: {
+      full_name: "Paulo Energia",
+      phone: "(11) 94444-3333",
+      city: "Osasco",
+      state: "SP"
+    }
+  },
+  {
+    id: "h1",
+    category: "Hidraulica",
+    description: "Encanador profissional especializado em reparos e instalações.",
+    rate_per_hour: 55,
+    is_verified: true,
+    rating: 4.6,
+    total_reviews: 75,
+    services_completed: 90,
+    response_time: "30 minutos",
+    created_at: "2024-01-25",
+    updated_at: "2024-04-17",
+    profiles: {
+      full_name: "José Hidráulica",
+      phone: "(11) 93333-2222",
+      city: "São Paulo",
+      state: "SP"
+    }
+  },
+  {
+    id: "h2",
+    category: "Hidraulica",
+    description: "Especialista em detecção e conserto de vazamentos.",
+    rate_per_hour: 60,
+    is_verified: true,
+    rating: 4.9,
+    total_reviews: 95,
+    services_completed: 115,
+    response_time: "45 minutos",
+    created_at: "2024-02-10",
+    updated_at: "2024-04-17",
+    profiles: {
+      full_name: "Marcelo Água",
+      phone: "(11) 92222-1111",
+      city: "Guarulhos",
+      state: "SP"
+    }
+  },
+  {
+    id: "r1",
+    category: "Reforma",
+    description: "Pedreiro especializado em reformas residenciais e comerciais.",
+    rate_per_hour: 50,
+    is_verified: true,
+    rating: 4.7,
+    total_reviews: 82,
+    services_completed: 95,
+    response_time: "1 hora",
+    created_at: "2024-01-30",
+    updated_at: "2024-04-17",
+    profiles: {
+      full_name: "Antonio Reformas",
+      phone: "(11) 91111-0000",
+      city: "São Paulo",
+      state: "SP"
+    }
+  },
+  {
+    id: "r2",
+    category: "Reforma",
+    description: "Equipe especializada em reformas e acabamentos.",
+    rate_per_hour: 65,
+    is_verified: true,
+    rating: 4.8,
+    total_reviews: 78,
+    services_completed: 90,
+    response_time: "2 horas",
+    created_at: "2024-02-20",
+    updated_at: "2024-04-17",
+    profiles: {
+      full_name: "Ricardo Construções",
+      phone: "(11) 90000-9999",
+      city: "Osasco",
+      state: "SP"
+    }
   }
 ];
 
