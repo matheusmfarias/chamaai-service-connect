@@ -26,7 +26,7 @@ export interface ServiceProvider {
 const mockProviders: ServiceProvider[] = [
   {
     id: "1",
-    category: "Faxina",
+    category: "Limpeza",
     description: "Especialista em limpeza residencial com mais de 5 anos de experiência. Atendo apartamentos e casas.",
     rate_per_hour: 35,
     is_verified: true,
@@ -45,7 +45,7 @@ const mockProviders: ServiceProvider[] = [
   },
   {
     id: "2",
-    category: "Faxina",
+    category: "Limpeza",
     description: "Faxineira profissional com experiência em limpeza pós-obra e limpeza pesada.",
     rate_per_hour: 40,
     is_verified: true,
@@ -64,7 +64,7 @@ const mockProviders: ServiceProvider[] = [
   },
   {
     id: "3",
-    category: "Faxina",
+    category: "Limpeza",
     description: "Especializada em limpeza de escritórios e ambientes comerciais. Experiência com produtos específicos.",
     rate_per_hour: 45,
     is_verified: true,
@@ -83,7 +83,7 @@ const mockProviders: ServiceProvider[] = [
   },
   {
     id: "4",
-    category: "Faxina",
+    category: "Limpeza",
     description: "Atendo com limpeza residencial, especialista em organização e limpeza de rotina.",
     rate_per_hour: 38,
     is_verified: false,
@@ -102,7 +102,7 @@ const mockProviders: ServiceProvider[] = [
   },
   {
     id: "5",
-    category: "Faxina",
+    category: "Limpeza",
     description: "Realizo limpeza completa, incluindo janelas, cortinas e armários. Organização de ambientes.",
     rate_per_hour: 42,
     is_verified: true,

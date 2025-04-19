@@ -1,7 +1,6 @@
-
 import { useState, useEffect } from "react";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
-import { Search } from "lucide-react";
+import { Search, ArrowLeft } from "lucide-react";
 import { motion } from "framer-motion";
 import Layout from "@/components/Layout";
 import { Input } from "@/components/ui/input";
@@ -11,6 +10,15 @@ import LoginModal from "@/components/LoginModal";
 import SearchFilters, { FilterValues } from "@/components/SearchFilters";
 import { useServiceProviders, ServiceProvider } from "@/hooks/useServiceProviders";
 import { useAuth } from "@/contexts/AuthContext";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 
 const staggerContainer = {
   hidden: { opacity: 0 },
@@ -27,13 +35,17 @@ const fadeIn = {
   visible: { opacity: 1, y: 0 }
 };
 
+const ITEMS_PER_PAGE = 6;
+
 const SearchResults = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [searchParams, setSearchParams] = useSearchParams();
   const { user } = useAuth();
   
   const [searchQuery, setSearchQuery] = useState(searchParams.get("q") || "");
   const [filteredProviders, setFilteredProviders] = useState<ServiceProvider[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [selectedProviderId, setSelectedProviderId] = useState<string | null>(null);
   const [filters, setFilters] = useState<FilterValues>({
@@ -143,6 +155,83 @@ const SearchResults = () => {
     setFilteredProviders(results);
   }, [searchQuery, providers, filters]);
   
+  const totalPages = Math.ceil(filteredProviders.length / ITEMS_PER_PAGE);
+  const paginatedProviders = filteredProviders.slice(
+    (currentPage - 1) * ITEMS_PER_PAGE,
+    currentPage * ITEMS_PER_PAGE
+  );
+  
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const renderPagination = () => {
+    if (totalPages <= 1) return null;
+
+    const pages = [];
+    for (let i = 1; i <= totalPages; i++) {
+      if (
+        i === 1 ||
+        i === totalPages ||
+        (i >= currentPage - 1 && i <= currentPage + 1)
+      ) {
+        pages.push(i);
+      } else if (i === currentPage - 2 || i === currentPage + 2) {
+        pages.push("ellipsis");
+      }
+    }
+
+    return (
+      <Pagination className="mt-8">
+        <PaginationContent>
+          <PaginationItem>
+            <PaginationPrevious
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                if (currentPage > 1) handlePageChange(currentPage - 1);
+              }}
+              className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
+            />
+          </PaginationItem>
+
+          {pages.map((page, index) =>
+            page === "ellipsis" ? (
+              <PaginationItem key={`ellipsis-${index}`}>
+                <PaginationEllipsis />
+              </PaginationItem>
+            ) : (
+              <PaginationItem key={page}>
+                <PaginationLink
+                  href="#"
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handlePageChange(page as number);
+                  }}
+                  isActive={currentPage === page}
+                >
+                  {page}
+                </PaginationLink>
+              </PaginationItem>
+            )
+          )}
+
+          <PaginationItem>
+            <PaginationNext
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                if (currentPage < totalPages) handlePageChange(currentPage + 1);
+              }}
+              className={currentPage === totalPages ? "pointer-events-none opacity-50" : ""}
+            />
+          </PaginationItem>
+        </PaginationContent>
+      </Pagination>
+    );
+  };
+
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     // A pesquisa agora é automática via useEffect, mas mantemos esse handler para o form
@@ -173,7 +262,7 @@ const SearchResults = () => {
   const handleSignUp = () => {
     navigate("/cadastro");
   };
-  
+
   return (
     <Layout>
       <motion.section 
@@ -183,6 +272,15 @@ const SearchResults = () => {
         className="bg-gradient-to-r from-chamaai-blue to-chamaai-lightblue text-white py-8"
       >
         <div className="container-custom">
+          <Button
+            variant="ghost"
+            className="text-white mb-4 hover:text-white/90"
+            onClick={() => navigate(-1)}
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Voltar à página anterior
+          </Button>
+          
           <h1 className="text-3xl font-bold mb-4">Resultados da Busca</h1>
           <form onSubmit={handleSearch} className="relative">
             <Input
@@ -242,9 +340,9 @@ const SearchResults = () => {
               
               <motion.div 
                 variants={staggerContainer}
-                className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+                className="grid grid-cols-1 lg:grid-cols-2 gap-6"
               >
-                {filteredProviders.map((provider) => (
+                {paginatedProviders.map((provider) => (
                   <ProviderCard 
                     key={provider.id}
                     provider={provider}
@@ -252,11 +350,11 @@ const SearchResults = () => {
                   />
                 ))}
               </motion.div>
+              
+              {renderPagination()}
             </>
           )}
-        </div>
-      </motion.section>
-      
+          
       {showLoginModal && (
         <LoginModal 
           isOpen={showLoginModal}
@@ -265,6 +363,8 @@ const SearchResults = () => {
           onSignUp={handleSignUp}
         />
       )}
+        </div>
+      </motion.section>
     </Layout>
   );
 };

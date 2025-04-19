@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Star, MapPin, Clock, Check, X, Paintbrush, Plug, ShowerHead, Hammer, Brush } from "lucide-react";
+import { Star, MapPin, Clock, BadgeCheck, Paintbrush, Plug, ShowerHead, Hammer, Brush } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -85,91 +85,75 @@ const ProviderCard = ({ provider, onViewProfile }: ProviderCardProps) => {
     .toUpperCase()
     .slice(0, 2);
     
-  const location = [provider.profiles.city, provider.profiles.state]
-    .filter(Boolean)
-    .join(", ");
-  
+  const location = provider.profiles.city || "";
   const availability = getProviderAvailability(provider);
   const responseTime = getResponseTime(provider);
   
-  const categoryData = getCategoryData(provider.category);
-  
   return (
     <motion.div variants={fadeIn}>
-      <Card className={`overflow-hidden hover:shadow-lg transition-shadow duration-300 border-2 ${categoryData.color}`}>
-        <CardContent className="pt-6 pb-6">
-          <div className="absolute top-2 right-2">
-            {availability === "available" && (
-              <Badge variant="default" className="bg-green-500 hover:bg-green-600">
-                <Check className="w-3 h-3 mr-1" />Disponível
-              </Badge>
-            )}
-            {availability === "busy" && (
-              <Badge variant="default" className="bg-amber-500 hover:bg-amber-600">
-                <Clock className="w-3 h-3 mr-1" />Responde em até {responseTime} min
-              </Badge>
-            )}
-            {availability === "unavailable" && (
-              <Badge variant="default" className="bg-red-500 hover:bg-red-600">
-                <X className="w-3 h-3 mr-1" />Indisponível
-              </Badge>
-            )}
-          </div>
-
-          <div className="flex items-center space-x-4 mb-4">
+      <Card className="overflow-hidden hover:shadow-lg transition-shadow duration-300">
+        <CardContent className="p-6">
+          <div className="flex items-start gap-4">
             <Avatar className="h-16 w-16 border-2 border-gray-100">
               <AvatarImage src={profileImage} alt={provider.profiles.full_name} />
               <AvatarFallback className="text-xl bg-chamaai-lightblue text-white">
                 {initials}
               </AvatarFallback>
             </Avatar>
+            
             <div className="flex-1">
-              <h3 className="text-xl font-semibold mb-1">
-                {provider.profiles.full_name}
-              </h3>
-              <div className="flex items-center gap-1 mb-1">
-                {categoryData.icon}
-                <span className="bg-chamaai-lightgray px-2 py-1 rounded-full text-xs">
-                  {provider.category}
-                </span>
-              </div>
-            </div>
-          </div>
-          
-          <div className="flex items-center text-amber-500 mb-2">
-            <Star className="w-4 h-4 mr-1 fill-amber-500" />
-            <span className="text-sm font-medium">
-              {provider.rating.toFixed(1)} 
-              <span className="text-gray-400 ml-1">
-                ({provider.total_reviews} {provider.total_reviews === 1 ? "avaliação" : "avaliações"})
-              </span>
-            </span>
-          </div>
-          
-          {location && (
-            <div className="flex items-center text-gray-600 mb-4">
-              <MapPin className="w-4 h-4 mr-1" />
-              <span className="text-sm">{location}</span>
-            </div>
-          )}
-          
-          <TooltipProvider>
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <div>
-                  <Button 
-                    onClick={onViewProfile} 
-                    className="w-full bg-chamaai-blue hover:bg-chamaai-lightblue"
-                  >
-                    Ver Perfil
-                  </Button>
+              <div className="flex items-center gap-2 mb-1">
+                <h3 className="text-lg font-semibold">{provider.profiles.full_name}</h3>
+                <div className="flex items-center text-amber-500">
+                  <Star className="w-4 h-4 fill-amber-500" />
+                  <span className="text-sm font-medium ml-0.5">
+                    {provider.rating.toFixed(1)}
+                  </span>
+                  <span className="text-gray-400 text-sm ml-1">
+                    ({provider.total_reviews})
+                  </span>
                 </div>
-              </TooltipTrigger>
-              <TooltipContent>
-                <p>Visualize avaliações completas, fotos e entre em contato — após login.</p>
-              </TooltipContent>
-            </Tooltip>
-          </TooltipProvider>
+              </div>
+              
+              <div className="flex flex-wrap gap-2 mb-3">
+                {provider.is_verified && (
+                  <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+                    <BadgeCheck className="w-3 h-3 mr-1" />
+                    Verificado
+                  </Badge>
+                )}
+                {availability === "available" && (
+                  <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+                    <Clock className="w-3 h-3 mr-1" />
+                    Responde rápido
+                  </Badge>
+                )}
+              </div>
+              
+              <div className="flex items-center text-gray-500 text-sm mb-4">
+                <MapPin className="w-4 h-4 mr-1 shrink-0" />
+                <span>{location}</span>
+              </div>
+              
+              <p className="text-gray-600 text-sm mb-4">{provider.description}</p>
+              
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button 
+                      onClick={onViewProfile} 
+                      className="w-full bg-chamaai-blue hover:bg-chamaai-lightblue"
+                    >
+                      Ver Perfil
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>
+                    <p>Visualize avaliações completas, fotos e entre em contato — após login.</p>
+                  </TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+            </div>
+          </div>
         </CardContent>
       </Card>
     </motion.div>
