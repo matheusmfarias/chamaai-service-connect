@@ -28,11 +28,12 @@ const Footer = () => {
           <div>
             <h4 className="font-semibold text-gray-800 mb-4">Serviços</h4>
             <ul className="space-y-2">
-              <li><Link to="/prestadores/limpeza" className="text-gray-600 hover:text-chamaai-blue" onClick={() => window.scrollTo(0, 0)}>Limpeza</Link></li>
-              <li><Link to="/prestadores/eletrica" className="text-gray-600 hover:text-chamaai-blue" onClick={() => window.scrollTo(0, 0)}>Elétrica</Link></li>
-              <li><Link to="/prestadores/pintura" className="text-gray-600 hover:text-chamaai-blue" onClick={() => window.scrollTo(0, 0)}>Pintura</Link></li>
-              <li><Link to="/prestadores/hidraulica" className="text-gray-600 hover:text-chamaai-blue" onClick={() => window.scrollTo(0, 0)}>Hidráulica</Link></li>
-              <li><Link to="/prestadores/jardinagem" className="text-gray-600 hover:text-chamaai-blue" onClick={() => window.scrollTo(0, 0)}>Jardinagem</Link></li>
+              <li><Link to="/servicos/limpeza" className="text-gray-600 hover:text-chamaai-blue">Limpeza</Link></li>
+              <li><Link to="/servicos/eletrica" className="text-gray-600 hover:text-chamaai-blue">Elétrica</Link></li>
+              <li><Link to="/servicos/pintura" className="text-gray-600 hover:text-chamaai-blue">Pintura</Link></li>
+              <li><Link to="/servicos/hidraulica" className="text-gray-600 hover:text-chamaai-blue">Hidráulica</Link></li>
+              <li><Link to="/servicos/jardinagem" className="text-gray-600 hover:text-chamaai-blue">Jardinagem</Link></li>
+              <li><Link to="/servicos/montagem-moveis" className="text-gray-600 hover:text-chamaai-blue">Montagem de Móveis</Link></li>
             </ul>
           </div>
           <div>

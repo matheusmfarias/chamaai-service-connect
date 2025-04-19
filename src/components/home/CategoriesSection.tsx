@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -12,12 +11,12 @@ import {
 } from "lucide-react";
 
 const serviceCategories = [
-  { name: "Faxina", icon: Sparkles, path: "/prestadores/faxina" },
-  { name: "Pintura", icon: Paintbrush, path: "/prestadores/pintura" },
-  { name: "Elétrica", icon: Wrench, path: "/prestadores/eletrica" },
-  { name: "Hidráulica", icon: ShowerHead, path: "/prestadores/hidraulica" },
-  { name: "Jardinagem", icon: Leaf, path: "/prestadores/jardinagem" },
-  { name: "Montagem de Móveis", icon: Hammer, path: "/prestadores/montagem-moveis" }
+  { name: "Limpeza", icon: Sparkles, path: "/servicos/limpeza" },
+  { name: "Pintura", icon: Paintbrush, path: "/servicos/pintura" },
+  { name: "Elétrica", icon: Wrench, path: "/servicos/eletrica" },
+  { name: "Hidráulica", icon: ShowerHead, path: "/servicos/hidraulica" },
+  { name: "Jardinagem", icon: Leaf, path: "/servicos/jardinagem" },
+  { name: "Montagem de Móveis", icon: Hammer, path: "/servicos/montagem-moveis" }
 ];
 
 const fadeIn = {

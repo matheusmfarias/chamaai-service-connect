@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -23,6 +22,12 @@ import FAQ from "./pages/FAQ";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermosDeUso from "./pages/TermosDeUso";
 import SearchResults from "./pages/SearchResults";
+import LimpezaService from "./pages/services/LimpezaService";
+import EletricaService from "./pages/services/EletricaService";
+import PinturaService from "./pages/services/PinturaService";
+import HidraulicaService from "./pages/services/HidraulicaService";
+import JardinagemService from "./pages/services/JardinagemService";
+import MontagemMoveisService from "./pages/services/MontagemMoveisService";
 
 const queryClient = new QueryClient();
 
@@ -57,6 +62,12 @@ const App = () => (
             <Route path="/prestador/:id" element={<PerfilPrestador />} />
             <Route path="/privacidade" element={<PrivacyPolicy />} />
             <Route path="/termos" element={<TermosDeUso />} />
+            <Route path="/servicos/limpeza" element={<LimpezaService />} />
+            <Route path="/servicos/eletrica" element={<EletricaService />} />
+            <Route path="/servicos/pintura" element={<PinturaService />} />
+            <Route path="/servicos/hidraulica" element={<HidraulicaService />} />
+            <Route path="/servicos/jardinagem" element={<JardinagemService />} />
+            <Route path="/servicos/montagem-moveis" element={<MontagemMoveisService />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>
