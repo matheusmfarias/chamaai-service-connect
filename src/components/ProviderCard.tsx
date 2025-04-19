@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Star, MapPin, Clock, BadgeCheck, Paintbrush, Plug, ShowerHead, Hammer, Brush } from "lucide-react";
+import { Star, MapPin, Clock, BadgeCheck, Tag } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -116,6 +116,10 @@ const ProviderCard = ({ provider, onViewProfile }: ProviderCardProps) => {
               </div>
               
               <div className="flex flex-wrap gap-2 mb-3">
+                <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+                  <Tag className="w-3 h-3 mr-1" />
+                  {provider.category}
+                </Badge>
                 {provider.is_verified && (
                   <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
                     <BadgeCheck className="w-3 h-3 mr-1" />
