@@ -12,12 +12,12 @@ import {
 } from "lucide-react";
 
 const serviceCategories = [
-  { name: "Limpeza", icon: Sparkles, path: "/servicos/limpeza" },
-  { name: "Pintura", icon: Paintbrush, path: "/servicos/pintura" },
-  { name: "Elétrica", icon: Wrench, path: "/servicos/eletrica" },
-  { name: "Hidráulica", icon: ShowerHead, path: "/servicos/hidraulica" },
-  { name: "Jardinagem", icon: Leaf, path: "/servicos/jardinagem" },
-  { name: "Montagem de Móveis", icon: Hammer, path: "/servicos/montagem-moveis" }
+  { name: "Limpeza", icon: Sparkles, description: "Serviços de limpeza residencial e comercial", path: "/servicos/limpeza" },
+  { name: "Pintura", icon: Paintbrush, description: "Pintura de interiores e exteriores", path: "/servicos/pintura" },
+  { name: "Elétrica", icon: Wrench, description: "Instalações e reparos elétricos", path: "/servicos/eletrica" },
+  { name: "Hidráulica", icon: ShowerHead, description: "Reparos e instalações hidráulicas", path: "/servicos/hidraulica" },
+  { name: "Jardinagem", icon: Leaf, description: "Manutenção e paisagismo de jardins", path: "/servicos/jardinagem" },
+  { name: "Montagem de Móveis", icon: Hammer, description: "Montagem e desmontagem de móveis", path: "/servicos/montagem-moveis" }
 ];
 
 const fadeIn = {
@@ -46,24 +46,29 @@ const CategoriesSection = () => {
       className="py-16 bg-white"
     >
       <div className="container-custom">
-        <h2 className="text-3xl font-bold text-center mb-12">Categorias Populares</h2>
+        <h2 className="text-4xl font-bold text-center mb-4">Categorias de Serviços</h2>
+        <p className="text-xl text-gray-600 text-center mb-12 max-w-3xl mx-auto">
+          Encontre profissionais qualificados para todos os tipos de serviços
+        </p>
         <motion.div 
-          className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 justify-items-center"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
           variants={staggerContainer}
         >
           {serviceCategories.map((category, index) => (
             <motion.div
               key={index}
               variants={fadeIn}
-              transition={{ delay: index * 0.1 }}
-              className="w-full max-w-[200px]"
+              className="h-full"
             >
               <Link to={category.path} className="block h-full">
-                <div className="flex flex-col items-center p-6 bg-white rounded-lg shadow-md border border-gray-100 hover:shadow-lg transition-all duration-200 h-full">
-                  <div className="bg-chamaai-lightgray p-4 rounded-full mb-4">
-                    <category.icon className="w-8 h-8 text-chamaai-blue" />
+                <div className="group h-full p-6 bg-white rounded-xl border border-gray-200 hover:border-chamaai-blue hover:shadow-lg transition-all duration-300">
+                  <div className="flex items-center mb-4">
+                    <div className="bg-chamaai-lightgray p-4 rounded-lg group-hover:bg-chamaai-blue/10">
+                      <category.icon className="w-8 h-8 text-chamaai-blue" />
+                    </div>
+                    <h3 className="text-xl font-semibold ml-4">{category.name}</h3>
                   </div>
-                  <h3 className="font-medium text-center">{category.name}</h3>
+                  <p className="text-gray-600">{category.description}</p>
                 </div>
               </Link>
             </motion.div>
