@@ -17,9 +17,25 @@ const Navbar = () => {
     }
   }, [user, location.pathname, signOut]);
 
+  const handleCategoriesClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    
+    // If we're not on the home page, navigate to home first
+    if (location.pathname !== '/') {
+      window.location.href = '/#categories';
+      return;
+    }
+
+    // If we're already on home page, just scroll
+    const categoriesSection = document.getElementById('categories');
+    if (categoriesSection) {
+      categoriesSection.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   const publicLinks = [
     { name: "Início", path: "/" },
-    { name: "Categorias", path: "/categorias" },
+    { name: "Categorias", path: "/#categories", onClick: handleCategoriesClick },
     { name: "Como Funciona", path: "/como-funciona" },
     { name: "Sobre nós", path: "/sobre" },
   ];
@@ -34,13 +50,14 @@ const Navbar = () => {
 
           <div className="hidden md:flex items-center space-x-6">
             {!user && publicLinks.map((link) => (
-              <Link 
+              <a 
                 key={link.path}
-                to={link.path} 
+                href={link.path}
+                onClick={link.onClick} 
                 className="text-gray-600 hover:text-chamaai-blue transition-colors"
               >
                 {link.name}
-              </Link>
+              </a>
             ))}
           </div>
 
@@ -72,14 +89,17 @@ const Navbar = () => {
         {mobileMenuOpen && (
           <div className="md:hidden pb-4 space-y-4">
             {!user && publicLinks.map((link) => (
-              <Link 
+              <a 
                 key={link.path}
-                to={link.path} 
+                href={link.path}
+                onClick={(e) => {
+                  setMobileMenuOpen(false);
+                  link.onClick && link.onClick(e);
+                }}
                 className="flex items-center py-2 text-gray-600 hover:text-chamaai-blue transition-colors"
-                onClick={() => setMobileMenuOpen(false)}
               >
                 {link.name}
-              </Link>
+              </a>
             ))}
             
             {!user && (

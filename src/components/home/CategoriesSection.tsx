@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -37,6 +38,7 @@ const staggerContainer = {
 const CategoriesSection = () => {
   return (
     <motion.section 
+      id="categories"
       initial="hidden"
       whileInView="visible"
       viewport={{ once: true }}
