@@ -181,7 +181,9 @@ const SearchResults = () => {
                 if (currentPage > 1) handlePageChange(currentPage - 1);
               }}
               className={currentPage === 1 ? "pointer-events-none opacity-50" : ""}
-            />
+            >
+              Anterior
+            </PaginationPrevious>
           </PaginationItem>
 
           {pages.map((page, index) =>
@@ -213,7 +215,9 @@ const SearchResults = () => {
                 if (currentPage < totalPages) handlePageChange(currentPage + 1);
               }}
               className={currentPage === totalPages ? "pointer-events-none opacity-50" : ""}
-            />
+            >
+              Próxima
+            </PaginationNext>
           </PaginationItem>
         </PaginationContent>
       </Pagination>

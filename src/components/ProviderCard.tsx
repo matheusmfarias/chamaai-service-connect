@@ -1,5 +1,6 @@
+
 import { motion } from "framer-motion";
-import { Star, MapPin, Clock, BadgeCheck, Tag, Paintbrush, Plug, ShowerHead, Hammer, Scan } from "lucide-react";
+import { Star, MapPin, Clock, BadgeCheck, Tag, Paintbrush, Plug, ShowerHead, Hammer } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -26,29 +27,30 @@ const getCategoryData = (category: string) => {
   const categoryMap: Record<string, { color: string; icon: JSX.Element }> = {
     "limpeza": {
       color: "border-blue-300 bg-blue-50",
-      icon: <Scan className="w-4 h-4 text-blue-500" />
+      icon: <Tag className="w-3 h-3 text-blue-500" />
     },
     "pintura": {
       color: "border-orange-300 bg-orange-50",
-      icon: <Paintbrush className="w-4 h-4 text-orange-500" />
+      icon: <Paintbrush className="w-3 h-3 text-orange-500" />
     },
     "eletrica": {
       color: "border-yellow-300 bg-yellow-50",
-      icon: <Plug className="w-4 h-4 text-yellow-600" />
+      icon: <Plug className="w-3 h-3 text-yellow-600" />
     },
     "hidraulica": {
       color: "border-green-300 bg-green-50",
-      icon: <ShowerHead className="w-4 h-4 text-green-500" />
+      icon: <ShowerHead className="w-3 h-3 text-green-500" />
     },
     "reforma": {
       color: "border-gray-300 bg-gray-50",
-      icon: <Hammer className="w-4 h-4 text-gray-500" />
+      icon: <Hammer className="w-3 h-3 text-gray-500" />
     }
   };
   
-  return categoryMap[category.toLowerCase()] || { 
+  const key = category.toLowerCase();
+  return categoryMap[key] || { 
     color: "border-gray-200",
-    icon: <Scan className="w-4 h-4 text-gray-500" />
+    icon: <Tag className="w-3 h-3 text-gray-500" />
   };
 };
 
