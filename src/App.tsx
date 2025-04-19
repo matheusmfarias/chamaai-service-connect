@@ -24,14 +24,6 @@ import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermosDeUso from "./pages/TermosDeUso";
 import SearchResults from "./pages/SearchResults";
 
-// Import service pages
-import LimpezaService from "./pages/services/LimpezaService";
-import EletricaService from "./pages/services/EletricaService";
-import PinturaService from "./pages/services/PinturaService";
-import HidraulicaService from "./pages/services/HidraulicaService";
-import JardinagemService from "./pages/services/JardinagemService";
-import MontagemMoveisService from "./pages/services/MontagemMoveisService";
-
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -47,15 +39,6 @@ const App = () => (
             <Route path="/cadastro" element={<Cadastro />} />
             <Route path="/como-funciona" element={<ComoFunciona />} />
             <Route path="/categorias" element={<Categorias />} />
-            
-            {/* Service description pages */}
-            <Route path="/servicos/limpeza" element={<LimpezaService />} />
-            <Route path="/servicos/eletrica" element={<EletricaService />} />
-            <Route path="/servicos/pintura" element={<PinturaService />} />
-            <Route path="/servicos/hidraulica" element={<HidraulicaService />} />
-            <Route path="/servicos/jardinagem" element={<JardinagemService />} />
-            <Route path="/servicos/montagem-moveis" element={<MontagemMoveisService />} />
-            
             <Route path="/prestadores/:categoria" element={<PrestadoresPorCategoria />} />
             <Route path="/sobre" element={<Sobre />} />
             <Route path="/contato" element={<Sobre />} />
