@@ -1,4 +1,5 @@
 
+import React from "react";
 import { motion } from "framer-motion";
 import { Star, MapPin, Clock, BadgeCheck, Tag, Paintbrush, Plug, ShowerHead, Hammer, Sparkles, Leaf, Wrench } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
