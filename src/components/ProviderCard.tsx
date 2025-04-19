@@ -1,6 +1,5 @@
-
 import { motion } from "framer-motion";
-import { Star, MapPin, Clock, BadgeCheck, Tag, PaintBrush, Wrench, Hammer, Droplets, Scan } from "lucide-react";
+import { Star, MapPin, Clock, BadgeCheck, Tag, Paintbrush, Wrench, Hammer, Droplets, Scan } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -31,7 +30,7 @@ const getCategoryData = (category: string) => {
     },
     "pintura": {
       color: "border-orange-300 bg-orange-50",
-      icon: <PaintBrush className="w-4 h-4 text-orange-500" />
+      icon: <Paintbrush className="w-4 h-4 text-orange-500" />
     },
     "eletrica": {
       color: "border-yellow-300 bg-yellow-50",
@@ -166,4 +165,3 @@ const ProviderCard = ({ provider, onViewProfile }: ProviderCardProps) => {
 };
 
 export default ProviderCard;
-
