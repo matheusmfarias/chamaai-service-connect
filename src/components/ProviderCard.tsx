@@ -1,5 +1,6 @@
+
 import { motion } from "framer-motion";
-import { Star, MapPin, Clock, BadgeCheck, Tag } from "lucide-react";
+import { Star, MapPin, Clock, BadgeCheck, Tag, PaintBrush, Wrench, Hammer, Droplets, Scan } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -24,21 +25,21 @@ const fadeIn = {
 
 const getCategoryData = (category: string) => {
   const categoryMap: Record<string, { color: string; icon: JSX.Element }> = {
-    "faxina": {
+    "limpeza": {
       color: "border-blue-300 bg-blue-50",
-      icon: <Brush className="w-4 h-4 text-blue-500" />
+      icon: <Scan className="w-4 h-4 text-blue-500" />
     },
     "pintura": {
       color: "border-orange-300 bg-orange-50",
-      icon: <Paintbrush className="w-4 h-4 text-orange-500" />
+      icon: <PaintBrush className="w-4 h-4 text-orange-500" />
     },
     "eletrica": {
       color: "border-yellow-300 bg-yellow-50",
-      icon: <Plug className="w-4 h-4 text-yellow-600" />
+      icon: <Wrench className="w-4 h-4 text-yellow-600" />
     },
     "hidraulica": {
       color: "border-green-300 bg-green-50",
-      icon: <ShowerHead className="w-4 h-4 text-green-500" />
+      icon: <Droplets className="w-4 h-4 text-green-500" />
     },
     "reforma": {
       color: "border-gray-300 bg-gray-50",
@@ -48,7 +49,7 @@ const getCategoryData = (category: string) => {
   
   return categoryMap[category.toLowerCase()] || { 
     color: "border-gray-200",
-    icon: <Brush className="w-4 h-4 text-gray-500" />
+    icon: <Scan className="w-4 h-4 text-gray-500" />
   };
 };
 
@@ -165,3 +166,4 @@ const ProviderCard = ({ provider, onViewProfile }: ProviderCardProps) => {
 };
 
 export default ProviderCard;
+
