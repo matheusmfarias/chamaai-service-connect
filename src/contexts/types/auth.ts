@@ -1,4 +1,3 @@
-
 import { User, Session } from "@supabase/supabase-js";
 
 export interface UserProfile {
@@ -18,7 +17,10 @@ export interface UserSignUpData {
   phone?: string;
   city?: string;
   state?: string;
-  user_type?: 'cliente' | 'prestador';
+  user_type?: string;
+  category?: string;
+  description?: string;
+  rate_per_hour?: number;
 }
 
 export interface ServiceProviderData {
