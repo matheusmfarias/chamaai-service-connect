@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -45,7 +44,6 @@ const Navbar = () => {
       path: "/#how-it-works", 
       onClick: (e: React.MouseEvent) => handleSectionScroll(e, 'how-it-works') 
     },
-    { name: "Sobre nós", path: "/sobre" },
   ];
 
   return (

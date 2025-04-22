@@ -39,7 +39,6 @@ const Footer = () => {
           <div>
             <h4 className="font-semibold text-gray-800 mb-4">Links Úteis</h4>
             <ul className="space-y-2">
-              <li><Link to="/como-funciona" className="text-gray-600 hover:text-chamaai-blue" onClick={() => window.scrollTo(0, 0)}>Como Funciona</Link></li>
               <li><Link to="/sobre" className="text-gray-600 hover:text-chamaai-blue" onClick={() => window.scrollTo(0, 0)}>Sobre Nós</Link></li>
               <li><Link to="/faq" className="text-gray-600 hover:text-chamaai-blue" onClick={() => window.scrollTo(0, 0)}>Perguntas Frequentes</Link></li>
               <li><Link to="/privacidade" className="text-gray-600 hover:text-chamaai-blue" onClick={() => window.scrollTo(0, 0)}>Política de Privacidade</Link></li>

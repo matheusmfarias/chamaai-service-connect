@@ -14,7 +14,6 @@ import Dashboard from "./pages/Dashboard";
 import SolicitarServico from "./pages/SolicitarServico";
 import PerfilPrestador from "./pages/PerfilPrestador";
 import NotFound from "./pages/NotFound";
-import ComoFunciona from "./pages/ComoFunciona";
 import PrestadoresPorCategoria from "./pages/PrestadoresPorCategoria";
 import Sobre from "./pages/Sobre";
 import FAQ from "./pages/FAQ";
@@ -41,7 +40,6 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/login" element={<Login />} />
             <Route path="/cadastro" element={<Cadastro />} />
-            <Route path="/como-funciona" element={<ComoFunciona />} />
             <Route path="/prestadores/:categoria" element={<PrestadoresPorCategoria />} />
             <Route path="/sobre" element={<Sobre />} />
             <Route path="/contato" element={<Sobre />} />
