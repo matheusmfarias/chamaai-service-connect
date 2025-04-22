@@ -46,7 +46,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   useEffect(() => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, session) => {
+      async (event, session) => {
         setSession(session);
         setUser(session?.user ?? null);
         
@@ -54,10 +54,22 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           setUserProfile(null);
           setIsServiceProvider(false);
         } else {
-          setTimeout(() => {
-            fetchUserProfile(session.user.id);
-            checkServiceProviderStatus(session.user.id);
-          }, 0);
+          if (event === 'USER_UPDATED' && session.user.email_confirmed_at) {
+            toast({
+              title: "E-mail verificado!",
+              description: "Sua conta foi ativada com sucesso. Por favor, faça login para continuar.",
+            });
+            
+            localStorage.removeItem("verification_email");
+            
+            await signOut();
+            navigate("/login");
+          } else {
+            setTimeout(() => {
+              fetchUserProfile(session.user.id);
+              checkServiceProviderStatus(session.user.id);
+            }, 0);
+          }
         }
       }
     );

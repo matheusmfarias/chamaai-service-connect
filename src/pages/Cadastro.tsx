@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -42,7 +41,6 @@ const clientSchema = z.object({
   path: ["confirmPassword"],
 });
 
-// Create provider schema separately instead of extending
 const providerSchema = z.object({
   fullName: z.string().min(2, "Nome completo é obrigatório"),
   email: z.string().email("E-mail inválido"),
@@ -114,12 +112,8 @@ const Cadastro = () => {
         user_type: 'cliente'
       });
 
-      toast({
-        title: "Cadastro realizado",
-        description: "Sua conta de cliente foi criada com sucesso!",
-      });
-
-      navigate("/dashboard");
+      localStorage.setItem("verification_email", data.email);
+      navigate("/verificar-email");
     } catch (error) {
       toast({
         title: "Erro no cadastro",
@@ -131,7 +125,6 @@ const Cadastro = () => {
 
   const handleProviderSubmit = async (data: ProviderFormValues) => {
     try {
-      // Primeiro, cadastra o usuário
       await signUp(data.email, data.password, {
         full_name: data.fullName,
         phone: data.phone,
@@ -140,19 +133,15 @@ const Cadastro = () => {
         user_type: 'prestador'
       });
 
-      // Depois, cria o perfil de prestador
+      localStorage.setItem("verification_email", data.email);
+
       await createServiceProvider({
         category: data.category,
         description: data.description,
         rate_per_hour: data.ratePerHour
       });
 
-      toast({
-        title: "Cadastro realizado",
-        description: "Seu perfil de prestador está em análise. Você receberá um e-mail quando for aprovado.",
-      });
-
-      navigate("/dashboard");
+      navigate("/verificar-email");
     } catch (error) {
       toast({
         title: "Erro no cadastro",
@@ -180,7 +169,6 @@ const Cadastro = () => {
                   <TabsTrigger value="prestador">Sou Prestador</TabsTrigger>
                 </TabsList>
                 
-                {/* Cliente Form */}
                 <TabsContent value="cliente">
                   <Form {...clientForm}>
                     <form onSubmit={clientForm.handleSubmit(handleClientSubmit)} className="space-y-4">
@@ -331,7 +319,6 @@ const Cadastro = () => {
                   </Form>
                 </TabsContent>
 
-                {/* Prestador Form */}
                 <TabsContent value="prestador">
                   <Form {...providerForm}>
                     <form onSubmit={providerForm.handleSubmit(handleProviderSubmit)} className="space-y-4">
