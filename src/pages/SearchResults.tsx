@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
@@ -175,7 +176,8 @@ const SearchResults = () => {
         <div className="container-custom">
           <SearchResultsList 
             isLoading={isLoading}
-            error={error}
+            // Fix the error by converting error object to string if it exists
+            error={error ? error.message : null}
             filteredProviders={filteredProviders}
             searchQuery={searchQuery}
             onFilterChange={handleFilterChange}

@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { 
@@ -62,16 +61,14 @@ const CreateReviewForm = ({ rating, comment, providerId, onSuccess }: CreateRevi
     }
 
     setIsSubmitting(true);
-    const success = await createReview({
+    createReview({
       service_provider_id: providerId,
       rating: reviewRating,
       comment: reviewComment,
     });
-
+    
     setIsSubmitting(false);
-    if (success) {
-      onSuccess();
-    }
+    onSuccess();
   };
 
   return (
@@ -165,7 +162,6 @@ const PerfilPrestador = () => {
   };
   
   const handleRequestService = () => {
-    // Redirect to service request page (would pass provider ID as parameter)
     window.location.href = "/solicitar-servico";
   };
 
@@ -203,7 +199,6 @@ const PerfilPrestador = () => {
     );
   }
 
-  // Definir o nome da categoria
   const getCategoryName = (categoryId: string) => {
     const categories: {[key: string]: string} = {
       "faxina": "Faxina",
@@ -227,7 +222,6 @@ const PerfilPrestador = () => {
     <Layout>
       <div className="container-custom py-12">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {/* Provider Info Card */}
           <div className="md:col-span-1">
             <Card className="sticky top-24">
               <CardContent className="p-6">
@@ -335,9 +329,7 @@ const PerfilPrestador = () => {
             </Card>
           </div>
           
-          {/* Provider Details and Reviews */}
           <div className="md:col-span-2">
-            {/* About Section */}
             <Card className="mb-8">
               <CardHeader>
                 <CardTitle>Sobre</CardTitle>
@@ -369,7 +361,6 @@ const PerfilPrestador = () => {
               </CardContent>
             </Card>
             
-            {/* Reviews Section */}
             <Card>
               <CardHeader className="flex flex-row items-start justify-between">
                 <div>
