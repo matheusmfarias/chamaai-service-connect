@@ -17,26 +17,34 @@ const Navbar = () => {
     }
   }, [user, location.pathname, signOut]);
 
-  const handleCategoriesClick = (e: React.MouseEvent) => {
+  const handleSectionScroll = (e: React.MouseEvent, sectionId: string) => {
     e.preventDefault();
     
-    // If we're not on the home page, navigate to home first
+    // Se não estiver na página inicial, navegue para ela primeiro
     if (location.pathname !== '/') {
-      window.location.href = '/#categories';
+      window.location.href = `/#${sectionId}`;
       return;
     }
 
-    // If we're already on home page, just scroll
-    const categoriesSection = document.getElementById('categories');
-    if (categoriesSection) {
-      categoriesSection.scrollIntoView({ behavior: 'smooth' });
+    // Se já estiver na página inicial, apenas faça o scroll
+    const section = document.getElementById(sectionId);
+    if (section) {
+      section.scrollIntoView({ behavior: 'smooth' });
     }
   };
 
   const publicLinks = [
     { name: "Início", path: "/" },
-    { name: "Categorias", path: "/#categories", onClick: handleCategoriesClick },
-    { name: "Como Funciona", path: "/como-funciona" },
+    { 
+      name: "Categorias", 
+      path: "/#categories", 
+      onClick: (e: React.MouseEvent) => handleSectionScroll(e, 'categories') 
+    },
+    { 
+      name: "Como Funciona", 
+      path: "/#how-it-works", 
+      onClick: (e: React.MouseEvent) => handleSectionScroll(e, 'how-it-works') 
+    },
     { name: "Sobre nós", path: "/sobre" },
   ];
 
