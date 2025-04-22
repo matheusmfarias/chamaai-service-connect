@@ -10,6 +10,7 @@ export interface UserProfile {
   created_at: string;
   updated_at: string;
   avatar_url?: string | null;
+  user_type?: string;
 }
 
 export interface UserSignUpData {
@@ -17,6 +18,7 @@ export interface UserSignUpData {
   phone?: string;
   city?: string;
   state?: string;
+  user_type?: 'cliente' | 'prestador';
 }
 
 export interface ServiceProviderData {
