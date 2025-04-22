@@ -107,7 +107,7 @@ const ServiceRequestModal = ({ isOpen, onClose }: ServiceRequestModalProps) => {
   };
 
   const handleClose = () => {
-    if (!createServiceRequestMutation.isLoading) {
+    if (!createServiceRequestMutation.isPending) {
       form.reset();
       onClose();
     }
@@ -222,6 +222,7 @@ const ServiceRequestModal = ({ isOpen, onClose }: ServiceRequestModalProps) => {
                         onSelect={field.onChange}
                         disabled={(date) => date < new Date()}
                         initialFocus
+                        className="p-3 pointer-events-auto"
                       />
                     </PopoverContent>
                   </Popover>
@@ -231,14 +232,14 @@ const ServiceRequestModal = ({ isOpen, onClose }: ServiceRequestModalProps) => {
             />
             
             <DialogFooter>
-              <Button type="button" variant="outline" onClick={handleClose} disabled={createServiceRequestMutation.isLoading}>
+              <Button type="button" variant="outline" onClick={handleClose} disabled={createServiceRequestMutation.isPending}>
                 Cancelar
               </Button>
               <Button 
                 type="submit" 
-                disabled={createServiceRequestMutation.isLoading}
+                disabled={createServiceRequestMutation.isPending}
               >
-                {createServiceRequestMutation.isLoading ? (
+                {createServiceRequestMutation.isPending ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                     Enviando...
