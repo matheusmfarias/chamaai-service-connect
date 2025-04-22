@@ -17,12 +17,16 @@ const ProviderSignUpForm = () => {
     handlePhoneChange,
     onSubmit,
     states,
-    cities
+    cities,
+    emailStatus,
+    phoneStatus,
+    passwordStrength
   } = useProviderSignUpForm();
 
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        {/* Nome completo */}
         <FormField
           control={form.control}
           name="fullName"
@@ -30,13 +34,17 @@ const ProviderSignUpForm = () => {
             <FormItem>
               <FormLabel>Nome completo</FormLabel>
               <FormControl>
-                <Input placeholder="Seu nome completo" {...field} />
+                <Input
+                  placeholder="Seu nome completo"
+                  maxLength={60}
+                  {...field}
+                />
               </FormControl>
               <FormMessage />
             </FormItem>
           )}
         />
-
+        {/* E-mail */}
         <FormField
           control={form.control}
           name="email"
@@ -44,7 +52,24 @@ const ProviderSignUpForm = () => {
             <FormItem>
               <FormLabel>E-mail</FormLabel>
               <FormControl>
-                <Input type="email" placeholder="seu@email.com" {...field} />
+                <div className="relative">
+                  <Input
+                    type="email"
+                    placeholder="seu@email.com"
+                    maxLength={120}
+                    {...field}
+                    autoComplete="email"
+                  />
+                  {emailStatus.loading && (
+                    <span className="absolute right-2 top-3 text-xs text-gray-400 animate-pulse">verificando...</span>
+                  )}
+                  {emailStatus.error && (
+                    <span className="absolute right-2 top-3 text-xs text-destructive">{emailStatus.error}</span>
+                  )}
+                  {emailStatus.valid && !emailStatus.error && (
+                    <span className="absolute right-2 top-3 text-xs text-green-600">Disponível</span>
+                  )}
+                </div>
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -59,11 +84,28 @@ const ProviderSignUpForm = () => {
               <FormItem>
                 <FormLabel>Senha</FormLabel>
                 <FormControl>
-                  <Input 
-                    type={showPassword ? "text" : "password"} 
-                    placeholder="Sua senha"
-                    {...field}
-                  />
+                  <div>
+                    <Input
+                      type={showPassword ? "text" : "password"}
+                      placeholder="Sua senha"
+                      minLength={8}
+                      maxLength={64}
+                      autoComplete="new-password"
+                      {...field}
+                    />
+                    {/* Nível da senha */}
+                    <div className="text-xs mt-1">
+                      <span className={
+                        passwordStrength.score >= 3
+                          ? "text-green-600"
+                          : passwordStrength.score === 2
+                          ? "text-yellow-600"
+                          : "text-red-600"
+                      }>
+                        Segurança: {passwordStrength.feedback}
+                      </span>
+                    </div>
+                  </div>
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -76,9 +118,12 @@ const ProviderSignUpForm = () => {
               <FormItem>
                 <FormLabel>Confirme sua senha</FormLabel>
                 <FormControl>
-                  <Input 
-                    type={showPassword ? "text" : "password"} 
+                  <Input
+                    type={showPassword ? "text" : "password"}
                     placeholder="Confirme sua senha"
+                    minLength={8}
+                    maxLength={64}
+                    autoComplete="new-password"
                     {...field}
                   />
                 </FormControl>
@@ -87,19 +132,21 @@ const ProviderSignUpForm = () => {
             )}
           />
         </div>
+        {/* Mostrar senha */}
         <div className="flex items-center space-x-2">
           <Checkbox
-            id="showPasswordProvider" 
-            checked={showPassword} 
-            onCheckedChange={() => setShowPassword(!showPassword)} 
+            id="showPasswordProvider"
+            checked={showPassword}
+            onCheckedChange={() => setShowPassword(!showPassword)}
           />
-          <label 
+          <label
             htmlFor="showPasswordProvider"
             className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
           >
             Mostrar senhas
           </label>
         </div>
+        {/* Telefone */}
         <FormField
           control={form.control}
           name="phone"
@@ -107,11 +154,24 @@ const ProviderSignUpForm = () => {
             <FormItem>
               <FormLabel>Telefone</FormLabel>
               <FormControl>
-                <Input 
-                  placeholder="(99) 99999-9999" 
-                  value={field.value}
-                  onChange={(e) => handlePhoneChange(e)}
-                />
+                <div className="relative">
+                  <Input
+                    placeholder="(99) 99999-9999"
+                    value={field.value}
+                    onChange={handlePhoneChange}
+                    autoComplete="tel"
+                    maxLength={15}
+                  />
+                  {phoneStatus.loading && (
+                    <span className="absolute right-2 top-3 text-xs text-gray-400 animate-pulse">verificando...</span>
+                  )}
+                  {phoneStatus.error && (
+                    <span className="absolute right-2 top-3 text-xs text-destructive">{phoneStatus.error}</span>
+                  )}
+                  {phoneStatus.valid && !phoneStatus.error && (
+                    <span className="absolute right-2 top-3 text-xs text-green-600">Disponível</span>
+                  )}
+                </div>
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -119,6 +179,7 @@ const ProviderSignUpForm = () => {
         />
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Estado */}
           <FormField
             control={form.control}
             name="state"
@@ -127,7 +188,7 @@ const ProviderSignUpForm = () => {
                 <FormLabel>Estado</FormLabel>
                 <Select
                   value={field.value}
-                  onValueChange={(value) => handleStateChange(value)}
+                  onValueChange={handleStateChange}
                 >
                   <FormControl>
                     <SelectTrigger>
@@ -147,6 +208,7 @@ const ProviderSignUpForm = () => {
             )}
           />
 
+          {/* Cidade */}
           <FormField
             control={form.control}
             name="city"
@@ -176,6 +238,7 @@ const ProviderSignUpForm = () => {
             )}
           />
         </div>
+        {/* Categoria */}
         <FormField
           control={form.control}
           name="category"
@@ -204,6 +267,7 @@ const ProviderSignUpForm = () => {
             </FormItem>
           )}
         />
+        {/* Descrição dos Serviços */}
         <FormField
           control={form.control}
           name="description"
@@ -211,9 +275,10 @@ const ProviderSignUpForm = () => {
             <FormItem>
               <FormLabel>Descrição dos Serviços</FormLabel>
               <FormControl>
-                <Textarea 
+                <Textarea
                   placeholder="Descreva os serviços que você oferece (mínimo 30 caracteres)"
                   className="min-h-[120px]"
+                  maxLength={500}
                   {...field}
                 />
               </FormControl>
@@ -221,6 +286,7 @@ const ProviderSignUpForm = () => {
             </FormItem>
           )}
         />
+        {/* Valor por hora */}
         <FormField
           control={form.control}
           name="ratePerHour"
@@ -228,10 +294,10 @@ const ProviderSignUpForm = () => {
             <FormItem>
               <FormLabel>Valor por hora (R$)</FormLabel>
               <FormControl>
-                <Input 
-                  type="number" 
-                  min="30" 
-                  max="500" 
+                <Input
+                  type="number"
+                  min="30"
+                  max="500"
                   step="5"
                   {...field}
                 />
@@ -240,6 +306,7 @@ const ProviderSignUpForm = () => {
             </FormItem>
           )}
         />
+        {/* Termos de Uso */}
         <FormField
           control={form.control}
           name="termsAccepted"
@@ -263,7 +330,7 @@ const ProviderSignUpForm = () => {
         <Button
           type="submit"
           className="w-full"
-          disabled={isSubmitting}
+          disabled={isSubmitting || emailStatus.loading || phoneStatus.loading}
         >
           {isSubmitting ? "Cadastrando..." : "Cadastrar como Prestador"}
         </Button>
