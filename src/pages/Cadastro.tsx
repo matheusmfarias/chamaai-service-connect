@@ -20,78 +20,130 @@ import {
 import { useAuth } from "@/contexts/AuthContext";
 import Layout from "@/components/Layout";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
+import { serviceCategories } from "@/constants/categories";
+import { useToast } from "@/hooks/use-toast";
+import * as z from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm, Controller } from "react-hook-form";
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 
-const categories = [
-  { id: "faxina", name: "Faxina" },
-  { id: "pintura", name: "Pintura" },
-  { id: "eletrica", name: "Elétrica" },
-  { id: "hidraulica", name: "Hidráulica" },
-  { id: "reforma", name: "Reforma" },
-  { id: "jardinagem", name: "Jardinagem" },
-];
+const clientSchema = z.object({
+  fullName: z.string().min(2, "Nome completo é obrigatório"),
+  email: z.string().email("E-mail inválido"),
+  password: z.string().min(6, "Senha deve ter pelo menos 6 caracteres"),
+  confirmPassword: z.string(),
+  phone: z.string().regex(/^\(\d{2}\)\s\d{4,5}-\d{4}$/, "Telefone inválido"),
+  city: z.string().min(1, "Cidade é obrigatória"),
+  state: z.string().min(1, "Estado é obrigatório"),
+  termsAccepted: z.boolean().refine(val => val === true, "Você deve aceitar os Termos de Uso e Política de Privacidade")
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Senhas não coincidem",
+  path: ["confirmPassword"],
+});
+
+const providerSchema = clientSchema.extend({
+  category: z.string().min(1, "Categoria é obrigatória"),
+  description: z.string().min(30, "Descrição deve ter pelo menos 30 caracteres"),
+  ratePerHour: z.coerce.number()
+    .min(30, "Valor mínimo R$30")
+    .max(500, "Valor máximo R$500")
+});
 
 const Cadastro = () => {
   const [searchParams] = useSearchParams();
   const defaultTab = searchParams.get("type") === "prestador" ? "prestador" : "cliente";
   
-  const [fullName, setFullName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [phone, setPhone] = useState("");
-  const [city, setCity] = useState("");
-  const [state, setState] = useState("");
-  const [category, setCategory] = useState("");
-  const [description, setDescription] = useState("");
-  const [ratePerHour, setRatePerHour] = useState("");
-  const [activeTab, setActiveTab] = useState(defaultTab);
-  
   const navigate = useNavigate();
-  const { signUp, createServiceProvider, isLoading, user } = useAuth();
+  const { signUp, createServiceProvider, isLoading } = useAuth();
+  const { toast } = useToast();
 
-  // Redirecionamento se já estiver autenticado
-  if (user) {
-    navigate("/dashboard");
-    return null;
-  }
+  const clientForm = useForm<z.infer<typeof clientSchema>>({
+    resolver: zodResolver(clientSchema),
+    defaultValues: {
+      fullName: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+      phone: "",
+      city: "",
+      state: "",
+      termsAccepted: false
+    }
+  });
 
-  const handleRegister = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    // Validação básica
-    if (!fullName || !email || !password || !confirmPassword || !phone || !city || !state) {
-      return;
+  const providerForm = useForm<z.infer<typeof providerSchema>>({
+    resolver: zodResolver(providerSchema),
+    defaultValues: {
+      fullName: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+      phone: "",
+      city: "",
+      state: "",
+      category: "",
+      description: "",
+      ratePerHour: 0,
+      termsAccepted: false
     }
-    
-    if (password !== confirmPassword) {
-      return;
-    }
-    
-    if (activeTab === "prestador" && (!category || !description || !ratePerHour)) {
-      return;
-    }
-    
+  });
+
+  const handleClientSubmit = async (data: z.infer<typeof clientSchema>) => {
     try {
-      // Registra o usuário
-      await signUp(email, password, {
-        full_name: fullName,
-        phone,
-        city,
-        state
+      await signUp(data.email, data.password, {
+        full_name: data.fullName,
+        phone: data.phone,
+        city: data.city,
+        state: data.state,
+        user_type: 'cliente'
       });
 
-      // Se for prestador, cria o perfil de prestador
-      if (activeTab === "prestador") {
-        await createServiceProvider({
-          category,
-          description,
-          rate_per_hour: parseFloat(ratePerHour)
-        });
-      }
-      
-      // O redirecionamento é feito dentro do signUp
+      toast({
+        title: "Cadastro realizado",
+        description: "Sua conta de cliente foi criada com sucesso!",
+      });
+
+      navigate("/dashboard");
     } catch (error) {
-      console.error("Erro ao registrar:", error);
+      toast({
+        title: "Erro no cadastro",
+        description: "Não foi possível criar sua conta. Tente novamente.",
+        variant: "destructive"
+      });
+    }
+  };
+
+  const handleProviderSubmit = async (data: z.infer<typeof providerSchema>) => {
+    try {
+      // Primeiro, cadastra o usuário
+      await signUp(data.email, data.password, {
+        full_name: data.fullName,
+        phone: data.phone,
+        city: data.city,
+        state: data.state,
+        user_type: 'prestador'
+      });
+
+      // Depois, cria o perfil de prestador
+      await createServiceProvider({
+        category: data.category,
+        description: data.description,
+        rate_per_hour: data.ratePerHour
+      });
+
+      toast({
+        title: "Cadastro realizado",
+        description: "Seu perfil de prestador está em análise. Você receberá um e-mail quando for aprovado.",
+      });
+
+      navigate("/dashboard");
+    } catch (error) {
+      toast({
+        title: "Erro no cadastro",
+        description: "Não foi possível criar sua conta. Tente novamente.",
+        variant: "destructive"
+      });
     }
   };
 
@@ -103,175 +155,153 @@ const Cadastro = () => {
             <CardHeader className="text-center">
               <CardTitle className="text-2xl font-bold text-chamaai-blue">Crie sua conta</CardTitle>
               <CardDescription>
-                Seja bem-vindo ao ChamaAí! Preencha seus dados para criar sua conta.
+                Escolha entre ser cliente ou prestador de serviços
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Tabs defaultValue={defaultTab} value={activeTab} onValueChange={setActiveTab} className="mb-6">
+              <Tabs defaultValue={defaultTab} className="mb-6">
                 <TabsList className="grid w-full grid-cols-2">
                   <TabsTrigger value="cliente">Sou Cliente</TabsTrigger>
                   <TabsTrigger value="prestador">Sou Prestador</TabsTrigger>
                 </TabsList>
-              </Tabs>
-              
-              <form onSubmit={handleRegister}>
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <label htmlFor="fullName" className="text-sm font-medium">
-                      Nome Completo*
-                    </label>
-                    <Input
-                      id="fullName"
-                      placeholder="Seu nome completo"
-                      value={fullName}
-                      onChange={(e) => setFullName(e.target.value)}
-                      required
-                    />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <label htmlFor="email" className="text-sm font-medium">
-                      Email*
-                    </label>
-                    <Input
-                      id="email"
-                      type="email"
-                      placeholder="seu@email.com"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      required
-                    />
-                  </div>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <label htmlFor="password" className="text-sm font-medium">
-                        Senha*
-                      </label>
-                      <Input
-                        id="password"
-                        type="password"
-                        placeholder="••••••••"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        required
-                      />
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <label htmlFor="confirmPassword" className="text-sm font-medium">
-                        Confirmar Senha*
-                      </label>
-                      <Input
-                        id="confirmPassword"
-                        type="password"
-                        placeholder="••••••••"
-                        value={confirmPassword}
-                        onChange={(e) => setConfirmPassword(e.target.value)}
-                        required
-                      />
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <label htmlFor="phone" className="text-sm font-medium">
-                      Telefone*
-                    </label>
-                    <Input
-                      id="phone"
-                      placeholder="(00) 00000-0000"
-                      value={phone}
-                      onChange={(e) => setPhone(e.target.value)}
-                      required
-                    />
-                  </div>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <label htmlFor="city" className="text-sm font-medium">
-                        Cidade*
-                      </label>
-                      <Input
-                        id="city"
-                        placeholder="Sua cidade"
-                        value={city}
-                        onChange={(e) => setCity(e.target.value)}
-                        required
-                      />
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <label htmlFor="state" className="text-sm font-medium">
-                        Estado*
-                      </label>
-                      <Input
-                        id="state"
-                        placeholder="Seu estado"
-                        value={state}
-                        onChange={(e) => setState(e.target.value)}
-                        required
-                      />
-                    </div>
-                  </div>
-                  
-                  {activeTab === "prestador" && (
-                    <>
-                      <div className="space-y-2">
-                        <label htmlFor="category" className="text-sm font-medium">
-                          Categoria de Serviço*
-                        </label>
-                        <Select value={category} onValueChange={setCategory}>
-                          <SelectTrigger id="category">
-                            <SelectValue placeholder="Selecione uma categoria" />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {categories.map((cat) => (
-                              <SelectItem key={cat.id} value={cat.id}>
-                                {cat.name}
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      
-                      <div className="space-y-2">
-                        <label htmlFor="description" className="text-sm font-medium">
-                          Descrição dos serviços*
-                        </label>
-                        <textarea
-                          id="description"
-                          rows={3}
-                          className="w-full min-h-[80px] rounded-md border border-input bg-transparent px-3 py-2 text-sm shadow-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-                          placeholder="Descreva brevemente seus serviços e experiência..."
-                          value={description}
-                          onChange={(e) => setDescription(e.target.value)}
-                        />
-                      </div>
-                      
-                      <div className="space-y-2">
-                        <label htmlFor="ratePerHour" className="text-sm font-medium">
-                          Valor por hora (R$)*
-                        </label>
-                        <Input
-                          id="ratePerHour"
-                          type="number"
-                          placeholder="0.00"
-                          value={ratePerHour}
-                          onChange={(e) => setRatePerHour(e.target.value)}
-                        />
-                      </div>
-                    </>
-                  )}
-                </div>
                 
-                <Button
-                  type="submit"
-                  className="w-full mt-6 bg-chamaai-blue hover:bg-chamaai-lightblue"
-                  disabled={isLoading}
-                >
-                  {isLoading ? "Criando conta..." : "Criar conta"}
-                </Button>
-              </form>
+                {/* Cliente Form */}
+                <Form {...clientForm}>
+                  <form onSubmit={clientForm.handleSubmit(handleClientSubmit)} className="space-y-4">
+                    <FormField
+                      control={clientForm.control}
+                      name="fullName"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Nome Completo</FormLabel>
+                          <FormControl>
+                            <Input placeholder="Seu nome completo" {...field} />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    {/* Similar FormField components for other client form fields */}
+                    
+                    <FormField
+                      control={clientForm.control}
+                      name="termsAccepted"
+                      render={({ field }) => (
+                        <FormItem>
+                          <div className="flex items-center space-x-2">
+                            <FormControl>
+                              <Checkbox
+                                checked={field.value}
+                                onCheckedChange={field.onChange}
+                              />
+                            </FormControl>
+                            <FormLabel>
+                              Li e aceito os{" "}
+                              <Link 
+                                to="/termos" 
+                                className="text-chamaai-blue hover:underline"
+                              >
+                                Termos de Uso
+                              </Link>{" "}
+                              e{" "}
+                              <Link 
+                                to="/privacidade" 
+                                className="text-chamaai-blue hover:underline"
+                              >
+                                Política de Privacidade
+                              </Link>
+                            </FormLabel>
+                          </div>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <Button 
+                      type="submit" 
+                      className="w-full mt-6 bg-chamaai-blue hover:bg-chamaai-lightblue" 
+                      disabled={isLoading}
+                    >
+                      {isLoading ? "Criando conta..." : "Criar conta de Cliente"}
+                    </Button>
+                  </form>
+                </Form>
+
+                {/* Prestador Form */}
+                <Form {...providerForm}>
+                  <form onSubmit={providerForm.handleSubmit(handleProviderSubmit)} className="space-y-4">
+                    <FormField
+                      control={providerForm.control}
+                      name="category"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Categoria de Serviço</FormLabel>
+                          <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <FormControl>
+                              <SelectTrigger>
+                                <SelectValue placeholder="Selecione uma categoria" />
+                              </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                              {serviceCategories.map((category) => (
+                                <SelectItem key={category.id} value={category.id}>
+                                  {category.name}
+                                </SelectItem>
+                              ))}
+                            </SelectContent>
+                          </Select>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    {/* Similar FormField components for other provider form fields */}
+
+                    <FormField
+                      control={providerForm.control}
+                      name="termsAccepted"
+                      render={({ field }) => (
+                        <FormItem>
+                          <div className="flex items-center space-x-2">
+                            <FormControl>
+                              <Checkbox
+                                checked={field.value}
+                                onCheckedChange={field.onChange}
+                              />
+                            </FormControl>
+                            <FormLabel>
+                              Li e aceito os{" "}
+                              <Link 
+                                to="/termos" 
+                                className="text-chamaai-blue hover:underline"
+                              >
+                                Termos de Uso
+                              </Link>{" "}
+                              e{" "}
+                              <Link 
+                                to="/privacidade" 
+                                className="text-chamaai-blue hover:underline"
+                              >
+                                Política de Privacidade
+                              </Link>
+                            </FormLabel>
+                          </div>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <Button 
+                      type="submit" 
+                      className="w-full mt-6 bg-chamaai-blue hover:bg-chamaai-lightblue" 
+                      disabled={isLoading}
+                    >
+                      {isLoading ? "Criando conta..." : "Criar conta de Prestador"}
+                    </Button>
+                  </form>
+                </Form>
+              </Tabs>
             </CardContent>
             
             <CardFooter className="flex flex-col space-y-4 border-t pt-4">

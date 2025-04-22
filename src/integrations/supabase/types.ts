@@ -98,6 +98,7 @@ export type Database = {
           phone: string | null
           state: string | null
           updated_at: string
+          user_type: string | null
         }
         Insert: {
           city?: string | null
@@ -107,6 +108,7 @@ export type Database = {
           phone?: string | null
           state?: string | null
           updated_at?: string
+          user_type?: string | null
         }
         Update: {
           city?: string | null
@@ -116,6 +118,7 @@ export type Database = {
           phone?: string | null
           state?: string | null
           updated_at?: string
+          user_type?: string | null
         }
         Relationships: []
       }
@@ -226,7 +229,9 @@ export type Database = {
           created_at: string
           description: string | null
           id: string
+          is_approved: boolean | null
           is_verified: boolean | null
+          profile_completed: boolean | null
           rate_per_hour: number | null
           rating: number | null
           response_time: string | null
@@ -241,7 +246,9 @@ export type Database = {
           created_at?: string
           description?: string | null
           id: string
+          is_approved?: boolean | null
           is_verified?: boolean | null
+          profile_completed?: boolean | null
           rate_per_hour?: number | null
           rating?: number | null
           response_time?: string | null
@@ -256,7 +263,9 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: string
+          is_approved?: boolean | null
           is_verified?: boolean | null
+          profile_completed?: boolean | null
           rate_per_hour?: number | null
           rating?: number | null
           response_time?: string | null

@@ -1,4 +1,3 @@
-
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { User, Session } from "@supabase/supabase-js";
@@ -7,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import { AuthContextType, UserSignUpData } from "./types/auth";
 import { useProfile } from "./hooks/useProfile";
 import { useServiceProvider } from "./hooks/useServiceProvider";
+import { ServiceCategory } from "@/constants/categories";
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -90,7 +90,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             full_name: userData.full_name,
             phone: userData.phone || null,
             city: userData.city || null,
-            state: userData.state || null
+            state: userData.state || null,
+            user_type: userData.user_type || 'cliente'
           }
         }
       });
