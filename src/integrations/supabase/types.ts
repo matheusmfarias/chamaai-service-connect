@@ -9,6 +9,30 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      categories: {
+        Row: {
+          created_at: string
+          icon: string | null
+          id: string
+          name: string
+          slug: string
+        }
+        Insert: {
+          created_at?: string
+          icon?: string | null
+          id?: string
+          name: string
+          slug: string
+        }
+        Update: {
+          created_at?: string
+          icon?: string | null
+          id?: string
+          name?: string
+          slug?: string
+        }
+        Relationships: []
+      }
       faq_questions: {
         Row: {
           category: string
@@ -38,6 +62,32 @@ export type Database = {
           responded?: boolean
         }
         Relationships: []
+      }
+      profile_skills: {
+        Row: {
+          id: string
+          profile_id: string | null
+          skill: string
+        }
+        Insert: {
+          id?: string
+          profile_id?: string | null
+          skill: string
+        }
+        Update: {
+          id?: string
+          profile_id?: string | null
+          skill?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profile_skills_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {
@@ -75,6 +125,7 @@ export type Database = {
           created_at: string
           id: string
           rating: number
+          request_id: string | null
           reviewer_id: string
           service_provider_id: string
         }
@@ -83,6 +134,7 @@ export type Database = {
           created_at?: string
           id?: string
           rating: number
+          request_id?: string | null
           reviewer_id: string
           service_provider_id: string
         }
@@ -91,10 +143,18 @@ export type Database = {
           created_at?: string
           id?: string
           rating?: number
+          request_id?: string | null
           reviewer_id?: string
           service_provider_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "reviews_request_id_fkey"
+            columns: ["request_id"]
+            isOneToOne: false
+            referencedRelation: "service_requests"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "reviews_reviewer_id_fkey"
             columns: ["reviewer_id"]
@@ -162,6 +222,7 @@ export type Database = {
       service_providers: {
         Row: {
           category: string
+          category_id: string | null
           created_at: string
           description: string | null
           id: string
@@ -169,12 +230,14 @@ export type Database = {
           rate_per_hour: number | null
           rating: number | null
           response_time: string | null
+          search_tags: string[] | null
           services_completed: number | null
           total_reviews: number | null
           updated_at: string
         }
         Insert: {
           category: string
+          category_id?: string | null
           created_at?: string
           description?: string | null
           id: string
@@ -182,12 +245,14 @@ export type Database = {
           rate_per_hour?: number | null
           rating?: number | null
           response_time?: string | null
+          search_tags?: string[] | null
           services_completed?: number | null
           total_reviews?: number | null
           updated_at?: string
         }
         Update: {
           category?: string
+          category_id?: string | null
           created_at?: string
           description?: string | null
           id?: string
@@ -195,11 +260,19 @@ export type Database = {
           rate_per_hour?: number | null
           rating?: number | null
           response_time?: string | null
+          search_tags?: string[] | null
           services_completed?: number | null
           total_reviews?: number | null
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "service_providers_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "categories"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "service_providers_id_fkey"
             columns: ["id"]

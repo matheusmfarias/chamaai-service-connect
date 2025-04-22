@@ -1,60 +1,66 @@
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { ServiceProvider } from '@/types/serviceProvider';
-import { mockProviders } from '@/mocks/serviceProviders';
-import {
-  filterProvidersBySearch,
-  filterProvidersByLocation,
-  filterProvidersByRating,
-  filterProvidersByPrice,
-  sortProviders
-} from '@/utils/providerUtils';
 
 export { type ServiceProvider };
 
 export const useServiceProviders = (category?: string) => {
-  const [providers, setProviders] = useState<ServiceProvider[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
   
-  useEffect(() => {
-    const fetchProviders = async () => {
-      setIsLoading(true);
-      
+  const { data: providers, isLoading, error } = useQuery({
+    queryKey: ['providers', category],
+    queryFn: async () => {
       try {
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        setProviders(mockProviders);
+        let query = supabase
+          .from('service_providers')
+          .select(`
+            *,
+            profiles (
+              full_name,
+              phone,
+              city,
+              state
+            ),
+            categories (
+              name,
+              slug,
+              icon
+            )
+          `)
+          .order('rating', { ascending: false });
+        
+        if (category) {
+          query = query.eq('categories.slug', category);
+        }
+
+        const { data, error } = await query;
+        
+        if (error) throw error;
+        
+        return data as unknown as ServiceProvider[];
       } catch (err: any) {
-        setError(err.message);
         toast({
           title: 'Erro ao carregar prestadores',
-          description: 'Não foi possível carregar a lista de prestadores de serviço.',
+          description: err.message,
           variant: 'destructive',
         });
-      } finally {
-        setIsLoading(false);
+        throw err;
       }
-    };
-    
-    fetchProviders();
-  }, [category, toast]);
+    }
+  });
   
-  return { providers, isLoading, error };
+  return { providers: providers || [], isLoading, error };
 };
 
 export const useServiceProvider = (id: string) => {
-  const [provider, setProvider] = useState<ServiceProvider | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
   
-  useEffect(() => {
-    const fetchProvider = async () => {
-      setIsLoading(true);
-      
+  const { data: provider, isLoading, error } = useQuery({
+    queryKey: ['provider', id],
+    queryFn: async () => {
       try {
         const { data, error } = await supabase
           .from('service_providers')
@@ -65,32 +71,60 @@ export const useServiceProvider = (id: string) => {
               phone,
               city,
               state
+            ),
+            categories (
+              name,
+              slug,
+              icon
             )
           `)
           .eq('id', id)
           .single();
         
-        if (error) {
-          throw error;
-        }
+        if (error) throw error;
         
-        setProvider(data as unknown as ServiceProvider);
+        return data as unknown as ServiceProvider;
       } catch (err: any) {
-        setError(err.message);
         toast({
           title: 'Erro ao carregar prestador',
-          description: 'Não foi possível carregar os dados do prestador de serviço.',
+          description: err.message,
           variant: 'destructive',
         });
-      } finally {
-        setIsLoading(false);
+        throw err;
       }
-    };
-    
-    if (id) {
-      fetchProvider();
-    }
-  }, [id, toast]);
+    },
+    enabled: !!id
+  });
   
   return { provider, isLoading, error };
+};
+
+export const useSearchServiceProviders = (searchTerm: string) => {
+  const { toast } = useToast();
+  
+  const { data: providers, isLoading, error } = useQuery({
+    queryKey: ['search-providers', searchTerm],
+    queryFn: async () => {
+      try {
+        const { data, error } = await supabase
+          .rpc('search_service_providers', {
+            search_term: searchTerm
+          });
+        
+        if (error) throw error;
+        
+        return data as unknown as ServiceProvider[];
+      } catch (err: any) {
+        toast({
+          title: 'Erro ao buscar prestadores',
+          description: err.message,
+          variant: 'destructive',
+        });
+        throw err;
+      }
+    },
+    enabled: !!searchTerm
+  });
+  
+  return { providers: providers || [], isLoading, error };
 };

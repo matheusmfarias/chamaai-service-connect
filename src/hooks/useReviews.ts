@@ -1,5 +1,5 @@
 
-import { useState, useEffect } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
@@ -11,24 +11,20 @@ export interface Review {
   rating: number;
   comment: string | null;
   created_at: string;
+  request_id: string | null;
   profiles: {
     full_name: string;
   };
 }
 
 export const useReviews = (providerId?: string) => {
-  const [reviews, setReviews] = useState<Review[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const { toast } = useToast();
   const { user } = useAuth();
+  const queryClient = useQueryClient();
   
-  useEffect(() => {
-    if (!providerId) return;
-    
-    const fetchReviews = async () => {
-      setIsLoading(true);
-      
+  const { data: reviews, isLoading, error } = useQuery({
+    queryKey: ['reviews', providerId],
+    queryFn: async () => {
       try {
         const { data, error } = await supabase
           .from('reviews')
@@ -41,67 +37,69 @@ export const useReviews = (providerId?: string) => {
           .eq('service_provider_id', providerId)
           .order('created_at', { ascending: false });
         
-        if (error) {
-          throw error;
-        }
+        if (error) throw error;
         
-        setReviews(data as unknown as Review[]);
+        return data as unknown as Review[];
       } catch (err: any) {
-        setError(err.message);
         toast({
           title: 'Erro ao carregar avaliações',
-          description: 'Não foi possível carregar as avaliações para este prestador.',
+          description: err.message,
           variant: 'destructive',
         });
-      } finally {
-        setIsLoading(false);
+        throw err;
       }
-    };
-    
-    fetchReviews();
-  }, [providerId, toast]);
+    },
+    enabled: !!providerId
+  });
   
-  const createReview = async (reviewData: {
-    service_provider_id: string;
-    rating: number;
-    comment?: string;
-  }): Promise<boolean> => {
-    if (!user) {
-      toast({
-        title: 'Erro ao enviar avaliação',
-        description: 'Você precisa estar logado para avaliar um prestador.',
-        variant: 'destructive',
-      });
-      return false;
-    }
-    
-    try {
-      const { error } = await supabase
+  const createReview = useMutation({
+    mutationFn: async ({ 
+      service_provider_id, 
+      rating, 
+      comment 
+    }: { 
+      service_provider_id: string;
+      rating: number;
+      comment?: string;
+    }) => {
+      if (!user) throw new Error('Usuário não autenticado');
+      
+      const { data, error } = await supabase
         .from('reviews')
         .insert({
-          ...reviewData,
-          reviewer_id: user.id
-        });
+          service_provider_id,
+          reviewer_id: user.id,
+          rating,
+          comment
+        })
+        .select()
+        .single();
       
-      if (error) {
-        throw error;
-      }
+      if (error) throw error;
       
+      return data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['reviews', providerId] });
+      queryClient.invalidateQueries({ queryKey: ['provider', providerId] });
       toast({
         title: 'Avaliação enviada',
         description: 'Obrigado por compartilhar sua experiência!',
       });
-      
-      return true;
-    } catch (err: any) {
+    },
+    onError: (err: any) => {
       toast({
         title: 'Erro ao enviar avaliação',
-        description: err.message || 'Não foi possível enviar sua avaliação. Tente novamente mais tarde.',
+        description: err.message,
         variant: 'destructive',
       });
-      return false;
     }
-  };
+  });
   
-  return { reviews, isLoading, error, createReview };
+  return {
+    reviews: reviews || [],
+    isLoading,
+    error,
+    createReview: createReview.mutate
+  };
 };
