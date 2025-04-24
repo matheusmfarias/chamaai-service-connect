@@ -13,29 +13,22 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
-
-// Mock service requests storage
-const serviceRequests: any[] = [];
+import { serviceCategories } from "@/constants/categories";
+import { ServiceRequest } from "@/hooks/useServiceRequests";
 
 interface FormValues {
+  title: string;
   category: string;
   description: string;
   preferredDate: Date | undefined;
-  title: string;
+  isPublic: boolean;
 }
 
 interface ServiceRequestFormProps {
   onSuccess: () => void;
 }
-
-const categories = [
-  { id: "faxina", name: "Faxina" },
-  { id: "eletrica", name: "Elétrica" },
-  { id: "pintura", name: "Pintura" },
-  { id: "hidraulica", name: "Hidráulica" },
-  { id: "reforma", name: "Reforma" },
-];
 
 export function ServiceRequestForm({ onSuccess }: ServiceRequestFormProps) {
   const { toast } = useToast();
@@ -48,6 +41,7 @@ export function ServiceRequestForm({ onSuccess }: ServiceRequestFormProps) {
       category: "",
       description: "",
       preferredDate: undefined,
+      isPublic: true
     },
   });
 
@@ -58,22 +52,19 @@ export function ServiceRequestForm({ onSuccess }: ServiceRequestFormProps) {
       }
 
       // Create mock service request
-      const newRequest = {
-        id: `req-${Date.now()}`,
+      const newRequest: Partial<ServiceRequest> = {
         client_id: user.id,
         title: values.title,
         description: values.description,
         category: values.category,
         status: 'pending',
+        is_public: values.isPublic,
         estimated_price: null,
-        scheduled_date: values.preferredDate ? values.preferredDate.toISOString() : null,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
+        scheduled_date: values.preferredDate ? values.preferredDate.toISOString() : new Date().toISOString()
       };
-
-      // Add to mock storage
-      serviceRequests.push(newRequest);
-      console.log("Service request created:", newRequest);
+      
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
       
       return newRequest;
     },
@@ -138,7 +129,7 @@ export function ServiceRequestForm({ onSuccess }: ServiceRequestFormProps) {
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent>
-                  {categories.map((category) => (
+                  {serviceCategories.map((category) => (
                     <SelectItem key={category.id} value={category.id}>
                       {category.name}
                     </SelectItem>
@@ -207,6 +198,27 @@ export function ServiceRequestForm({ onSuccess }: ServiceRequestFormProps) {
                 </PopoverContent>
               </Popover>
               <FormMessage />
+            </FormItem>
+          )}
+        />
+        
+        <FormField
+          control={form.control}
+          name="isPublic"
+          render={({ field }) => (
+            <FormItem className="flex flex-row items-center justify-between rounded-lg border p-4">
+              <div className="space-y-0.5">
+                <FormLabel className="text-base">Solicitação Pública</FormLabel>
+                <p className="text-sm text-muted-foreground">
+                  Quando ativado, qualquer prestador poderá ver e enviar propostas para seu serviço.
+                </p>
+              </div>
+              <FormControl>
+                <Switch
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                />
+              </FormControl>
             </FormItem>
           )}
         />

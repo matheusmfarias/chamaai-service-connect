@@ -4,9 +4,9 @@ import { UserProfile } from "../types/auth";
 import { useToast } from "@/hooks/use-toast";
 
 const mockProfiles: Record<string, UserProfile> = {
-  "mock-user-1": {
-    id: "mock-user-1",
-    full_name: "João Silva",
+  "client-user": {
+    id: "client-user",
+    full_name: "Cliente Exemplo",
     phone: "(11) 99999-9999",
     city: "São Paulo",
     state: "SP",
@@ -14,9 +14,9 @@ const mockProfiles: Record<string, UserProfile> = {
     updated_at: "2024-01-01T00:00:00Z",
     user_type: "cliente"
   },
-  "mock-user-2": {
-    id: "mock-user-2",
-    full_name: "Maria Santos",
+  "provider-user": {
+    id: "provider-user",
+    full_name: "Prestador Exemplo",
     phone: "(11) 88888-8888",
     city: "Rio de Janeiro",
     state: "RJ",
@@ -32,14 +32,20 @@ export const useProfile = () => {
 
   const fetchUserProfile = async (userId: string) => {
     try {
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 300));
+      
       const mockProfile = mockProfiles[userId];
       if (mockProfile) {
         setUserProfile(mockProfile);
+        return mockProfile;
       } else {
         console.log("Perfil não encontrado para o usuário:", userId);
+        return null;
       }
     } catch (error) {
       console.error("Erro ao buscar perfil:", error);
+      return null;
     }
   };
 
@@ -48,6 +54,9 @@ export const useProfile = () => {
     if (!userId) return;
 
     try {
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 800));
+      
       const updatedProfile = {
         ...mockProfiles[userId],
         ...data,
@@ -61,12 +70,15 @@ export const useProfile = () => {
         title: "Perfil atualizado",
         description: "Seu perfil foi atualizado com sucesso.",
       });
+      
+      return updatedProfile;
     } catch (error: any) {
       toast({
         title: "Erro ao atualizar perfil",
         description: error.message || "Ocorreu um erro ao atualizar seu perfil. Tente novamente mais tarde.",
         variant: "destructive",
       });
+      return null;
     }
   };
 

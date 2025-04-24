@@ -3,16 +3,13 @@ import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { ServiceProviderData } from "../types/auth";
 
+// Mock service provider data
 const mockServiceProviders: Record<string, ServiceProviderData> = {
-  "mock-provider-1": {
+  "provider-user": {
     category: "limpeza",
-    description: "Serviços de limpeza residencial",
+    description: "Serviços de limpeza residencial com produtos de alta qualidade",
     rate_per_hour: 50,
-  },
-  "mock-provider-2": {
-    category: "eletrica",
-    description: "Serviços de elétrica em geral",
-    rate_per_hour: 80,
+    service_radius: 10 // 10 km
   }
 };
 
@@ -22,6 +19,9 @@ export const useServiceProvider = () => {
 
   const checkServiceProviderStatus = async (userId: string) => {
     try {
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 300));
+      
       const mockProvider = mockServiceProviders[userId];
       setIsServiceProvider(!!mockProvider);
       return !!mockProvider;
@@ -33,31 +33,77 @@ export const useServiceProvider = () => {
 
   const createServiceProvider = async (data: ServiceProviderData) => {
     try {
-      const mockUserId = "mock-user-" + Math.random().toString(36).substr(2, 9);
-      mockServiceProviders[mockUserId] = data;
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 800));
+      
+      // In a real app, we'd save this to the database
+      // For now, we just update our mock data
+      const mockUserId = "provider-user";
+      mockServiceProviders[mockUserId] = {
+        ...data,
+        service_radius: data.service_radius || 10 // Default to 10 km if not provided
+      };
+      
       setIsServiceProvider(true);
 
       toast({
         title: "Perfil de prestador criado",
         description: "Seu perfil de prestador foi criado com sucesso.",
       });
+      
+      return true;
     } catch (error: any) {
       toast({
         title: "Erro ao criar perfil de prestador",
         description: error.message || "Ocorreu um erro ao criar seu perfil de prestador. Tente novamente mais tarde.",
         variant: "destructive",
       });
+      return false;
     }
   };
 
   const checkIsServiceProvider = async (): Promise<boolean> => {
-    const mockUserId = "mock-user-1"; // For testing purposes
     try {
-      const mockProvider = mockServiceProviders[mockUserId];
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 300));
+      
+      // For mock purposes, we'll check if provider-user exists in mockServiceProviders
+      const mockProvider = mockServiceProviders["provider-user"];
       setIsServiceProvider(!!mockProvider);
       return !!mockProvider;
     } catch (error) {
       console.error("Erro ao verificar status de prestador:", error);
+      return false;
+    }
+  };
+
+  const updateServiceProviderInfo = async (data: Partial<ServiceProviderData>) => {
+    try {
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 800));
+      
+      const mockUserId = "provider-user";
+      if (!mockServiceProviders[mockUserId]) {
+        throw new Error("Perfil de prestador não encontrado");
+      }
+      
+      mockServiceProviders[mockUserId] = {
+        ...mockServiceProviders[mockUserId],
+        ...data
+      };
+
+      toast({
+        title: "Perfil de prestador atualizado",
+        description: "Suas informações de prestador foram atualizadas com sucesso.",
+      });
+      
+      return true;
+    } catch (error: any) {
+      toast({
+        title: "Erro ao atualizar perfil de prestador",
+        description: error.message || "Ocorreu um erro ao atualizar suas informações de prestador. Tente novamente mais tarde.",
+        variant: "destructive",
+      });
       return false;
     }
   };
@@ -68,5 +114,6 @@ export const useServiceProvider = () => {
     checkServiceProviderStatus,
     createServiceProvider,
     checkIsServiceProvider,
+    updateServiceProviderInfo
   };
 };

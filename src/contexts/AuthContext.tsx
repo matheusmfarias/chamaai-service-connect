@@ -2,7 +2,7 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
-import { AuthContextType, UserSignUpData, User, Session } from "./types/auth";
+import { AuthContextType, UserSignUpData, User, Session, ServiceProviderData, UserProfile } from "./types/auth";
 import { useProfile } from "./hooks/useProfile";
 import { useServiceProvider } from "./hooks/useServiceProvider";
 
@@ -20,25 +20,46 @@ interface AuthProviderProps {
   children: ReactNode;
 }
 
-// Mock user for development
-const mockUser: User = {
-  id: "mock-user-1",
-  email: "user@example.com",
-  user_metadata: {
-    full_name: "Mock User"
+// Mock users for development - one client and one provider
+const mockUsers: Record<string, User> = {
+  "client-user": {
+    id: "client-user",
+    email: "client@example.com",
+    user_metadata: {
+      full_name: "Cliente Exemplo"
+    },
+    app_metadata: {},
+    aud: "authenticated",
+    created_at: new Date().toISOString()
   },
-  app_metadata: {},
-  aud: "authenticated",
-  created_at: new Date().toISOString()
+  "provider-user": {
+    id: "provider-user",
+    email: "provider@example.com",
+    user_metadata: {
+      full_name: "Prestador Exemplo"
+    },
+    app_metadata: {},
+    aud: "authenticated",
+    created_at: new Date().toISOString()
+  }
 };
 
-// Mock session for development
-const mockSession: Session = {
-  access_token: "mock-token",
-  token_type: "bearer",
-  expires_in: 3600,
-  refresh_token: "mock-refresh-token",
-  user: mockUser
+// Mock sessions for development
+const mockSessions: Record<string, Session> = {
+  "client-user": {
+    access_token: "mock-token-client",
+    token_type: "bearer",
+    expires_in: 3600,
+    refresh_token: "mock-refresh-token-client",
+    user: mockUsers["client-user"]
+  },
+  "provider-user": {
+    access_token: "mock-token-provider",
+    token_type: "bearer",
+    expires_in: 3600,
+    refresh_token: "mock-refresh-token-provider",
+    user: mockUsers["provider-user"]
+  }
 };
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
@@ -52,24 +73,53 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const { isServiceProvider, setIsServiceProvider, checkServiceProviderStatus, createServiceProvider, checkIsServiceProvider } = useServiceProvider();
 
   useEffect(() => {
-    // Simulate initial auth check
+    // Simulate initial auth check - no auto login in development
     setTimeout(() => {
-      setUser(mockUser);
-      setSession(mockSession);
       setIsLoading(false);
-    }, 1000);
+    }, 500);
   }, []);
 
   const signUp = async (email: string, password: string, userData: UserSignUpData) => {
     try {
       setIsLoading(true);
       
-      // Simulate signup delay
+      // Simulate signup delay to mimic API call
       await new Promise(resolve => setTimeout(resolve, 1000));
 
+      const userId = userData.user_type === 'prestador' ? 'provider-user' : 'client-user';
+      
       // Simulate successful signup
-      setUser(mockUser);
-      setSession(mockSession);
+      setUser(mockUsers[userId]);
+      setSession(mockSessions[userId]);
+      
+      // Set user profile based on signup data
+      const newProfile: UserProfile = {
+        id: userId,
+        full_name: userData.full_name,
+        phone: userData.phone || null,
+        city: userData.city || null, 
+        state: userData.state || null,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        user_type: userData.user_type || 'cliente'
+      };
+      
+      setUserProfile(newProfile);
+      
+      // If user is signing up as a service provider
+      if (userData.user_type === 'prestador' && userData.category && userData.description && userData.rate_per_hour) {
+        await createServiceProvider({
+          category: userData.category,
+          description: userData.description,
+          rate_per_hour: userData.rate_per_hour
+        });
+        setIsServiceProvider(true);
+      } else {
+        setIsServiceProvider(false);
+      }
+
+      // Simulate email verification (in real app, this would be done via email)
+      await new Promise(resolve => setTimeout(resolve, 500));
 
       toast({
         title: "Cadastro realizado com sucesso!",
@@ -95,9 +145,22 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       // Simulate signin delay
       await new Promise(resolve => setTimeout(resolve, 1000));
 
-      // Simulate successful signin
-      setUser(mockUser);
-      setSession(mockSession);
+      // In mock mode, we'll determine the user type based on email
+      let userId = 'client-user'; // default
+      if (email.includes('prestador') || email.includes('provider')) {
+        userId = 'provider-user';
+      }
+
+      // Set user and session
+      setUser(mockUsers[userId]);
+      setSession(mockSessions[userId]);
+      
+      // Fetch user profile
+      await fetchUserProfile(userId);
+      
+      // Check if user is a service provider
+      const isProvider = await checkIsServiceProvider();
+      setIsServiceProvider(isProvider);
 
       toast({
         title: "Login realizado com sucesso!",
@@ -121,7 +184,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       setIsLoading(true);
       
       // Simulate signout delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      await new Promise(resolve => setTimeout(resolve, 500));
 
       setUser(null);
       setSession(null);

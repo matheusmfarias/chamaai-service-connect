@@ -1,94 +1,49 @@
 
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { useToast } from "@/hooks/use-toast";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { useLocation, useNavigate } from "react-router-dom";
 import Layout from "@/components/Layout";
-
-// Mock verification functionality
-const mockVerificationFunctions = {
-  resendEmail: async (email: string) => {
-    console.log("Resending verification email to:", email);
-    return { error: null };
-  },
-  updateEmail: async (email: string) => {
-    console.log("Updating email to:", email);
-    return { error: null };
-  }
-};
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { CheckCircle, AlertCircle, Loader2 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 
 const VerificarEmail = () => {
-  const [email, setEmail] = useState("");
-  const [isEditingEmail, setIsEditingEmail] = useState(false);
-  const [resendCooldown, setResendCooldown] = useState(0);
+  const [isVerifying, setIsVerifying] = useState(true);
+  const [isVerified, setIsVerified] = useState(false);
+  const location = useLocation();
+  const navigate = useNavigate();
   const { toast } = useToast();
-  
-  // Recupera o email do localStorage onde foi salvo após o cadastro
+
+  // In a real app, we would verify the token from the URL
+  // For mock purposes, we'll simulate verification
   useEffect(() => {
-    const savedEmail = localStorage.getItem("verification_email");
-    if (savedEmail) {
-      setEmail(savedEmail);
-    }
-  }, []);
-
-  useEffect(() => {
-    let timer: number;
-    if (resendCooldown > 0) {
-      timer = window.setInterval(() => {
-        setResendCooldown((prev) => prev - 1);
-      }, 1000);
-    }
-    return () => {
-      if (timer) clearInterval(timer);
-    };
-  }, [resendCooldown]);
-
-  const handleResendEmail = async () => {
-    try {
-      const { error } = await mockVerificationFunctions.resendEmail(email);
-
-      if (error) throw error;
-
-      toast({
-        title: "E-mail reenviado!",
-        description: "Por favor, verifique sua caixa de entrada.",
-      });
-
-      setResendCooldown(60);
-    } catch (error: any) {
-      toast({
-        title: "Erro ao reenviar e-mail",
-        description: error.message,
-        variant: "destructive",
-      });
-    }
-  };
-
-  const handleUpdateEmail = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    try {
-      const { error } = await mockVerificationFunctions.updateEmail(email);
-
-      if (error) throw error;
-
-      localStorage.setItem("verification_email", email);
+    const simulateVerification = async () => {
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      // For mock purposes, always succeed
+      setIsVerified(true);
+      setIsVerifying(false);
       
       toast({
-        title: "E-mail atualizado!",
-        description: "Um novo e-mail de verificação foi enviado.",
+        title: "E-mail verificado",
+        description: "Seu e-mail foi verificado com sucesso.",
       });
+    };
+    
+    simulateVerification();
+  }, [toast]);
 
-      setIsEditingEmail(false);
-    } catch (error: any) {
-      toast({
-        title: "Erro ao atualizar e-mail",
-        description: error.message,
-        variant: "destructive",
-      });
-    }
+  const handleContinue = () => {
+    navigate("/dashboard");
+  };
+
+  const handleResendVerification = async () => {
+    // Simulate resending verification email
+    toast({
+      title: "E-mail enviado",
+      description: "Um novo e-mail de verificação foi enviado para seu endereço.",
+    });
   };
 
   return (
@@ -98,65 +53,54 @@ const VerificarEmail = () => {
           <Card className="border-0 shadow-lg">
             <CardHeader className="text-center">
               <CardTitle className="text-2xl font-bold text-chamaai-blue">
-                Verifique seu e-mail
+                Verificação de E-mail
               </CardTitle>
               <CardDescription>
-                Enviamos um e-mail de confirmação para:
-                <br />
-                <strong className="text-black">{email}</strong>
+                {isVerifying ? "Verificando seu e-mail..." : isVerified ? 
+                  "Seu e-mail foi verificado com sucesso." : 
+                  "Houve um problema ao verificar seu e-mail."}
               </CardDescription>
             </CardHeader>
-
-            <CardContent className="space-y-4">
-              {isEditingEmail ? (
-                <form onSubmit={handleUpdateEmail} className="space-y-4">
-                  <Input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="Novo e-mail"
-                    required
-                  />
-                  <div className="flex gap-2">
-                    <Button type="submit" className="flex-1">
-                      Atualizar e-mail
-                    </Button>
-                    <Button 
-                      type="button" 
-                      variant="outline"
-                      onClick={() => setIsEditingEmail(false)}
-                    >
-                      Cancelar
-                    </Button>
-                  </div>
-                </form>
-              ) : (
+            <CardContent className="space-y-6">
+              <div className="flex justify-center p-4">
+                {isVerifying ? (
+                  <Loader2 className="h-16 w-16 text-chamaai-blue animate-spin" />
+                ) : isVerified ? (
+                  <CheckCircle className="h-16 w-16 text-green-500" />
+                ) : (
+                  <AlertCircle className="h-16 w-16 text-red-500" />
+                )}
+              </div>
+              
+              {!isVerifying && (
                 <div className="space-y-4">
-                  <Button
-                    onClick={handleResendEmail}
-                    disabled={resendCooldown > 0}
-                    className="w-full"
-                  >
-                    {resendCooldown > 0
-                      ? `Você poderá reenviar em ${resendCooldown} segundos...`
-                      : "Reenviar e-mail de verificação"}
-                  </Button>
-
-                  <Button
-                    variant="outline"
-                    onClick={() => setIsEditingEmail(true)}
-                    className="w-full"
-                  >
-                    Digite outro e-mail
-                  </Button>
+                  {isVerified ? (
+                    <div className="text-center">
+                      <p className="text-gray-700 mb-4">
+                        Sua conta está pronta para uso. Você já pode acessar todas as funcionalidades do ChamaAí.
+                      </p>
+                      <Button 
+                        className="w-full bg-chamaai-blue hover:bg-chamaai-lightblue"
+                        onClick={handleContinue}
+                      >
+                        Continuar para o Dashboard
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="text-center">
+                      <p className="text-gray-700 mb-4">
+                        Não foi possível verificar seu e-mail. O link pode ter expirado ou ser inválido.
+                      </p>
+                      <Button 
+                        className="w-full bg-chamaai-blue hover:bg-chamaai-lightblue"
+                        onClick={handleResendVerification}
+                      >
+                        Reenviar E-mail de Verificação
+                      </Button>
+                    </div>
+                  )}
                 </div>
               )}
-              
-              <div className="text-center text-sm text-gray-600 mt-6">
-                <Link to="/login" className="text-chamaai-blue hover:underline">
-                  Voltar para o login
-                </Link>
-              </div>
             </CardContent>
           </Card>
         </div>

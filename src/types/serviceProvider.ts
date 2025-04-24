@@ -9,11 +9,12 @@ export interface ServiceProvider {
   rating: number;
   total_reviews: number;
   created_at: string;
-  // Add properties referenced in the code but not defined in type
+  // Additional fields
   category: string;
   is_verified?: boolean;
   response_time?: string;
   services_completed?: number;
+  service_radius?: number; // in KM
   profiles: {
     full_name: string;
     phone: string | null;

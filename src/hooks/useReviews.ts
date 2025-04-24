@@ -16,20 +16,32 @@ export interface Review {
   };
 }
 
+// Mock reviews data
 const mockReviews: Review[] = [
   {
     id: "1",
-    service_provider_id: "mock-provider-1",
-    reviewer_id: "mock-user-1",
+    service_provider_id: "provider-user",
+    reviewer_id: "client-user",
     rating: 5,
-    comment: "Excelente serviço!",
+    comment: "Excelente serviço, muito profissional e pontual!",
     created_at: "2024-01-01T00:00:00Z",
     request_id: "request-1",
     profiles: {
-      full_name: "João Silva"
+      full_name: "Cliente Exemplo"
     }
   },
-  // Add more mock reviews as needed
+  {
+    id: "2",
+    service_provider_id: "provider-user",
+    reviewer_id: "another-client",
+    rating: 4,
+    comment: "Bom serviço, recomendo!",
+    created_at: "2024-02-15T00:00:00Z",
+    request_id: null,
+    profiles: {
+      full_name: "Outro Cliente"
+    }
+  },
 ];
 
 export const useReviews = (providerId?: string) => {
@@ -51,11 +63,13 @@ export const useReviews = (providerId?: string) => {
     mutationFn: async ({ 
       service_provider_id, 
       rating, 
-      comment 
+      comment,
+      request_id = null
     }: { 
       service_provider_id: string;
       rating: number;
       comment?: string;
+      request_id?: string | null;
     }) => {
       if (!user) throw new Error('Usuário não autenticado');
       
@@ -69,12 +83,13 @@ export const useReviews = (providerId?: string) => {
         rating,
         comment: comment || null,
         created_at: new Date().toISOString(),
-        request_id: null,
+        request_id,
         profiles: {
           full_name: user.user_metadata.full_name
         }
       };
       
+      // Add to mock data
       mockReviews.push(newReview);
       return newReview;
     },
@@ -99,6 +114,9 @@ export const useReviews = (providerId?: string) => {
     reviews: reviews || [],
     isLoading,
     error,
-    createReview: createReview.mutate
+    createReview: createReview.mutate,
+    averageRating: reviews?.length ? 
+      reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length : 
+      0
   };
 };
