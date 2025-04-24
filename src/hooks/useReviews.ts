@@ -5,6 +5,8 @@ import { useAuth } from '@/contexts/AuthContext';
 import { Review } from '@/types/serviceRequest';
 import { supabase } from '@/integrations/supabase';
 
+export type { Review };
+
 export const useReviews = (providerId?: string) => {
   const { toast } = useToast();
   const { user } = useAuth();
@@ -86,4 +88,3 @@ export const useReviews = (providerId?: string) => {
       0
   };
 };
-

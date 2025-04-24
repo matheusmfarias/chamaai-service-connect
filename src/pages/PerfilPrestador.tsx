@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { 
@@ -23,7 +24,8 @@ import {
 } from "lucide-react";
 import Layout from "@/components/Layout";
 import { useServiceProvider } from "@/hooks/useServiceProviders";
-import { useReviews, Review } from "@/hooks/useReviews";
+import { useReviews } from "@/hooks/useReviews";
+import { Review } from "@/types/serviceRequest";
 import { useAuth } from "@/contexts/AuthContext";
 import {
   Dialog,
