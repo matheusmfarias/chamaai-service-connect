@@ -4,6 +4,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useForm } from "react-hook-form";
 import { supabase } from "@/integrations/supabase/client";
 import { ServiceRequest } from "@/types/serviceRequest";
+import { useAuth } from "@/contexts/AuthContext";
 
 export interface ServiceRequestFormValues {
   title: string;
@@ -20,6 +21,7 @@ interface UseServiceRequestFormProps {
 export function useServiceRequestForm({ onSuccess }: UseServiceRequestFormProps) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  const { user } = useAuth();
 
   const form = useForm<ServiceRequestFormValues>({
     defaultValues: {
@@ -33,16 +35,20 @@ export function useServiceRequestForm({ onSuccess }: UseServiceRequestFormProps)
 
   const createServiceRequestMutation = useMutation({
     mutationFn: async (values: ServiceRequestFormValues) => {
+      if (!user) {
+        throw new Error("Usuário não autenticado");
+      }
+      
       const { data, error } = await supabase
         .from('service_requests')
         .insert({
           title: values.title,
           description: values.description,
-          category: values.category,
+          category_id: values.category,
+          client_id: user.id,
           status: 'pending',
           is_public: values.isPublic,
-          estimated_price: null,
-          scheduled_date: values.preferredDate?.toISOString() || new Date().toISOString()
+          scheduled_date: values.preferredDate?.toISOString() || null
         })
         .select()
         .single();

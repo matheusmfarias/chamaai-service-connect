@@ -8,17 +8,29 @@ import {
   Wrench, 
   ShowerHead,
   Leaf,
-  Hammer
+  Hammer,
+  Loader2
 } from "lucide-react";
+import { useCategories } from "@/hooks/useCategories";
 
-const serviceCategories = [
-  { name: "Limpeza", icon: Sparkles, description: "Serviços de limpeza residencial e comercial", path: "/servicos/limpeza" },
-  { name: "Pintura", icon: Paintbrush, description: "Pintura de interiores e exteriores", path: "/servicos/pintura" },
-  { name: "Elétrica", icon: Wrench, description: "Instalações e reparos elétricos", path: "/servicos/eletrica" },
-  { name: "Hidráulica", icon: ShowerHead, description: "Reparos e instalações hidráulicas", path: "/servicos/hidraulica" },
-  { name: "Jardinagem", icon: Leaf, description: "Manutenção e paisagismo de jardins", path: "/servicos/jardinagem" },
-  { name: "Montagem de Móveis", icon: Hammer, description: "Montagem e desmontagem de móveis", path: "/servicos/montagem-moveis" }
-];
+const getCategoryIcon = (slug: string) => {
+  switch (slug) {
+    case "limpeza":
+      return Sparkles;
+    case "pintura":
+      return Paintbrush;
+    case "eletrica":
+      return Wrench;
+    case "hidraulica":
+      return ShowerHead;
+    case "jardinagem":
+      return Leaf;
+    case "montagem-moveis":
+      return Hammer;
+    default:
+      return Wrench;
+  }
+};
 
 const fadeIn = {
   hidden: { opacity: 0, y: 20 },
@@ -36,6 +48,8 @@ const staggerContainer = {
 };
 
 const CategoriesSection = () => {
+  const { categories, isLoading } = useCategories();
+
   return (
     <motion.section 
       id="categories"
@@ -50,30 +64,43 @@ const CategoriesSection = () => {
         <p className="text-xl text-gray-600 text-center mb-12 max-w-3xl mx-auto">
           Encontre profissionais qualificados para todos os tipos de serviços
         </p>
-        <motion.div 
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
-          variants={staggerContainer}
-        >
-          {serviceCategories.map((category, index) => (
-            <motion.div
-              key={index}
-              variants={fadeIn}
-              className="h-full"
-            >
-              <Link to={category.path} className="block h-full">
-                <div className="group h-full p-6 bg-white rounded-xl border border-gray-200 hover:border-chamaai-blue hover:shadow-lg transition-all duration-300">
-                  <div className="flex items-center mb-4">
-                    <div className="bg-chamaai-lightgray p-4 rounded-lg group-hover:bg-chamaai-blue/10">
-                      <category.icon className="w-8 h-8 text-chamaai-blue" />
+        
+        {isLoading ? (
+          <div className="flex justify-center items-center py-12">
+            <Loader2 className="h-8 w-8 animate-spin text-chamaai-blue" />
+            <span className="ml-2 text-chamaai-blue">Carregando categorias...</span>
+          </div>
+        ) : (
+          <motion.div 
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"
+            variants={staggerContainer}
+          >
+            {categories.map((category) => {
+              const IconComponent = getCategoryIcon(category.slug);
+              return (
+                <motion.div
+                  key={category.id}
+                  variants={fadeIn}
+                  className="h-full"
+                >
+                  <Link to={`/servicos/${category.slug}`} className="block h-full">
+                    <div className="group h-full p-6 bg-white rounded-xl border border-gray-200 hover:border-chamaai-blue hover:shadow-lg transition-all duration-300">
+                      <div className="flex items-center mb-4">
+                        <div className="bg-chamaai-lightgray p-4 rounded-lg group-hover:bg-chamaai-blue/10">
+                          <IconComponent className="w-8 h-8 text-chamaai-blue" />
+                        </div>
+                        <h3 className="text-xl font-semibold ml-4">{category.name}</h3>
+                      </div>
+                      <p className="text-gray-600">
+                        Serviços de {category.name.toLowerCase()} residencial e comercial
+                      </p>
                     </div>
-                    <h3 className="text-xl font-semibold ml-4">{category.name}</h3>
-                  </div>
-                  <p className="text-gray-600">{category.description}</p>
-                </div>
-              </Link>
-            </motion.div>
-          ))}
-        </motion.div>
+                  </Link>
+                </motion.div>
+              );
+            })}
+          </motion.div>
+        )}
       </div>
     </motion.section>
   );

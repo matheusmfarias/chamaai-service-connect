@@ -2,10 +2,12 @@
 import { useFormContext } from "react-hook-form";
 import { ServiceRequestFormValues } from "@/hooks/useServiceRequestForm";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectLabel, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { serviceCategories } from "@/constants/categories";
+import { useCategories } from "@/hooks/useCategories";
+import { Loader2 } from "lucide-react";
 
 export function CategoryField() {
   const { watch, setValue, formState: { errors } } = useFormContext<ServiceRequestFormValues>();
+  const { categories, isLoading } = useCategories();
 
   return (
     <div className="space-y-2">
@@ -13,14 +15,22 @@ export function CategoryField() {
       <Select
         value={watch("category")}
         onValueChange={(value) => setValue("category", value)}
+        disabled={isLoading}
       >
         <SelectTrigger>
-          <SelectValue placeholder="Selecione uma categoria" />
+          {isLoading ? (
+            <div className="flex items-center">
+              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              <span>Carregando...</span>
+            </div>
+          ) : (
+            <SelectValue placeholder="Selecione uma categoria" />
+          )}
         </SelectTrigger>
         <SelectContent>
           <SelectGroup>
             <SelectLabel>Categorias</SelectLabel>
-            {serviceCategories.map((cat) => (
+            {categories.map((cat) => (
               <SelectItem key={cat.id} value={cat.id}>
                 {cat.name}
               </SelectItem>

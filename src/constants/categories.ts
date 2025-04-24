@@ -1,4 +1,7 @@
 
+import { Category } from '@/hooks/useCategories';
+
+// These are just fallback categories in case the API call fails
 export const serviceCategories = [
   { id: "limpeza", name: "Limpeza", icon: "clean" },
   { id: "eletrica", name: "Elétrica", icon: "zap" },
@@ -17,3 +20,12 @@ export const serviceTypes = [
 ] as const;
 
 export type UserType = typeof serviceTypes[number]["id"];
+
+// Helper function to convert a Category[] from the database to the format expected by components
+export const formatCategories = (categories: Category[]) => {
+  return categories.map(cat => ({
+    id: cat.slug,
+    name: cat.name,
+    icon: cat.icon || cat.slug
+  }));
+};

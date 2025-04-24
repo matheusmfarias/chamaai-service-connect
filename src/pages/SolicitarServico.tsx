@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { 
@@ -14,7 +15,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { 
   Calendar as CalendarIcon,
   Clock,
-  PenSquare,
   Sparkles
 } from "lucide-react";
 import { Calendar } from "@/components/ui/calendar";
@@ -36,15 +36,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useServiceRequests } from "@/hooks/useServiceRequests";
-
-const categories = [
-  { id: "faxina", name: "Faxina" },
-  { id: "pintura", name: "Pintura" },
-  { id: "eletrica", name: "Elétrica" },
-  { id: "hidraulica", name: "Hidráulica" },
-  { id: "reforma", name: "Reforma" },
-  { id: "jardinagem", name: "Jardinagem" },
-];
+import { useCategories } from "@/hooks/useCategories";
 
 const timeSlots = [
   "08:00", "09:00", "10:00", "11:00", "12:00", 
@@ -61,6 +53,7 @@ const SolicitarServico = () => {
   const [isImproving, setIsImproving] = useState(false);
   const navigate = useNavigate();
   const { createRequest, isLoading } = useServiceRequests();
+  const { categories, isLoading: loadingCategories } = useCategories();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -142,9 +135,16 @@ const SolicitarServico = () => {
                   <label className="text-sm font-medium">
                     Categoria*
                   </label>
-                  <Select value={category} onValueChange={setCategory} required>
+                  <Select value={category} onValueChange={setCategory} disabled={loadingCategories} required>
                     <SelectTrigger>
-                      <SelectValue placeholder="Selecione uma categoria" />
+                      {loadingCategories ? (
+                        <div className="flex items-center">
+                          <span className="animate-spin mr-2">⏳</span>
+                          <span>Carregando...</span>
+                        </div>
+                      ) : (
+                        <SelectValue placeholder="Selecione uma categoria" />
+                      )}
                     </SelectTrigger>
                     <SelectContent>
                       <SelectGroup>
