@@ -4,15 +4,19 @@ export interface ServiceRequest {
   client_id: string;
   title: string;
   description: string;
-  category: string;
-  status: 'pending' | 'assigned' | 'completed' | 'cancelled';
+  category_id: string | null;
+  status: 'pending' | 'in_progress' | 'completed' | 'cancelled';
   is_public: boolean;
-  estimated_price: number | null;
-  scheduled_date: string;
+  location: string | null;
+  scheduled_date: string | null;
   created_at: string;
-  updated_at: string;
   profiles?: {
     full_name: string;
+  };
+  categories?: {
+    name: string;
+    slug: string;
+    icon: string | null;
   };
 }
 

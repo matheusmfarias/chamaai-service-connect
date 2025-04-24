@@ -21,6 +21,11 @@ export const useServiceRequests = () => {
           *,
           profiles:client_id (
             full_name
+          ),
+          categories:category_id (
+            name,
+            slug,
+            icon
           )
         `)
         .eq('client_id', user.id)
@@ -32,7 +37,7 @@ export const useServiceRequests = () => {
     enabled: !!user
   });
 
-  const createRequest = async (requestData: Omit<ServiceRequest, 'id' | 'client_id' | 'created_at' | 'updated_at'>): Promise<string | null> => {
+  const createRequest = async (requestData: Omit<ServiceRequest, 'id' | 'client_id' | 'created_at'>): Promise<string | null> => {
     if (!user) return null;
 
     try {
@@ -73,13 +78,18 @@ export const useServiceRequests = () => {
           *,
           profiles:client_id (
             full_name
+          ),
+          categories:category_id (
+            name,
+            slug,
+            icon
           )
         `)
         .eq('is_public', true)
         .order('created_at', { ascending: false });
 
       if (category) {
-        query.eq('category', category);
+        query.eq('category_id', category);
       }
 
       const { data, error } = await query;

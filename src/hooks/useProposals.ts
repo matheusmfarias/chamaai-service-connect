@@ -1,122 +1,104 @@
 
-import { useState, useEffect } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import { Proposal } from '@/types/serviceRequest';
-import { mockProposals } from '@/mocks/serviceRequestMocks';
+import { supabase } from '@/integrations/supabase/client';
 
 export const useProposals = (requestId?: string) => {
-  const [proposals, setProposals] = useState<Proposal[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const { user } = useAuth();
   const { toast } = useToast();
-  
-  useEffect(() => {
-    if (!requestId) return;
-    
-    const fetchProposals = async () => {
-      setIsLoading(true);
-      
-      try {
-        await new Promise(resolve => setTimeout(resolve, 800));
-        
-        const filteredProposals = mockProposals.filter(
-          proposal => proposal.request_id === requestId
-        );
-        
-        setProposals(filteredProposals);
-      } catch (err: any) {
-        setError(err.message);
-        toast({
-          title: 'Erro ao carregar propostas',
-          description: 'Não foi possível carregar as propostas para esta solicitação.',
-          variant: 'destructive',
-        });
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    
-    fetchProposals();
-  }, [requestId, toast]);
+  const queryClient = useQueryClient();
 
-  const createProposal = async (data: {
-    request_id: string;
-    price: number;
-    message: string;
-  }): Promise<boolean> => {
-    if (!user) return false;
-    
-    try {
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      const newProposal: Proposal = {
-        id: `proposal-${Date.now()}`,
-        provider_id: user.id,
-        status: 'pending',
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-        ...data
-      };
-      
-      mockProposals.push(newProposal);
-      setProposals(prev => [...prev, newProposal]);
-      
+  const { data: proposals = [], isLoading, error } = useQuery({
+    queryKey: ['proposals', requestId],
+    queryFn: async () => {
+      if (!requestId || !user) return [];
+
+      const { data, error } = await supabase
+        .from('proposals')
+        .select(`
+          *,
+          service_providers:provider_id (
+            id,
+            rating,
+            profiles (
+              full_name,
+              city,
+              state
+            )
+          )
+        `)
+        .eq('request_id', requestId)
+        .order('created_at', { ascending: true });
+
+      if (error) throw error;
+      return data as Proposal[];
+    },
+    enabled: !!requestId && !!user,
+  });
+
+  const createProposal = useMutation({
+    mutationFn: async (data: { request_id: string; price: number; message: string }) => {
+      if (!user) throw new Error('User not authenticated');
+
+      const { error } = await supabase
+        .from('proposals')
+        .insert({
+          ...data,
+          provider_id: user.id,
+          status: 'pending'
+        });
+
+      if (error) throw error;
+      return true;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['proposals'] });
       toast({
         title: 'Proposta enviada',
         description: 'Sua proposta foi enviada com sucesso.',
       });
-      
-      return true;
-    } catch (err: any) {
+    },
+    onError: (error: any) => {
       toast({
         title: 'Erro ao enviar proposta',
-        description: 'Não foi possível enviar sua proposta.',
+        description: error.message || 'Não foi possível enviar sua proposta.',
         variant: 'destructive',
       });
-      return false;
     }
-  };
+  });
 
-  const updateProposalStatus = async (proposalId: string, status: 'accepted' | 'rejected'): Promise<boolean> => {
-    try {
-      await new Promise(resolve => setTimeout(resolve, 800));
-      
-      const proposalIndex = mockProposals.findIndex(p => p.id === proposalId);
-      if (proposalIndex === -1) return false;
-      
-      mockProposals[proposalIndex].status = status;
-      mockProposals[proposalIndex].updated_at = new Date().toISOString();
-      
-      setProposals(prev => 
-        prev.map(p => p.id === proposalId ? 
-          { ...p, status, updated_at: new Date().toISOString() } : p
-        )
-      );
-      
-      const actionText = status === 'accepted' ? 'aceita' : 'recusada';
-      
-      toast({
-        title: `Proposta ${actionText}`,
-        description: `A proposta foi ${actionText} com sucesso.`,
-      });
-      
+  const updateProposalStatus = useMutation({
+    mutationFn: async ({ proposalId, status }: { proposalId: string; status: 'accepted' | 'rejected' }) => {
+      const { error } = await supabase
+        .from('proposals')
+        .update({ status })
+        .eq('id', proposalId);
+
+      if (error) throw error;
       return true;
-    } catch (err: any) {
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['proposals'] });
       toast({
-        title: 'Erro ao atualizar proposta',
-        description: 'Não foi possível atualizar o status da proposta.',
+        title: 'Status atualizado',
+        description: 'O status da proposta foi atualizado com sucesso.',
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: 'Erro ao atualizar status',
+        description: error.message || 'Não foi possível atualizar o status da proposta.',
         variant: 'destructive',
       });
-      return false;
     }
-  };
-  
-  return { 
-    proposals, 
-    isLoading, 
-    error, 
+  });
+
+  return {
+    proposals,
+    isLoading,
+    error,
     createProposal,
     updateProposalStatus
   };
