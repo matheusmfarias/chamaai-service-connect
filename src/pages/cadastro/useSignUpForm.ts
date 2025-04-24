@@ -107,7 +107,7 @@ const useSignUpFormBase = (formType: 'client' | 'provider') => {
     }
   };
   
-  // Client form
+  // Client form - make sure this is always defined before first access
   const clientForm = useForm({
     resolver: zodResolver(clientSchema),
     defaultValues: {
@@ -119,10 +119,11 @@ const useSignUpFormBase = (formType: 'client' | 'provider') => {
       city: "",
       state: "",
       termsAccepted: false
-    }
+    },
+    mode: "onBlur" // This helps initialize form state right away
   });
   
-  // Provider form
+  // Provider form - make sure this is always defined before first access
   const providerForm = useForm({
     resolver: zodResolver(providerSchema),
     defaultValues: {
@@ -137,28 +138,9 @@ const useSignUpFormBase = (formType: 'client' | 'provider') => {
       description: "",
       ratePerHour: 50,
       termsAccepted: false
-    }
+    },
+    mode: "onBlur" // This helps initialize form state right away
   });
-  
-  // Mock client submission
-  const onClientSubmit = async (data: z.infer<typeof clientSchema>) => {
-    setIsSubmitting(true);
-    // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    console.log("Client form submitted:", data);
-    setIsSubmitting(false);
-    // In a real app, this would redirect or show success message
-  };
-  
-  // Mock provider submission
-  const onProviderSubmit = async (data: z.infer<typeof providerSchema>) => {
-    setIsSubmitting(true);
-    // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    console.log("Provider form submitted:", data);
-    setIsSubmitting(false);
-    // In a real app, this would redirect or show success message
-  };
   
   return {
     showPassword,
@@ -177,6 +159,8 @@ const useSignUpFormBase = (formType: 'client' | 'provider') => {
 // Client-specific hook
 export const useClientSignUpForm = () => {
   const baseProps = useSignUpFormBase('client');
+  
+  // Move form definition here for better isolation
   const form = useForm({
     resolver: zodResolver(clientSchema),
     defaultValues: {
@@ -188,16 +172,21 @@ export const useClientSignUpForm = () => {
       city: "",
       state: "",
       termsAccepted: false
-    }
+    },
+    mode: "onBlur" // Initialize form state right away
   });
   
   const onSubmit = async (data: z.infer<typeof clientSchema>) => {
-    baseProps.isSubmitting = true;
-    // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    console.log("Client form submitted:", data);
-    baseProps.isSubmitting = false;
-    // In a real app, this would redirect or show success message
+    try {
+      baseProps.isSubmitting = true;
+      // Simulate API call delay
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      console.log("Client form submitted:", data);
+    } catch (error) {
+      console.error("Error submitting client form:", error);
+    } finally {
+      baseProps.isSubmitting = false;
+    }
   };
   
   return {
@@ -210,6 +199,8 @@ export const useClientSignUpForm = () => {
 // Provider-specific hook
 export const useProviderSignUpForm = () => {
   const baseProps = useSignUpFormBase('provider');
+  
+  // Move form definition here for better isolation
   const form = useForm({
     resolver: zodResolver(providerSchema),
     defaultValues: {
@@ -224,16 +215,21 @@ export const useProviderSignUpForm = () => {
       description: "",
       ratePerHour: 50,
       termsAccepted: false
-    }
+    },
+    mode: "onBlur" // Initialize form state right away
   });
   
   const onSubmit = async (data: z.infer<typeof providerSchema>) => {
-    baseProps.isSubmitting = true;
-    // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 1500));
-    console.log("Provider form submitted:", data);
-    baseProps.isSubmitting = false;
-    // In a real app, this would redirect or show success message
+    try {
+      baseProps.isSubmitting = true;
+      // Simulate API call delay
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      console.log("Provider form submitted:", data);
+    } catch (error) {
+      console.error("Error submitting provider form:", error);
+    } finally {
+      baseProps.isSubmitting = false;
+    }
   };
   
   return {

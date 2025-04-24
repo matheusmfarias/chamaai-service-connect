@@ -6,6 +6,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { useProviderSignUpForm } from "./useSignUpForm";
+import { Loader2 } from "lucide-react";
 
 const ProviderSignUpForm = () => {
   const {
@@ -22,6 +23,15 @@ const ProviderSignUpForm = () => {
     phoneStatus,
     passwordStrength
   } = useProviderSignUpForm();
+
+  // Add safety check to prevent rendering before form is initialized
+  if (!form.formState) {
+    return (
+      <div className="flex justify-center items-center p-8">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   return (
     <Form {...form}>

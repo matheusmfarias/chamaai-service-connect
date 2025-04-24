@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useClientSignUpForm } from "./useSignUpForm";
+import { Loader2 } from "lucide-react";
 
 const ClientSignUpForm = () => {
   const {
@@ -18,6 +19,15 @@ const ClientSignUpForm = () => {
     states,
     cities
   } = useClientSignUpForm();
+
+  // Add safety check to prevent rendering before form is initialized
+  if (!form.formState) {
+    return (
+      <div className="flex justify-center items-center p-8">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   return (
     <Form {...form}>
