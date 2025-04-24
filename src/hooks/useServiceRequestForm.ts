@@ -2,6 +2,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { useForm } from "react-hook-form";
+import { supabase } from "@/integrations/supabase/client";
 import { ServiceRequest } from "@/types/serviceRequest";
 
 export interface ServiceRequestFormValues {
@@ -32,20 +33,22 @@ export function useServiceRequestForm({ onSuccess }: UseServiceRequestFormProps)
 
   const createServiceRequestMutation = useMutation({
     mutationFn: async (values: ServiceRequestFormValues) => {
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      const newRequest: Partial<ServiceRequest> = {
-        title: values.title,
-        description: values.description,
-        category: values.category,
-        status: 'pending',
-        is_public: values.isPublic,
-        estimated_price: null,
-        scheduled_date: values.preferredDate ? values.preferredDate.toISOString() : new Date().toISOString()
-      };
-      
-      return newRequest;
+      const { data, error } = await supabase
+        .from('service_requests')
+        .insert({
+          title: values.title,
+          description: values.description,
+          category: values.category,
+          status: 'pending',
+          is_public: values.isPublic,
+          estimated_price: null,
+          scheduled_date: values.preferredDate?.toISOString() || new Date().toISOString()
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+      return data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['service_requests'] });
@@ -57,6 +60,7 @@ export function useServiceRequestForm({ onSuccess }: UseServiceRequestFormProps)
       onSuccess();
     },
     onError: (error: any) => {
+      console.error('Error creating service request:', error);
       toast({
         title: "Erro ao enviar solicitação",
         description: error.message || "Não foi possível criar a solicitação de serviço.",

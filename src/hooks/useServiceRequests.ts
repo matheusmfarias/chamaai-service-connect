@@ -1,69 +1,60 @@
 
-import { useState, useEffect } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import { ServiceRequest } from '@/types/serviceRequest';
-import { mockServiceRequests } from '@/mocks/serviceRequestMocks';
+import { supabase } from '@/integrations/supabase/client';
 
 export const useServiceRequests = () => {
-  const [requests, setRequests] = useState<ServiceRequest[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
   const { user } = useAuth();
   const { toast } = useToast();
-  
-  useEffect(() => {
-    const fetchRequests = async () => {
-      if (!user) return;
+  const queryClient = useQueryClient();
+
+  const { data: requests = [], isLoading, error } = useQuery({
+    queryKey: ['service_requests', user?.id],
+    queryFn: async () => {
+      if (!user) return [];
       
-      setIsLoading(true);
-      
-      try {
-        await new Promise(resolve => setTimeout(resolve, 800));
-        
-        const filteredRequests = mockServiceRequests.filter(
-          req => req.client_id === user.id
-        );
-        
-        setRequests(filteredRequests);
-      } catch (err: any) {
-        setError(err.message);
-        toast({
-          title: 'Erro ao carregar solicitações',
-          description: 'Não foi possível carregar suas solicitações de serviço.',
-          variant: 'destructive',
-        });
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    
-    fetchRequests();
-  }, [user, toast]);
-  
+      const { data, error } = await supabase
+        .from('service_requests')
+        .select(`
+          *,
+          profiles:client_id (
+            full_name
+          )
+        `)
+        .eq('client_id', user.id)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      return data as ServiceRequest[];
+    },
+    enabled: !!user
+  });
+
   const createRequest = async (requestData: Omit<ServiceRequest, 'id' | 'client_id' | 'created_at' | 'updated_at'>): Promise<string | null> => {
     if (!user) return null;
-    
+
     try {
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      const newRequest: ServiceRequest = {
-        ...requestData,
-        id: `request-${Date.now()}`,
-        client_id: user.id,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString()
-      };
-      
-      mockServiceRequests.push(newRequest);
-      setRequests(prev => [newRequest, ...prev]);
+      const { data, error } = await supabase
+        .from('service_requests')
+        .insert({
+          ...requestData,
+          client_id: user.id
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      queryClient.invalidateQueries({ queryKey: ['service_requests'] });
       
       toast({
         title: 'Solicitação criada',
         description: 'Sua solicitação de serviço foi criada com sucesso.',
       });
       
-      return newRequest.id;
+      return data.id;
     } catch (err: any) {
       toast({
         title: 'Erro ao criar solicitação',
@@ -76,15 +67,25 @@ export const useServiceRequests = () => {
 
   const getPublicRequests = async (category?: string): Promise<ServiceRequest[]> => {
     try {
-      await new Promise(resolve => setTimeout(resolve, 800));
-      
-      let filteredRequests = mockServiceRequests.filter(req => req.is_public);
-      
+      const query = supabase
+        .from('service_requests')
+        .select(`
+          *,
+          profiles:client_id (
+            full_name
+          )
+        `)
+        .eq('is_public', true)
+        .order('created_at', { ascending: false });
+
       if (category) {
-        filteredRequests = filteredRequests.filter(req => req.category === category);
+        query.eq('category', category);
       }
-      
-      return filteredRequests;
+
+      const { data, error } = await query;
+
+      if (error) throw error;
+      return data as ServiceRequest[];
     } catch (err: any) {
       toast({
         title: 'Erro ao carregar solicitações públicas',
