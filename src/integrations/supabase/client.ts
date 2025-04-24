@@ -59,6 +59,10 @@ const mockSupabase = {
   },
   rpc: (functionName: string, params: any) => 
     Promise.resolve({ data: [], error: null }),
+  functions: {
+    invoke: (functionName: string, { body }: { body: any }) =>
+      Promise.resolve({ data: null, error: null }),
+  },
 };
 
 export const supabase = mockSupabase;
