@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { 
@@ -58,6 +57,7 @@ const SolicitarServico = () => {
   const [category, setCategory] = useState("");
   const [date, setDate] = useState<Date | undefined>(undefined);
   const [time, setTime] = useState("");
+  const [isPublic, setIsPublic] = useState(true);
   const [isImproving, setIsImproving] = useState(false);
   const navigate = useNavigate();
   const { createRequest, isLoading } = useServiceRequests();
@@ -80,7 +80,8 @@ const SolicitarServico = () => {
       category,
       status: "pending",
       estimated_price: null,
-      scheduled_date: scheduledDate.toISOString()
+      scheduled_date: scheduledDate.toISOString(),
+      is_public: isPublic
     });
     
     if (requestId) {
@@ -237,6 +238,19 @@ const SolicitarServico = () => {
                       </SelectContent>
                     </Select>
                   </div>
+                </div>
+                
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="checkbox"
+                    id="isPublic"
+                    checked={isPublic}
+                    onChange={(e) => setIsPublic(e.target.checked)}
+                    className="rounded-md"
+                  />
+                  <label htmlFor="isPublic" className="text-sm font-medium">
+                    Solicitação pública (qualquer prestador pode enviar orçamento)
+                  </label>
                 </div>
               </CardContent>
               

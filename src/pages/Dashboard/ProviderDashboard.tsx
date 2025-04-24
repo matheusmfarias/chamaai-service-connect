@@ -39,13 +39,19 @@ interface ServiceProposal {
   service_requests?: ServiceRequest;
 }
 
-const mockPendingRequests = [
+const mockPendingRequests: Partial<ServiceRequest>[] = [
   {
     id: 'req-101',
     title: 'Limpeza de escritório',
     description: 'Limpeza completa de escritório de 120m²',
+    category: 'limpeza',
+    status: 'pending',
+    is_public: true,
+    estimated_price: null,
     scheduled_date: new Date(Date.now() + 172800000).toISOString(), // 2 days from now
     created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+    client_id: 'client-1',
     profiles: {
       full_name: 'Empresa ABC'
     }
@@ -54,8 +60,14 @@ const mockPendingRequests = [
     id: 'req-102',
     title: 'Faxina residencial',
     description: 'Limpeza de casa com 3 quartos',
+    category: 'limpeza',
+    status: 'pending',
+    is_public: true,
+    estimated_price: null,
     scheduled_date: new Date(Date.now() + 345600000).toISOString(), // 4 days from now
     created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+    client_id: 'client-2',
     profiles: {
       full_name: 'Roberto Almeida'
     }
@@ -79,6 +91,7 @@ const mockAcceptedProposals: ServiceProposal[] = [
       description: 'Apartamento com 2 quartos',
       category: 'limpeza',
       status: 'pending',
+      is_public: true,
       estimated_price: null,
       scheduled_date: new Date(Date.now() + 172800000).toISOString(),
       created_at: new Date().toISOString(),
@@ -96,7 +109,7 @@ const mockCompletedProposals: ServiceProposal[] = [
     request_id: 'req-301',
     provider_id: 'mock-user-1',
     price: 200,
-    status: 'done',
+    status: 'completed',
     message: null,
     created_at: new Date(Date.now() - 604800000).toISOString(), // 7 days ago
     updated_at: new Date(Date.now() - 518400000).toISOString(), // 6 days ago
@@ -106,7 +119,8 @@ const mockCompletedProposals: ServiceProposal[] = [
       title: 'Limpeza pós obra',
       description: 'Limpeza pós reforma de cozinha',
       category: 'limpeza',
-      status: 'done',
+      status: 'completed',
+      is_public: true,
       estimated_price: 200,
       scheduled_date: new Date(Date.now() - 518400000).toISOString(), // 6 days ago
       created_at: new Date(Date.now() - 604800000).toISOString(), // 7 days ago
@@ -225,6 +239,9 @@ const ProviderDashboard = () => {
       // Simulating proposal creation
       const price = 250; // R$ 250,00
       
+      // Find the request from mock data
+      const requestDetails = mockPendingRequests.find(req => req.id === requestId) as ServiceRequest;
+      
       // Create mock proposal
       const newProposal = {
         id: `prop-${Date.now()}`,
@@ -235,7 +252,7 @@ const ProviderDashboard = () => {
         message: 'Orçamento enviado automaticamente',
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
-        service_requests: mockPendingRequests.find(req => req.id === requestId)
+        service_requests: requestDetails
       };
       
       // Add to accepted proposals

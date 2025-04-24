@@ -49,9 +49,9 @@ export const useProfile = () => {
     }
   };
 
-  const updateProfile = async (data: Partial<UserProfile>) => {
+  const updateProfile = async (data: Partial<UserProfile>): Promise<UserProfile | null> => {
     const userId = userProfile?.id;
-    if (!userId) return;
+    if (!userId) return null;
 
     try {
       // Simulate API delay
