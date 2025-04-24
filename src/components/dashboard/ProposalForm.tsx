@@ -37,7 +37,7 @@ export default function ProposalForm({ requestId, isOpen, onClose }: ProposalFor
     setIsSubmitting(true);
     
     try {
-      await createProposal({
+      await createProposal.mutateAsync({
         request_id: requestId,
         price: parseFloat(price),
         message
@@ -103,10 +103,10 @@ export default function ProposalForm({ requestId, isOpen, onClose }: ProposalFor
             </Button>
             <Button 
               type="submit" 
-              disabled={isSubmitting}
+              disabled={isSubmitting || createProposal.isPending}
               className="bg-chamaai-blue hover:bg-chamaai-lightblue"
             >
-              {isSubmitting ? (
+              {isSubmitting || createProposal.isPending ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                   Enviando...

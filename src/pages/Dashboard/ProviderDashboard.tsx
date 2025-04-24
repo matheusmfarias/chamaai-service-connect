@@ -1,14 +1,18 @@
 
-import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
-import 'react-tabs/style/react-tabs.css';
 import { useState } from 'react';
+import { 
+  Tabs, 
+  TabsContent, 
+  TabsList, 
+  TabsTrigger 
+} from "@/components/ui/tabs";
 import { useAuth } from '@/contexts/AuthContext';
-import ProviderPublicRequests from './ProviderPublicRequests';
+import { usePublicServiceRequests } from '@/hooks/usePublicServiceRequests';
+import PublicRequestsList from '@/components/dashboard/PublicRequestsList';
 
 const ProviderDashboard = () => {
   const { userProfile } = useAuth();
-  const [activeTab, setActiveTab] = useState(0);
-
+  const [categoryFilter, setCategoryFilter] = useState<string>('');
   const firstName = userProfile?.full_name?.split(' ')[0] || 'Prestador';
 
   return (
@@ -17,42 +21,39 @@ const ProviderDashboard = () => {
         Olá, {firstName}!
       </h1>
       
-      <Tabs selectedIndex={activeTab} onSelect={index => setActiveTab(index)}>
-        <TabList className="flex mb-6 border-b">
-          <Tab 
-            className={`px-4 py-2 cursor-pointer ${activeTab === 0 ? 'border-b-2 border-chamaai-blue font-medium text-chamaai-blue' : 'text-gray-500'}`}
-          >
+      <Tabs defaultValue="public">
+        <TabsList className="w-full border-b flex">
+          <TabsTrigger value="public" className="flex-1">
             Solicitações Públicas
-          </Tab>
-          <Tab 
-            className={`px-4 py-2 cursor-pointer ${activeTab === 1 ? 'border-b-2 border-chamaai-blue font-medium text-chamaai-blue' : 'text-gray-500'}`}
-          >
+          </TabsTrigger>
+          <TabsTrigger value="proposals" className="flex-1">
             Minhas Propostas
-          </Tab>
-          <Tab 
-            className={`px-4 py-2 cursor-pointer ${activeTab === 2 ? 'border-b-2 border-chamaai-blue font-medium text-chamaai-blue' : 'text-gray-500'}`}
-          >
+          </TabsTrigger>
+          <TabsTrigger value="active" className="flex-1">
             Serviços em Andamento
-          </Tab>
-        </TabList>
+          </TabsTrigger>
+        </TabsList>
 
-        <TabPanel>
-          <ProviderPublicRequests />
-        </TabPanel>
+        <TabsContent value="public" className="pt-6">
+          <div className="space-y-6">
+            <h2 className="text-xl font-medium">Solicitações Públicas</h2>
+            <PublicRequestsList categoryFilter={categoryFilter} />
+          </div>
+        </TabsContent>
 
-        <TabPanel>
+        <TabsContent value="proposals">
           <div className="text-center py-16">
             <h3 className="text-lg font-medium text-gray-500">Suas propostas aparecerão aqui</h3>
             <p className="text-gray-400 mt-2">Você ainda não enviou nenhuma proposta</p>
           </div>
-        </TabPanel>
+        </TabsContent>
 
-        <TabPanel>
+        <TabsContent value="active">
           <div className="text-center py-16">
             <h3 className="text-lg font-medium text-gray-500">Serviços em andamento aparecerão aqui</h3>
             <p className="text-gray-400 mt-2">Você não tem nenhum serviço em andamento</p>
           </div>
-        </TabPanel>
+        </TabsContent>
       </Tabs>
     </div>
   );
