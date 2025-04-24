@@ -132,7 +132,7 @@ export const useSearchServiceProviders = (searchTerm: string) => {
         const searchTermLower = searchTerm.toLowerCase();
         
         return mockProviders.filter(provider => 
-          provider.description.toLowerCase().includes(searchTermLower) ||
+          provider.description?.toLowerCase().includes(searchTermLower) ||
           provider.profiles.full_name.toLowerCase().includes(searchTermLower) ||
           provider.categories.name.toLowerCase().includes(searchTermLower)
         );

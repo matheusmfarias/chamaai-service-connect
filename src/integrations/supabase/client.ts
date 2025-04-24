@@ -15,7 +15,9 @@ const mockSupabase = {
     }),
     updateUser: () => Promise.resolve({ data: { user: null }, error: null }),
     resetPasswordForEmail: () => Promise.resolve({ data: {}, error: null }),
-    resend: () => Promise.resolve({ data: {}, error: null }),
+    resend: {
+      verificationEmail: () => Promise.resolve({ data: {}, error: null })
+    },
   },
   from: (table: string) => ({
     select: (query?: string) => ({
@@ -23,6 +25,7 @@ const mockSupabase = {
         single: () => Promise.resolve({ data: null, error: null }),
         order: (_column: string, { ascending }: { ascending: boolean }) => 
           Promise.resolve({ data: [], error: null }),
+        maybeSingle: () => Promise.resolve({ data: null, error: null }),
       }),
       order: (_column: string, { ascending }: { ascending: boolean }) => ({
         eq: (_column: string, _value: any) => 
@@ -30,10 +33,12 @@ const mockSupabase = {
       }),
       eq: (_column: string, _value: any) => 
         Promise.resolve({ data: [], error: null }),
+      maybeSingle: () => Promise.resolve({ data: null, error: null }),
     }),
     insert: (data: any) => ({
       select: () => ({
         single: () => Promise.resolve({ data, error: null }),
+        maybeSingle: () => Promise.resolve({ data, error: null }),
       }),
     }),
     update: (data: any) => ({
