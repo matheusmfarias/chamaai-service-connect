@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { 
   Card, 
@@ -10,7 +9,6 @@ import {
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
-import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import {
   Tabs,
@@ -40,6 +38,85 @@ interface ServiceProposal {
   updated_at: string;
   service_requests?: ServiceRequest;
 }
+
+const mockPendingRequests = [
+  {
+    id: 'req-101',
+    title: 'Limpeza de escritório',
+    description: 'Limpeza completa de escritório de 120m²',
+    scheduled_date: new Date(Date.now() + 172800000).toISOString(), // 2 days from now
+    created_at: new Date().toISOString(),
+    profiles: {
+      full_name: 'Empresa ABC'
+    }
+  },
+  {
+    id: 'req-102',
+    title: 'Faxina residencial',
+    description: 'Limpeza de casa com 3 quartos',
+    scheduled_date: new Date(Date.now() + 345600000).toISOString(), // 4 days from now
+    created_at: new Date().toISOString(),
+    profiles: {
+      full_name: 'Roberto Almeida'
+    }
+  }
+];
+
+const mockAcceptedProposals: ServiceProposal[] = [
+  {
+    id: 'prop-101',
+    request_id: 'req-201',
+    provider_id: 'mock-user-1',
+    price: 180,
+    status: 'pending',
+    message: 'Posso fazer o serviço na data solicitada.',
+    created_at: new Date().toISOString(),
+    updated_at: new Date().toISOString(),
+    service_requests: {
+      id: 'req-201',
+      client_id: 'client-1',
+      title: 'Limpeza de apartamento',
+      description: 'Apartamento com 2 quartos',
+      category: 'limpeza',
+      status: 'pending',
+      estimated_price: null,
+      scheduled_date: new Date(Date.now() + 172800000).toISOString(),
+      created_at: new Date().toISOString(),
+      updated_at: new Date().toISOString(),
+      profiles: {
+        full_name: 'Ana Santos'
+      }
+    }
+  }
+];
+
+const mockCompletedProposals: ServiceProposal[] = [
+  {
+    id: 'prop-301',
+    request_id: 'req-301',
+    provider_id: 'mock-user-1',
+    price: 200,
+    status: 'done',
+    message: null,
+    created_at: new Date(Date.now() - 604800000).toISOString(), // 7 days ago
+    updated_at: new Date(Date.now() - 518400000).toISOString(), // 6 days ago
+    service_requests: {
+      id: 'req-301',
+      client_id: 'client-3',
+      title: 'Limpeza pós obra',
+      description: 'Limpeza pós reforma de cozinha',
+      category: 'limpeza',
+      status: 'done',
+      estimated_price: 200,
+      scheduled_date: new Date(Date.now() - 518400000).toISOString(), // 6 days ago
+      created_at: new Date(Date.now() - 604800000).toISOString(), // 7 days ago
+      updated_at: new Date(Date.now() - 518400000).toISOString(), // 6 days ago
+      profiles: {
+        full_name: 'Carlos Mendes'
+      }
+    }
+  }
+];
 
 const ServiceRequestCard = ({ request, onAccept, onDecline }: { 
   request: any; 
@@ -120,59 +197,12 @@ const ProviderDashboard = () => {
       setIsLoading(true);
       
       try {
-        // Buscar todas as solicitações (isso seria refinado em produção)
-        const { data: pendingData, error: pendingError } = await supabase
-          .from('service_requests')
-          .select(`
-            *,
-            profiles (
-              full_name
-            )
-          `)
-          .eq('status', 'pending')
-          .order('created_at', { ascending: false });
+        // Simulate API delay
+        await new Promise(resolve => setTimeout(resolve, 1000));
         
-        if (pendingError) throw pendingError;
-        
-        // Buscar solicitações aceitas por este prestador
-        const { data: acceptedData, error: acceptedError } = await supabase
-          .from('service_proposals')
-          .select(`
-            *,
-            service_requests (
-              *,
-              profiles (
-                full_name
-              )
-            )
-          `)
-          .eq('provider_id', user.id)
-          .eq('status', 'pending')
-          .order('created_at', { ascending: false });
-        
-        if (acceptedError) throw acceptedError;
-        
-        // Buscar solicitações concluídas por este prestador
-        const { data: completedData, error: completedError } = await supabase
-          .from('service_proposals')
-          .select(`
-            *,
-            service_requests (
-              *,
-              profiles (
-                full_name
-              )
-            )
-          `)
-          .eq('provider_id', user.id)
-          .eq('status', 'done')
-          .order('created_at', { ascending: false });
-        
-        if (completedError) throw completedError;
-        
-        setPendingRequests(pendingData as any[]);
-        setAcceptedRequests(acceptedData as ServiceProposal[]);
-        setCompletedRequests(completedData as ServiceProposal[]);
+        setPendingRequests(mockPendingRequests);
+        setAcceptedRequests(mockAcceptedProposals);
+        setCompletedRequests(mockCompletedProposals);
       } catch (error) {
         console.error('Error fetching requests:', error);
         toast({
@@ -192,28 +222,32 @@ const ProviderDashboard = () => {
     if (!user) return;
     
     try {
-      // Normalmente aqui haveria uma interface para definir o valor do orçamento
-      // Para simplificar, estamos definindo um valor fixo
+      // Simulating proposal creation
       const price = 250; // R$ 250,00
       
-      const { data, error } = await supabase
-        .from('service_proposals')
-        .insert({
-          request_id: requestId,
-          provider_id: user.id,
-          price,
-          status: 'pending',
-          message: 'Orçamento enviado automaticamente'
-        });
+      // Create mock proposal
+      const newProposal = {
+        id: `prop-${Date.now()}`,
+        request_id: requestId,
+        provider_id: user.id,
+        price,
+        status: 'pending',
+        message: 'Orçamento enviado automaticamente',
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+        service_requests: mockPendingRequests.find(req => req.id === requestId)
+      };
       
-      if (error) throw error;
+      // Add to accepted proposals
+      mockAcceptedProposals.push(newProposal as ServiceProposal);
+      setAcceptedRequests(prev => [...prev, newProposal as ServiceProposal]);
       
       toast({
         title: 'Orçamento enviado',
         description: 'Seu orçamento foi enviado ao cliente com sucesso.',
       });
       
-      // Atualiza a lista removendo a solicitação aceita
+      // Remove from pending requests
       setPendingRequests(prev => prev.filter(req => req.id !== requestId));
     } catch (error) {
       console.error('Error accepting request:', error);
@@ -226,8 +260,7 @@ const ProviderDashboard = () => {
   };
   
   const handleDeclineRequest = (requestId: string) => {
-    // Na implementação real, poderíamos marcar esta solicitação como "não interessado"
-    // para este prestador específico
+    // In implementation, remove request from view
     setPendingRequests(prev => prev.filter(req => req.id !== requestId));
     
     toast({

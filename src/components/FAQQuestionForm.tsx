@@ -2,11 +2,13 @@
 import { useState } from "react";
 import { MessageCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+
+// Mock FAQ questions storage
+const faqQuestions: any[] = [];
 
 const FAQQuestionForm = () => {
   const { toast } = useToast();
@@ -23,7 +25,15 @@ const FAQQuestionForm = () => {
     setLoading(true);
 
     try {
-      await supabase.from("faq_questions").insert([formData]);
+      // Mock inserting data
+      const newQuestion = {
+        ...formData,
+        id: `faq-${Date.now()}`,
+        created_at: new Date().toISOString()
+      };
+      
+      faqQuestions.push(newQuestion);
+      console.log("FAQ question submitted:", newQuestion);
       
       setFormData({
         name: "",

@@ -7,7 +7,6 @@ import { ptBR } from "date-fns/locale";
 import { CalendarIcon, Loader2 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
@@ -15,6 +14,9 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { cn } from "@/lib/utils";
+
+// Mock service requests storage
+const serviceRequests: any[] = [];
 
 interface FormValues {
   category: string;
@@ -55,22 +57,25 @@ export function ServiceRequestForm({ onSuccess }: ServiceRequestFormProps) {
         throw new Error("Usuário não autenticado");
       }
 
-      const { data, error } = await supabase
-        .from('service_requests')
-        .insert({
-          client_id: user.id,
-          title: values.title,
-          description: values.description,
-          category: values.category,
-          status: 'pending',
-          estimated_price: null,
-          scheduled_date: values.preferredDate ? values.preferredDate.toISOString() : null,
-        })
-        .select()
-        .single();
+      // Create mock service request
+      const newRequest = {
+        id: `req-${Date.now()}`,
+        client_id: user.id,
+        title: values.title,
+        description: values.description,
+        category: values.category,
+        status: 'pending',
+        estimated_price: null,
+        scheduled_date: values.preferredDate ? values.preferredDate.toISOString() : null,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString(),
+      };
 
-      if (error) throw error;
-      return data;
+      // Add to mock storage
+      serviceRequests.push(newRequest);
+      console.log("Service request created:", newRequest);
+      
+      return newRequest;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['service_requests'] });

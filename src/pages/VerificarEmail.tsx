@@ -4,9 +4,20 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import Layout from "@/components/Layout";
+
+// Mock verification functionality
+const mockVerificationFunctions = {
+  resendEmail: async (email: string) => {
+    console.log("Resending verification email to:", email);
+    return { error: null };
+  },
+  updateEmail: async (email: string) => {
+    console.log("Updating email to:", email);
+    return { error: null };
+  }
+};
 
 const VerificarEmail = () => {
   const [email, setEmail] = useState("");
@@ -36,10 +47,7 @@ const VerificarEmail = () => {
 
   const handleResendEmail = async () => {
     try {
-      const { error } = await supabase.auth.resend({
-        type: 'signup',
-        email: email,
-      });
+      const { error } = await mockVerificationFunctions.resendEmail(email);
 
       if (error) throw error;
 
@@ -62,7 +70,7 @@ const VerificarEmail = () => {
     e.preventDefault();
     
     try {
-      const { error } = await supabase.auth.updateUser({ email });
+      const { error } = await mockVerificationFunctions.updateEmail(email);
 
       if (error) throw error;
 

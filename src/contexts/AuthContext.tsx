@@ -27,7 +27,10 @@ const mockUser: User = {
   email: "user@example.com",
   user_metadata: {
     full_name: "Mock User"
-  }
+  },
+  app_metadata: {},
+  aud: "authenticated",
+  created_at: new Date().toISOString()
 };
 
 // Mock session for development
