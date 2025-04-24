@@ -102,7 +102,7 @@ const ProviderSignUpForm = () => {
                           ? "text-yellow-600"
                           : "text-red-600"
                       }>
-                        Segurança: {passwordStrength.feedback}
+                        Segurança: {passwordStrength.feedback}
                       </span>
                     </div>
                   </div>
