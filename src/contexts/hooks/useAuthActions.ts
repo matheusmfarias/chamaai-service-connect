@@ -34,6 +34,8 @@ export const useAuthActions = (
       if (error) throw error;
       
       if (data?.user) {
+        console.log("User created successfully:", data.user.id);
+        
         // Create profile record
         const { error: profileError } = await supabase
           .from('profiles')
@@ -49,7 +51,12 @@ export const useAuthActions = (
             updated_at: new Date().toISOString()
           });
           
-        if (profileError) throw profileError;
+        if (profileError) {
+          console.error("Error creating profile:", profileError);
+          throw profileError;
+        } else {
+          console.log("Profile created successfully for user:", data.user.id);
+        }
 
         // Navigate to verification page
         toast({
@@ -65,7 +72,11 @@ export const useAuthActions = (
       // More user-friendly error messages
       if (error.message.includes("already registered")) {
         message = "Este e-mail já está cadastrado.";
+      } else if (error.message.includes("violates row-level security")) {
+        message = "Erro de permissão ao criar perfil. Por favor, tente novamente.";
       }
+      
+      console.error("Signup error:", error);
       
       toast({
         title: "Erro ao criar conta",
@@ -95,15 +106,23 @@ export const useAuthActions = (
         handleAuthChange(data.session);
         
         // Fetch user profile and redirect based on user type
-        const { data: profile } = await supabase
+        const { data: profile, error: profileError } = await supabase
           .from('profiles')
           .select('user_type')
           .eq('id', data.session.user.id)
           .single();
         
+        if (profileError) {
+          console.error("Error fetching user profile:", profileError);
+          throw profileError;
+        }
+        
+        // Determine redirect path based on user_type
         const redirectPath = profile?.user_type === 'prestador' 
           ? '/dashboard/prestador' 
           : '/dashboard/cliente';
+        
+        console.log("Redirecting to:", redirectPath, "based on user_type:", profile?.user_type);
         
         navigate(redirectPath);
         
@@ -118,7 +137,12 @@ export const useAuthActions = (
       // More user-friendly error messages
       if (error.message.includes("Invalid login")) {
         message = "E-mail ou senha incorretos.";
+      } else if (error.message.includes("Email not confirmed")) {
+        message = "Por favor, verifique seu e-mail antes de fazer login.";
+        navigate("/verificar-email");
       }
+      
+      console.error("Login error:", error);
       
       toast({
         title: "Erro ao fazer login",
