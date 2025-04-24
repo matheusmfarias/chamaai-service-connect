@@ -1,14 +1,11 @@
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useToast } from '@/hooks/use-toast';
+import { toast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import { Review } from '@/types/serviceRequest';
 import { supabase } from '@/integrations/supabase';
 
-export type { Review };
-
 export const useReviews = (providerId?: string) => {
-  const { toast } = useToast();
   const { user } = useAuth();
   const queryClient = useQueryClient();
   
@@ -82,7 +79,7 @@ export const useReviews = (providerId?: string) => {
     reviews: reviews || [],
     isLoading,
     error,
-    createReview: createReview.mutate,
+    createReview,
     averageRating: reviews?.length ? 
       reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length : 
       0

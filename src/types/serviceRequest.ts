@@ -40,12 +40,17 @@ export interface Proposal {
       state: string | null;
     };
   };
+  service_requests?: {
+    id: string;
+    title: string;
+    status: string;
+  };
 }
 
 export interface Review {
   id: string;
-  service_provider_id: string;
-  reviewer_id: string;
+  from_user_id: string;
+  to_user_id: string;
   rating: number;
   comment: string | null;
   created_at: string;
@@ -62,4 +67,3 @@ export interface ProviderAvailability {
   start_time: string;
   end_time: string;
 }
-
