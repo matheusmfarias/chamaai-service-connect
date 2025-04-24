@@ -12,12 +12,16 @@ const mockProviders: ServiceProvider[] = [
     id: 'provider-1',
     user_id: 'user-1',
     category_id: 'limpeza',
+    category: 'Limpeza', // Added category field
     description: 'Serviços de limpeza residencial com produtos especializados.',
     rate_per_hour: 50,
     availability: ['morning', 'afternoon'],
     rating: 4.8,
     total_reviews: 24,
     created_at: '2024-01-01T10:00:00Z',
+    is_verified: true, // Added is_verified field
+    response_time: '30 minutos', // Added response_time field
+    services_completed: 45, // Added services_completed field
     profiles: {
       full_name: 'Maria Silva',
       phone: '(11) 98765-4321',
@@ -35,12 +39,16 @@ const mockProviders: ServiceProvider[] = [
     id: 'provider-2',
     user_id: 'user-2',
     category_id: 'eletrica',
+    category: 'Elétrica', // Added category field
     description: 'Eletricista com 15 anos de experiência em instalações residenciais.',
     rate_per_hour: 80,
     availability: ['afternoon', 'evening'],
     rating: 4.9,
     total_reviews: 36,
     created_at: '2024-01-05T14:30:00Z',
+    is_verified: false, // Added is_verified field
+    response_time: '1 hora', // Added response_time field
+    services_completed: 78, // Added services_completed field
     profiles: {
       full_name: 'João Ferreira',
       phone: '(11) 91234-5678',
@@ -134,7 +142,7 @@ export const useSearchServiceProviders = (searchTerm: string) => {
         return mockProviders.filter(provider => 
           provider.description?.toLowerCase().includes(searchTermLower) ||
           provider.profiles.full_name.toLowerCase().includes(searchTermLower) ||
-          provider.categories.name.toLowerCase().includes(searchTermLower)
+          provider.category.toLowerCase().includes(searchTermLower)
         );
       } catch (err: any) {
         toast({

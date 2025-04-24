@@ -9,6 +9,11 @@ export interface ServiceProvider {
   rating: number;
   total_reviews: number;
   created_at: string;
+  // Add properties referenced in the code but not defined in type
+  category: string;
+  is_verified?: boolean;
+  response_time?: string;
+  services_completed?: number;
   profiles: {
     full_name: string;
     phone: string | null;

@@ -17,12 +17,12 @@ export const filterProvidersBySearch = (providers: ServiceProvider[], query: str
     };
     
     let relatedMatch = false;
-    for (const [category, terms] of Object.entries(relatedTerms)) {
-      if (provider.category.toLowerCase() === category && terms.some(term => searchQuery.includes(term))) {
+    for (const [categoryKey, terms] of Object.entries(relatedTerms)) {
+      if (provider.category.toLowerCase() === categoryKey && terms.some(term => searchQuery.includes(term))) {
         relatedMatch = true;
         break;
       }
-      if (terms.includes(searchQuery) && provider.category.toLowerCase() === category) {
+      if (terms.includes(searchQuery) && provider.category.toLowerCase() === categoryKey) {
         relatedMatch = true;
         break;
       }
