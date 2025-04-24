@@ -69,7 +69,6 @@ const SolicitarServico = () => {
       return;
     }
     
-    // Combina a data e hora em um objeto Date
     const scheduledDate = new Date(date);
     const [hours, minutes] = time.split(':').map(Number);
     scheduledDate.setHours(hours, minutes, 0, 0);
@@ -79,9 +78,9 @@ const SolicitarServico = () => {
       description,
       category,
       status: "pending",
+      is_public: isPublic,
       estimated_price: null,
-      scheduled_date: scheduledDate.toISOString(),
-      is_public: isPublic
+      scheduled_date: scheduledDate.toISOString()
     });
     
     if (requestId) {

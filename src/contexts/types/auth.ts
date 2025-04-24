@@ -47,7 +47,7 @@ export interface ServiceProviderData {
   category: string;
   description: string;
   rate_per_hour: number;
-  service_radius?: number; // Raio de atendimento em KM
+  service_radius?: number;
 }
 
 export interface AuthContextType {

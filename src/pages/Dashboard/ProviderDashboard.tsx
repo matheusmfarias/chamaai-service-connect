@@ -48,7 +48,7 @@ const mockPendingRequests: Partial<ServiceRequest>[] = [
     status: 'pending',
     is_public: true,
     estimated_price: null,
-    scheduled_date: new Date(Date.now() + 172800000).toISOString(), // 2 days from now
+    scheduled_date: new Date(Date.now() + 172800000).toISOString(),
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
     client_id: 'client-1',
@@ -64,7 +64,7 @@ const mockPendingRequests: Partial<ServiceRequest>[] = [
     status: 'pending',
     is_public: true,
     estimated_price: null,
-    scheduled_date: new Date(Date.now() + 345600000).toISOString(), // 4 days from now
+    scheduled_date: new Date(Date.now() + 345600000).toISOString(),
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
     client_id: 'client-2',
@@ -111,8 +111,8 @@ const mockCompletedProposals: ServiceProposal[] = [
     price: 200,
     status: 'completed',
     message: null,
-    created_at: new Date(Date.now() - 604800000).toISOString(), // 7 days ago
-    updated_at: new Date(Date.now() - 518400000).toISOString(), // 6 days ago
+    created_at: new Date(Date.now() - 604800000).toISOString(),
+    updated_at: new Date(Date.now() - 518400000).toISOString(),
     service_requests: {
       id: 'req-301',
       client_id: 'client-3',
@@ -122,9 +122,9 @@ const mockCompletedProposals: ServiceProposal[] = [
       status: 'completed',
       is_public: true,
       estimated_price: 200,
-      scheduled_date: new Date(Date.now() - 518400000).toISOString(), // 6 days ago
-      created_at: new Date(Date.now() - 604800000).toISOString(), // 7 days ago
-      updated_at: new Date(Date.now() - 518400000).toISOString(), // 6 days ago
+      scheduled_date: new Date(Date.now() - 518400000).toISOString(),
+      created_at: new Date(Date.now() - 604800000).toISOString(),
+      updated_at: new Date(Date.now() - 518400000).toISOString(),
       profiles: {
         full_name: 'Carlos Mendes'
       }

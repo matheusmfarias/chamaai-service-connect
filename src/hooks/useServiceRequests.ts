@@ -9,7 +9,7 @@ export interface ServiceRequest {
   description: string;
   category: string;
   status: 'pending' | 'assigned' | 'completed' | 'cancelled';
-  is_public: boolean; // Public or private request
+  is_public: boolean;
   estimated_price: number | null;
   scheduled_date: string;
   created_at: string;
@@ -48,7 +48,7 @@ const mockServiceRequests: ServiceRequest[] = [
     description: 'Preciso de uma faxina completa em apartamento de 70m²',
     category: 'limpeza',
     status: 'pending',
-    is_public: true, // Public request
+    is_public: true,
     estimated_price: null,
     scheduled_date: new Date().toISOString(),
     created_at: new Date().toISOString(),
@@ -64,9 +64,9 @@ const mockServiceRequests: ServiceRequest[] = [
     description: 'Preciso instalar 5 tomadas na sala e cozinha',
     category: 'eletrica',
     status: 'pending',
-    is_public: false, // Private request
+    is_public: false,
     estimated_price: null,
-    scheduled_date: new Date(Date.now() + 86400000).toISOString(), // tomorrow
+    scheduled_date: new Date(Date.now() + 86400000).toISOString(),
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString(),
     profiles: {
