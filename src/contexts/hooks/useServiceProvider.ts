@@ -1,8 +1,20 @@
 
 import { useState } from "react";
-import { ServiceProviderData } from "../types/auth";
-import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { ServiceProviderData } from "../types/auth";
+
+const mockServiceProviders: Record<string, ServiceProviderData> = {
+  "mock-provider-1": {
+    category: "limpeza",
+    description: "Serviços de limpeza residencial",
+    rate_per_hour: 50,
+  },
+  "mock-provider-2": {
+    category: "eletrica",
+    description: "Serviços de elétrica em geral",
+    rate_per_hour: 80,
+  }
+};
 
 export const useServiceProvider = () => {
   const [isServiceProvider, setIsServiceProvider] = useState(false);
@@ -10,47 +22,19 @@ export const useServiceProvider = () => {
 
   const checkServiceProviderStatus = async (userId: string) => {
     try {
-      const { data, error } = await supabase
-        .from("service_providers")
-        .select("id")
-        .eq("id", userId)
-        .maybeSingle();
-
-      if (error && error.code !== "PGRST116") {
-        console.error("Erro ao verificar status de prestador:", error);
-        return;
-      }
-
-      setIsServiceProvider(!!data);
-      return !!data;
+      const mockProvider = mockServiceProviders[userId];
+      setIsServiceProvider(!!mockProvider);
+      return !!mockProvider;
     } catch (error) {
       console.error("Erro ao verificar status de prestador:", error);
+      return false;
     }
   };
 
   const createServiceProvider = async (data: ServiceProviderData) => {
-    const { data: session } = await supabase.auth.getSession();
-    if (!session.session?.user) return;
-
     try {
-      const { error } = await supabase
-        .from("service_providers")
-        .insert({
-          id: session.session.user.id,
-          category: data.category,
-          description: data.description,
-          rate_per_hour: data.rate_per_hour,
-        });
-
-      if (error) {
-        toast({
-          title: "Erro ao criar perfil de prestador",
-          description: error.message,
-          variant: "destructive",
-        });
-        return;
-      }
-
+      const mockUserId = "mock-user-" + Math.random().toString(36).substr(2, 9);
+      mockServiceProviders[mockUserId] = data;
       setIsServiceProvider(true);
 
       toast({
@@ -67,23 +51,11 @@ export const useServiceProvider = () => {
   };
 
   const checkIsServiceProvider = async (): Promise<boolean> => {
-    const { data: session } = await supabase.auth.getSession();
-    if (!session.session?.user) return false;
-    
+    const mockUserId = "mock-user-1"; // For testing purposes
     try {
-      const { data, error } = await supabase
-        .from("service_providers")
-        .select("id")
-        .eq("id", session.session.user.id)
-        .maybeSingle();
-
-      if (error && error.code !== "PGRST116") {
-        console.error("Erro ao verificar status de prestador:", error);
-        return false;
-      }
-
-      setIsServiceProvider(!!data);
-      return !!data;
+      const mockProvider = mockServiceProviders[mockUserId];
+      setIsServiceProvider(!!mockProvider);
+      return !!mockProvider;
     } catch (error) {
       console.error("Erro ao verificar status de prestador:", error);
       return false;

@@ -1,12 +1,11 @@
+
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import { User, Session } from "@supabase/supabase-js";
+import { User, Session } from "@/types/auth";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import { AuthContextType, UserSignUpData } from "./types/auth";
 import { useProfile } from "./hooks/useProfile";
 import { useServiceProvider } from "./hooks/useServiceProvider";
-import { ServiceCategory } from "@/constants/categories";
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -22,6 +21,24 @@ interface AuthProviderProps {
   children: ReactNode;
 }
 
+// Mock user for development
+const mockUser: User = {
+  id: "mock-user-1",
+  email: "user@example.com",
+  user_metadata: {
+    full_name: "Mock User"
+  }
+};
+
+// Mock session for development
+const mockSession: Session = {
+  access_token: "mock-token",
+  token_type: "bearer",
+  expires_in: 3600,
+  refresh_token: "mock-refresh-token",
+  user: mockUser
+};
+
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
@@ -29,93 +46,28 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  const { 
-    userProfile,
-    setUserProfile,
-    fetchUserProfile,
-    updateProfile 
-  } = useProfile();
-
-  const {
-    isServiceProvider,
-    setIsServiceProvider,
-    checkServiceProviderStatus,
-    createServiceProvider,
-    checkIsServiceProvider
-  } = useServiceProvider();
+  const { userProfile, setUserProfile, fetchUserProfile, updateProfile } = useProfile();
+  const { isServiceProvider, setIsServiceProvider, checkServiceProviderStatus, createServiceProvider, checkIsServiceProvider } = useServiceProvider();
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        setSession(session);
-        setUser(session?.user ?? null);
-        
-        if (!session) {
-          setUserProfile(null);
-          setIsServiceProvider(false);
-        } else {
-          if (event === 'USER_UPDATED' && session.user.email_confirmed_at) {
-            toast({
-              title: "E-mail verificado!",
-              description: "Sua conta foi ativada com sucesso. Por favor, faça login para continuar.",
-            });
-            
-            localStorage.removeItem("verification_email");
-            
-            await signOut();
-            navigate("/login");
-          } else {
-            setTimeout(() => {
-              fetchUserProfile(session.user.id);
-              checkServiceProviderStatus(session.user.id);
-            }, 0);
-          }
-        }
-      }
-    );
-
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
+    // Simulate initial auth check
+    setTimeout(() => {
+      setUser(mockUser);
+      setSession(mockSession);
       setIsLoading(false);
-
-      if (session?.user) {
-        fetchUserProfile(session.user.id);
-        checkServiceProviderStatus(session.user.id);
-      }
-    });
-
-    return () => {
-      subscription.unsubscribe();
-    };
+    }, 1000);
   }, []);
 
   const signUp = async (email: string, password: string, userData: UserSignUpData) => {
     try {
       setIsLoading(true);
       
-      const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          data: {
-            full_name: userData.full_name,
-            phone: userData.phone || null,
-            city: userData.city || null,
-            state: userData.state || null,
-            user_type: userData.user_type || 'cliente'
-          }
-        }
-      });
+      // Simulate signup delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
 
-      if (error) {
-        toast({
-          title: "Erro ao criar conta",
-          description: error.message,
-          variant: "destructive",
-        });
-        return;
-      }
+      // Simulate successful signup
+      setUser(mockUser);
+      setSession(mockSession);
 
       toast({
         title: "Cadastro realizado com sucesso!",
@@ -138,19 +90,12 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     try {
       setIsLoading(true);
       
-      const { data, error } = await supabase.auth.signInWithPassword({
-        email,
-        password,
-      });
+      // Simulate signin delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
 
-      if (error) {
-        toast({
-          title: "Erro ao fazer login",
-          description: error.message,
-          variant: "destructive",
-        });
-        return;
-      }
+      // Simulate successful signin
+      setUser(mockUser);
+      setSession(mockSession);
 
       toast({
         title: "Login realizado com sucesso!",
@@ -173,16 +118,13 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     try {
       setIsLoading(true);
       
-      const { error } = await supabase.auth.signOut();
+      // Simulate signout delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
 
-      if (error) {
-        toast({
-          title: "Erro ao sair",
-          description: error.message,
-          variant: "destructive",
-        });
-        return;
-      }
+      setUser(null);
+      setSession(null);
+      setUserProfile(null);
+      setIsServiceProvider(false);
 
       toast({
         title: "Desconectado com sucesso",

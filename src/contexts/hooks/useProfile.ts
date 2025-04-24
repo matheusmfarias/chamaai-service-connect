@@ -1,8 +1,30 @@
 
 import { useState } from "react";
 import { UserProfile } from "../types/auth";
-import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+
+const mockProfiles: Record<string, UserProfile> = {
+  "mock-user-1": {
+    id: "mock-user-1",
+    full_name: "João Silva",
+    phone: "(11) 99999-9999",
+    city: "São Paulo",
+    state: "SP",
+    created_at: "2024-01-01T00:00:00Z",
+    updated_at: "2024-01-01T00:00:00Z",
+    user_type: "cliente"
+  },
+  "mock-user-2": {
+    id: "mock-user-2",
+    full_name: "Maria Santos",
+    phone: "(11) 88888-8888",
+    city: "Rio de Janeiro",
+    state: "RJ",
+    created_at: "2024-01-01T00:00:00Z",
+    updated_at: "2024-01-01T00:00:00Z",
+    user_type: "prestador"
+  }
+};
 
 export const useProfile = () => {
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
@@ -10,19 +32,9 @@ export const useProfile = () => {
 
   const fetchUserProfile = async (userId: string) => {
     try {
-      const { data, error } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("id", userId)
-        .maybeSingle();
-
-      if (error && error.code !== "PGRST116") {
-        console.error("Erro ao buscar perfil:", error);
-        return;
-      }
-
-      if (data) {
-        setUserProfile(data as UserProfile);
+      const mockProfile = mockProfiles[userId];
+      if (mockProfile) {
+        setUserProfile(mockProfile);
       } else {
         console.log("Perfil não encontrado para o usuário:", userId);
       }
@@ -36,29 +48,14 @@ export const useProfile = () => {
     if (!userId) return;
 
     try {
-      const { error } = await supabase
-        .from("profiles")
-        .update({
-          ...data,
-          updated_at: new Date().toISOString(),
-        })
-        .eq("id", userId);
-
-      if (error) {
-        toast({
-          title: "Erro ao atualizar perfil",
-          description: error.message,
-          variant: "destructive",
-        });
-        return;
-      }
-
-      if (userProfile) {
-        setUserProfile({
-          ...userProfile,
-          ...data,
-        });
-      }
+      const updatedProfile = {
+        ...mockProfiles[userId],
+        ...data,
+        updated_at: new Date().toISOString(),
+      };
+      
+      mockProfiles[userId] = updatedProfile;
+      setUserProfile(updatedProfile);
 
       toast({
         title: "Perfil atualizado",
