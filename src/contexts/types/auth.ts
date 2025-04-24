@@ -60,6 +60,6 @@ export interface AuthContextType {
   signIn: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
   updateProfile: (data: Partial<UserProfile>) => Promise<UserProfile | null>;
-  createServiceProvider: (data: ServiceProviderData) => Promise<void>;
+  createServiceProvider: (data: ServiceProviderData) => Promise<boolean>;
   checkIsServiceProvider: () => Promise<boolean>;
 }

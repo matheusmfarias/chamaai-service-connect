@@ -207,7 +207,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
   };
 
-  const value = {
+  const value: AuthContextType = {
     user,
     session,
     isLoading,
