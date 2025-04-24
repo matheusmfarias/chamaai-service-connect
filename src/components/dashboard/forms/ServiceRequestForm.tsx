@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -16,7 +15,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
 import { cn } from "@/lib/utils";
 import { serviceCategories } from "@/constants/categories";
-import { ServiceRequest } from "@/hooks/useServiceRequests";
+import { ServiceRequest } from "@/types/serviceRequest";
 
 interface FormValues {
   title: string;

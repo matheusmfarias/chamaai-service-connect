@@ -25,7 +25,7 @@ import {
   Star,
   FileText
 } from "lucide-react";
-import { ServiceRequest } from "@/hooks/useServiceRequests";
+import { ServiceRequest } from "@/types/serviceRequest";
 
 interface ServiceProposal {
   id: string;

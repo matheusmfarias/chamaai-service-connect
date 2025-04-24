@@ -3,7 +3,8 @@ import { Eye, Star, Clock, CheckCircle, Award, XCircle, Calendar, AlertCircle } 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { useServiceRequests, ServiceRequest } from "@/hooks/useServiceRequests";
+import { useServiceRequests } from "@/hooks";
+import { ServiceRequest } from "@/types/serviceRequest";
 import { Link } from "react-router-dom";
 import { 
   AlertDialog,
