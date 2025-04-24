@@ -44,32 +44,42 @@ const mockPendingRequests: Partial<ServiceRequest>[] = [
     id: 'req-101',
     title: 'Limpeza de escritório',
     description: 'Limpeza completa de escritório de 120m²',
+    category_id: 'limpeza-id',
     category: 'limpeza',
     status: 'pending',
     is_public: true,
-    estimated_price: null,
+    location: null,
     scheduled_date: new Date(Date.now() + 172800000).toISOString(),
     created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
     client_id: 'client-1',
     profiles: {
       full_name: 'Empresa ABC'
+    },
+    categories: {
+      name: 'Limpeza',
+      slug: 'limpeza',
+      icon: null
     }
   },
   {
     id: 'req-102',
     title: 'Faxina residencial',
     description: 'Limpeza de casa com 3 quartos',
+    category_id: 'limpeza-id',
     category: 'limpeza',
     status: 'pending',
     is_public: true,
-    estimated_price: null,
+    location: null,
     scheduled_date: new Date(Date.now() + 345600000).toISOString(),
     created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
     client_id: 'client-2',
     profiles: {
       full_name: 'Roberto Almeida'
+    },
+    categories: {
+      name: 'Limpeza',
+      slug: 'limpeza',
+      icon: null
     }
   }
 ];

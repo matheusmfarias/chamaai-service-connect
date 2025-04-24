@@ -77,7 +77,7 @@ const RequestCard = ({ request }: { request: ServiceRequest }) => {
           <div>
             <CardTitle className="text-lg">{request.title}</CardTitle>
             <Badge variant="secondary" className="mt-2 font-normal">
-              {request.category}
+              {request.categories?.name || request.category}
             </Badge>
           </div>
           {statusDetails.badge}

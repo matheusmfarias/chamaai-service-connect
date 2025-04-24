@@ -18,6 +18,8 @@ export interface ServiceRequest {
     slug: string;
     icon: string | null;
   };
+  // For backward compatibility
+  category?: string;
 }
 
 export interface Proposal {

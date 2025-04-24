@@ -32,7 +32,14 @@ export const useServiceRequests = () => {
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      return data as ServiceRequest[];
+      
+      // Add backward compatibility for category field
+      const requestsWithCategory = data.map((request: any) => ({
+        ...request,
+        category: request.categories?.slug || null
+      }));
+      
+      return requestsWithCategory as ServiceRequest[];
     },
     enabled: !!user
   });

@@ -76,10 +76,10 @@ const SolicitarServico = () => {
     const requestId = await createRequest({
       title,
       description,
-      category,
+      category_id: category,
       status: "pending",
       is_public: isPublic,
-      estimated_price: null,
+      location: null,
       scheduled_date: scheduledDate.toISOString()
     });
     
