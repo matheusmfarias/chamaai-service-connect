@@ -1,4 +1,6 @@
 
 export { useServiceRequests } from './useServiceRequests';
 export { useProposals } from './useProposals';
-export type { ServiceRequest, Proposal } from '@/types/serviceRequest';
+export { useReviews } from './useReviews';
+export type { ServiceRequest, Proposal, Review, ProviderAvailability } from '@/types/serviceRequest';
+

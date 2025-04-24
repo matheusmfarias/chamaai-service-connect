@@ -41,3 +41,25 @@ export interface Proposal {
     };
   };
 }
+
+export interface Review {
+  id: string;
+  service_provider_id: string;
+  reviewer_id: string;
+  rating: number;
+  comment: string | null;
+  created_at: string;
+  request_id: string | null;
+  profiles: {
+    full_name: string;
+  };
+}
+
+export interface ProviderAvailability {
+  id: string;
+  provider_id: string;
+  day_of_week: number;
+  start_time: string;
+  end_time: string;
+}
+

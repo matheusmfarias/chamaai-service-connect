@@ -114,6 +114,123 @@ export type Database = {
           },
         ]
       }
+      provider_availabilities: {
+        Row: {
+          day_of_week: number | null
+          end_time: string | null
+          id: string
+          provider_id: string | null
+          start_time: string | null
+        }
+        Insert: {
+          day_of_week?: number | null
+          end_time?: string | null
+          id?: string
+          provider_id?: string | null
+          start_time?: string | null
+        }
+        Update: {
+          day_of_week?: number | null
+          end_time?: string | null
+          id?: string
+          provider_id?: string | null
+          start_time?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "provider_availabilities_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      request_visibility: {
+        Row: {
+          id: string
+          provider_id: string | null
+          request_id: string | null
+        }
+        Insert: {
+          id?: string
+          provider_id?: string | null
+          request_id?: string | null
+        }
+        Update: {
+          id?: string
+          provider_id?: string | null
+          request_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "request_visibility_provider_id_fkey"
+            columns: ["provider_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "request_visibility_request_id_fkey"
+            columns: ["request_id"]
+            isOneToOne: false
+            referencedRelation: "service_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      reviews: {
+        Row: {
+          comment: string | null
+          created_at: string | null
+          from_user_id: string | null
+          id: string
+          rating: number | null
+          request_id: string | null
+          to_user_id: string | null
+        }
+        Insert: {
+          comment?: string | null
+          created_at?: string | null
+          from_user_id?: string | null
+          id?: string
+          rating?: number | null
+          request_id?: string | null
+          to_user_id?: string | null
+        }
+        Update: {
+          comment?: string | null
+          created_at?: string | null
+          from_user_id?: string | null
+          id?: string
+          rating?: number | null
+          request_id?: string | null
+          to_user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reviews_from_user_id_fkey"
+            columns: ["from_user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reviews_request_id_fkey"
+            columns: ["request_id"]
+            isOneToOne: false
+            referencedRelation: "service_requests"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reviews_to_user_id_fkey"
+            columns: ["to_user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       service_requests: {
         Row: {
           category_id: string | null
