@@ -39,9 +39,10 @@ export const useAuthState = () => {
     }
   }, [toast, navigate]);
 
-  const handleAuthChange = useCallback((currentSession: Session | null) => {
-    setSession(currentSession);
-    setUser(currentSession?.user || null);
+  const handleAuthChange = useCallback((currentSession: any) => {
+    // Type assertion to manage the incompatible types
+    setSession(currentSession as Session);
+    setUser(currentSession?.user as User || null);
     setIsLoading(false);
   }, []);
   
@@ -55,7 +56,8 @@ export const useAuthState = () => {
       }
       
       if (data?.session) {
-        handleAuthChange(data.session);
+        // Type assertion to manage the incompatible types
+        handleAuthChange(data.session as Session);
       } else {
         setIsLoading(false);
       }

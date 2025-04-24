@@ -51,7 +51,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, sessionData) => {
         if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
-          handleAuthChange(sessionData);
+          // Type assertion to manage the incompatible types
+          handleAuthChange(sessionData as any);
         } else if (event === 'SIGNED_OUT') {
           handleAuthChange(null);
         }

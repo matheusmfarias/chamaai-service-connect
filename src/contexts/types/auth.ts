@@ -3,20 +3,20 @@ import { ReactNode } from "react";
 
 export interface User {
   id: string;
-  email: string;
-  user_metadata: {
-    full_name: string;
+  email?: string; // Changed from required to optional to match Supabase's User type
+  user_metadata?: {
+    full_name?: string;
   };
-  app_metadata: Record<string, any>;
-  aud: string;
-  created_at: string;
+  app_metadata?: Record<string, any>;
+  aud?: string;
+  created_at?: string;
 }
 
 export interface Session {
   access_token: string;
   token_type: string;
-  expires_in: number;
-  refresh_token: string;
+  expires_in?: number;
+  refresh_token?: string;
   user: User;
 }
 
