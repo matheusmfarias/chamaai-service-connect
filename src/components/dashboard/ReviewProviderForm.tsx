@@ -45,7 +45,7 @@ export default function ReviewProviderForm({
     setIsSubmitting(true);
     
     try {
-      await createReview({
+      await createReview.mutateAsync({
         service_provider_id: providerId,
         rating,
         comment,

@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useParams } from "react-router-dom";
 import { 
@@ -63,14 +62,16 @@ const CreateReviewForm = ({ rating, comment, providerId, onSuccess }: CreateRevi
     }
 
     setIsSubmitting(true);
-    createReview({
-      service_provider_id: providerId,
-      rating: reviewRating,
-      comment: reviewComment,
-    });
-    
-    setIsSubmitting(false);
-    onSuccess();
+    try {
+      await createReview.mutateAsync({
+        service_provider_id: providerId,
+        rating: reviewRating,
+        comment: reviewComment,
+      });
+      onSuccess();
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
