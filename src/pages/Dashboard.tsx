@@ -5,10 +5,11 @@ import { useAuth } from "@/contexts/AuthContext";
 import ClientDashboard from "./Dashboard/ClientDashboard";
 import ProviderDashboard from "./Dashboard/ProviderDashboard";
 import Layout from "@/components/Layout";
+import { Loader2 } from "lucide-react";
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const { user, isLoading, isServiceProvider, checkIsServiceProvider } = useAuth();
+  const { user, userProfile, isLoading, isServiceProvider, checkIsServiceProvider } = useAuth();
   
   useEffect(() => {
     const checkUserType = async () => {
@@ -18,26 +19,47 @@ const Dashboard = () => {
       }
       
       try {
-        await checkIsServiceProvider();
+        if (userProfile) {
+          console.log("User profile loaded:", userProfile);
+          
+          // Check if user is a service provider
+          await checkIsServiceProvider();
+          
+          // Redirect based on user type
+          const userType = userProfile.user_type;
+          console.log("User type:", userType);
+          
+          if (userType === 'prestador' || userType === 'provider') {
+            console.log("User is a service provider, staying on dashboard");
+          } else if (userType === 'cliente' || userType === 'client') {
+            console.log("User is a client, staying on dashboard");
+          } else {
+            console.log("Unknown user type:", userType);
+          }
+        } else {
+          console.log("User profile not loaded yet");
+        }
       } catch (error) {
-        console.error("Error checking if user is service provider:", error);
+        console.error("Error checking user type:", error);
       }
     };
     
-    if (!isLoading) {
+    if (!isLoading && user) {
       checkUserType();
     }
-  }, [user, isLoading, navigate, checkIsServiceProvider]);
+  }, [user, userProfile, isLoading, navigate, checkIsServiceProvider]);
 
   // Mostrar loading enquanto verifica o status
-  if (isLoading) {
+  if (isLoading || !userProfile) {
     return (
-      <div className="flex justify-center items-center h-screen">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-chamaai-blue mx-auto mb-4"></div>
-          <p>Carregando...</p>
+      <Layout>
+        <div className="flex justify-center items-center h-[calc(100vh-200px)]">
+          <div className="text-center">
+            <Loader2 className="h-12 w-12 animate-spin text-chamaai-blue mx-auto mb-4" />
+            <p>Carregando seu dashboard...</p>
+          </div>
         </div>
-      </div>
+      </Layout>
     );
   }
 

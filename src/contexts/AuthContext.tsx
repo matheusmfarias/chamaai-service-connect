@@ -1,5 +1,5 @@
 
-import React, { createContext, useContext, useEffect } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 import { AuthContextType } from "./types/auth";
 import { useAuthState } from "./hooks/useAuthState";
 import { useAuthActions } from "./hooks/useAuthActions";
@@ -30,7 +30,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     handleAuthChange,
     handleSignOut,
     restoreSession,
-    navigate
+    navigate,
+    toast
   } = useAuthState();
 
   const { userProfile, setUserProfile, fetchUserProfile, updateProfile } = useProfile();
@@ -40,21 +41,36 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     createServiceProvider, 
     checkIsServiceProvider 
   } = useServiceProvider();
+  
+  const [isAuthReady, setIsAuthReady] = useState(false);
 
   const { signUp, signIn } = useAuthActions(handleAuthChange, setIsLoading);
 
+  // Initialize auth state when the app loads
   useEffect(() => {
-    // Initialize auth state when the app loads
-    restoreSession();
+    const initAuth = async () => {
+      await restoreSession();
+      setIsAuthReady(true);
+    };
+    
+    initAuth();
 
     // Set up auth state change listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (event, sessionData) => {
+      async (event, sessionData) => {
+        console.log("Auth state change:", event);
+        
         if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
           // Type assertion to manage the incompatible types
           handleAuthChange(sessionData as any);
+          
+          if (sessionData?.user) {
+            await fetchUserProfile(sessionData.user.id);
+          }
         } else if (event === 'SIGNED_OUT') {
           handleAuthChange(null);
+          setUserProfile(null);
+          setIsServiceProvider(false);
         }
       }
     );
@@ -63,32 +79,37 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     return () => {
       subscription.unsubscribe();
     };
-  }, [restoreSession, handleAuthChange]);
+  }, [restoreSession, handleAuthChange, fetchUserProfile, setUserProfile, setIsServiceProvider]);
 
-  // Fetch user profile when user changes
+  // Handle user redirection after authentication
   useEffect(() => {
-    const getUserProfile = async () => {
-      if (user) {
-        const profile = await fetchUserProfile(user.id);
+    const handleRedirection = async () => {
+      if (user && userProfile && !isLoading && isAuthReady) {
+        console.log("Handle redirection with userProfile:", userProfile);
         
-        if (profile) {
-          // Check if user is a service provider
-          await checkIsServiceProvider();
+        // Check if user is a service provider
+        const isProvider = await checkIsServiceProvider();
+        
+        // Get the current path
+        const currentPath = window.location.pathname;
+        
+        // Only redirect if on certain pages
+        const shouldRedirect = ["/", "/login", "/cadastro", "/verificar-email"].includes(currentPath);
+        
+        if (shouldRedirect) {
+          // Determine redirect path based on user type
+          const redirectPath = userProfile.user_type === 'prestador' || userProfile.user_type === 'provider' 
+            ? "/dashboard" 
+            : "/dashboard";
           
-          // Redirect based on user type
-          if (profile.user_type === 'prestador' || profile.user_type === 'provider') {
-            navigate("/dashboard/prestador");
-          } else {
-            navigate("/dashboard/cliente");
-          }
+          console.log(`Redirecting user (${userProfile.user_type}) to ${redirectPath}`);
+          navigate(redirectPath);
         }
       }
     };
     
-    if (user && !isLoading) {
-      getUserProfile();
-    }
-  }, [user, isLoading, fetchUserProfile, checkIsServiceProvider, navigate]);
+    handleRedirection();
+  }, [user, userProfile, isLoading, isAuthReady, navigate, checkIsServiceProvider]);
 
   const value: AuthContextType = {
     user,

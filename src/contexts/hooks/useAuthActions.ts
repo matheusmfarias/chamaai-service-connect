@@ -2,12 +2,14 @@
 import { useToast } from "@/hooks/use-toast";
 import { UserSignUpData } from "../types/auth";
 import { supabase } from "@/integrations/supabase";
+import { useNavigate } from "react-router-dom";
 
 export const useAuthActions = (
   handleAuthChange: (session: any) => void,
   setIsLoading: (loading: boolean) => void
 ) => {
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const signUp = async (email: string, password: string, userData: UserSignUpData) => {
     try {
@@ -21,7 +23,8 @@ export const useAuthActions = (
           data: {
             full_name: userData.full_name,
             user_type: userData.user_type || 'cliente'
-          }
+          },
+          emailRedirectTo: `${window.location.origin}/verificar-email`
         }
       });
       
@@ -38,20 +41,21 @@ export const useAuthActions = (
             city: userData.city || null,
             state: userData.state || null,
             user_type: userData.user_type || 'cliente',
+            email: email,
             created_at: new Date().toISOString(),
             updated_at: new Date().toISOString()
           });
           
         if (profileError) throw profileError;
 
-        if (data.session) {
-          handleAuthChange(data.session);
-        }
-        
+        // Navigate to verification page instead of logging in automatically
         toast({
           title: "Cadastro realizado com sucesso!",
-          description: "Sua conta foi criada. Você foi automaticamente conectado.",
+          description: "Enviamos um link de verificação para o seu e-mail.",
         });
+        
+        // Navigate to verification page
+        navigate("/verificar-email", { state: { email: email } });
       }
     } catch (error: any) {
       let message = error.message;
@@ -110,28 +114,8 @@ export const useAuthActions = (
     }
   };
 
-  const signOut = async () => {
-    try {
-      setIsLoading(true);
-      
-      const { error } = await supabase.auth.signOut();
-      
-      if (error) throw error;
-
-    } catch (error: any) {
-      toast({
-        title: "Erro ao sair",
-        description: error.message || "Ocorreu um erro ao sair. Tente novamente mais tarde.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   return {
     signUp,
-    signIn,
-    signOut
+    signIn
   };
 };
