@@ -15,8 +15,9 @@ export const useAuthActions = (
     try {
       setIsLoading(true);
       
-      // Store email in localStorage for verification page
+      // Store signup data in localStorage for profile creation after verification
       localStorage.setItem('verification_email', email);
+      localStorage.setItem('user_signup_data', JSON.stringify(userData));
       
       // Register the user with Supabase
       const { data, error } = await supabase.auth.signUp({
@@ -25,7 +26,10 @@ export const useAuthActions = (
         options: {
           data: {
             full_name: userData.full_name,
-            user_type: userData.user_type || 'cliente'
+            user_type: userData.user_type || 'cliente',
+            phone: userData.phone || null,
+            city: userData.city || null,
+            state: userData.state || null
           },
           emailRedirectTo: `${window.location.origin}/verificar-email`
         }
@@ -36,31 +40,8 @@ export const useAuthActions = (
       if (data?.user) {
         console.log("User created successfully:", data.user.id);
         
-        // Create profile record
-        const { error: profileError } = await supabase
-          .from('profiles')
-          .insert({
-            id: data.user.id,
-            full_name: userData.full_name,
-            phone: userData.phone || null,
-            city: userData.city || null,
-            state: userData.state || null,
-            user_type: userData.user_type || 'cliente',
-            email: email,
-            created_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
-          });
-          
-        if (profileError) {
-          console.error("Error creating profile:", profileError);
-          throw profileError;
-        } else {
-          console.log("Profile created successfully for user:", data.user.id);
-        }
-
-        // Navigate to verification page
         toast({
-          title: "Cadastro realizado com sucesso!",
+          title: "Cadastro iniciado com sucesso!",
           description: "Enviamos um link de verificação para o seu e-mail.",
         });
         
@@ -72,8 +53,6 @@ export const useAuthActions = (
       // More user-friendly error messages
       if (error.message.includes("already registered")) {
         message = "Este e-mail já está cadastrado.";
-      } else if (error.message.includes("violates row-level security")) {
-        message = "Erro de permissão ao criar perfil. Por favor, tente novamente.";
       }
       
       console.error("Signup error:", error);
@@ -83,9 +62,6 @@ export const useAuthActions = (
         description: message || "Ocorreu um erro ao criar sua conta. Tente novamente mais tarde.",
         variant: "destructive",
       });
-
-      // Clear localStorage if signup fails
-      localStorage.removeItem('verification_email');
     } finally {
       setIsLoading(false);
     }

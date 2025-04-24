@@ -24,6 +24,8 @@ const VerificarEmail = () => {
   const [checkingEmail, setCheckingEmail] = useState(false);
   const [emailChangeSuccess, setEmailChangeSuccess] = useState(false);
   const [verificationStatus, setVerificationStatus] = useState<"pending" | "verified" | "error">("pending");
+  const [creatingProfile, setCreatingProfile] = useState(false);
+  const [profileCreated, setProfileCreated] = useState(false);
 
   // Get email from localStorage on component mount
   useEffect(() => {
@@ -42,7 +44,85 @@ const VerificarEmail = () => {
 
     // Check if user is already verified
     checkVerificationStatus();
+
+    // Set up interval to periodically check verification status
+    const interval = setInterval(() => {
+      checkVerificationStatus();
+    }, 5000); // Check every 5 seconds
+
+    return () => clearInterval(interval);
   }, []);
+
+  // Create user profile function
+  const createUserProfile = async (userId: string) => {
+    try {
+      setCreatingProfile(true);
+
+      // Check if profile already exists
+      const { data: existingProfile } = await supabase
+        .from("profiles")
+        .select("id")
+        .eq("id", userId)
+        .single();
+
+      if (existingProfile) {
+        console.log("Profile already exists for user:", userId);
+        setProfileCreated(true);
+        return;
+      }
+
+      // Get stored user data
+      const userDataString = localStorage.getItem("user_signup_data");
+      if (!userDataString) {
+        throw new Error("User signup data not found");
+      }
+
+      const userData = JSON.parse(userDataString);
+      
+      // Get current user
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        throw new Error("User not authenticated");
+      }
+
+      // Create profile record
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .insert({
+          id: userId,
+          full_name: userData.full_name,
+          phone: userData.phone || null,
+          city: userData.city || null,
+          state: userData.state || null,
+          user_type: userData.user_type || 'cliente',
+          email: user.email
+        });
+          
+      if (profileError) {
+        console.error("Error creating profile:", profileError);
+        throw profileError;
+      } else {
+        console.log("Profile created successfully for user:", userId);
+        setProfileCreated(true);
+        
+        // Success message
+        toast({
+          title: "Perfil criado com sucesso!",
+          description: "Seu cadastro foi concluído.",
+        });
+      }
+    } catch (error: any) {
+      console.error("Error creating profile:", error);
+      toast({
+        title: "Erro ao criar perfil",
+        description: error.message || "Ocorreu um erro ao criar seu perfil. Tente novamente mais tarde.",
+        variant: "destructive",
+      });
+    } finally {
+      setCreatingProfile(false);
+    }
+  };
 
   // Check verification status
   const checkVerificationStatus = async () => {
@@ -57,15 +137,25 @@ const VerificarEmail = () => {
         return;
       }
 
-      if (data?.user && !data.user.email_confirmed_at) {
+      if (data?.user) {
+        // If email is confirmed, the user is verified
+        if (data.user.email_confirmed_at) {
+          setVerificationStatus("verified");
+          
+          // Create user profile if not already created
+          if (!profileCreated && !creatingProfile) {
+            await createUserProfile(data.user.id);
+          }
+          
+          // If verified, redirect to login after a short delay
+          setTimeout(() => {
+            navigate("/login");
+          }, 3000);
+        } else {
+          setVerificationStatus("pending");
+        }
+      } else {
         setVerificationStatus("pending");
-      } else if (data?.user && data.user.email_confirmed_at) {
-        setVerificationStatus("verified");
-        
-        // If verified, redirect to login after a short delay
-        setTimeout(() => {
-          navigate("/login");
-        }, 3000);
       }
     } catch (error) {
       console.error("Error checking verification status:", error);
@@ -153,7 +243,7 @@ const VerificarEmail = () => {
     setLoading(true);
 
     try {
-      // First create a new user with the new email
+      // First update the email in Supabase Auth
       const { data, error } = await supabase.auth.updateUser({
         email: newEmail
       });
@@ -187,6 +277,13 @@ const VerificarEmail = () => {
     }
   };
 
+  // Handle redirect to login
+  const handleRedirectToLogin = () => {
+    // Clear signup data as it's no longer needed
+    localStorage.removeItem("user_signup_data");
+    navigate("/login");
+  };
+
   return (
     <Layout>
       <div className="container-custom py-12">
@@ -195,7 +292,8 @@ const VerificarEmail = () => {
             <CardTitle className="text-2xl font-bold text-center">Verificação de E-mail</CardTitle>
             <CardDescription className="text-center">
               {verificationStatus === "pending" && "Aguardando confirmação do seu e-mail"}
-              {verificationStatus === "verified" && "E-mail verificado com sucesso!"}
+              {verificationStatus === "verified" && !profileCreated && "E-mail verificado! Criando seu perfil..."}
+              {verificationStatus === "verified" && profileCreated && "E-mail verificado e perfil criado com sucesso!"}
               {verificationStatus === "error" && "Erro ao verificar e-mail"}
             </CardDescription>
           </CardHeader>
@@ -212,12 +310,23 @@ const VerificarEmail = () => {
               </Alert>
             )}
 
-            {verificationStatus === "verified" && (
+            {verificationStatus === "verified" && !profileCreated && (
+              <Alert className="bg-yellow-50 text-yellow-800 border-yellow-200">
+                <Clock className="h-4 w-4 text-yellow-600" />
+                <AlertTitle>E-mail verificado</AlertTitle>
+                <AlertDescription>
+                  Estamos criando seu perfil no sistema...
+                </AlertDescription>
+              </Alert>
+            )}
+
+            {verificationStatus === "verified" && profileCreated && (
               <Alert className="bg-green-50 text-green-800 border-green-200">
                 <CheckCircle className="h-4 w-4 text-green-600" />
                 <AlertTitle>E-mail verificado</AlertTitle>
                 <AlertDescription>
-                  Seu e-mail foi verificado com sucesso. Você será redirecionado para o login em instantes...
+                  Seu e-mail foi verificado com sucesso e seu perfil foi criado. 
+                  Você será redirecionado para o login em instantes...
                 </AlertDescription>
               </Alert>
             )}
@@ -319,9 +428,9 @@ const VerificarEmail = () => {
             )}
 
             {/* Button for verified users */}
-            {verificationStatus === "verified" && (
+            {verificationStatus === "verified" && profileCreated && (
               <Button
-                onClick={() => navigate("/login")}
+                onClick={handleRedirectToLogin}
                 className="w-full"
               >
                 Ir para login

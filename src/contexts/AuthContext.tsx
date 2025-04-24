@@ -65,19 +65,33 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           handleAuthChange(sessionData as any);
           
           if (sessionData?.user) {
+            // Wait for the profile to be loaded
             const profile = await fetchUserProfile(sessionData.user.id);
             
-            // Redirect based on user type
-            const redirectPath = profile?.user_type === 'prestador' 
-              ? '/dashboard/prestador' 
-              : '/dashboard/cliente';
-            
-            navigate(redirectPath);
+            // Only redirect if we have a profile and we're not on the verification page
+            if (profile && !window.location.pathname.includes('/verificar-email')) {
+              // Determine redirect path based on user_type
+              const redirectPath = profile.user_type === 'prestador' 
+                ? '/dashboard/prestador' 
+                : '/dashboard/cliente';
+              
+              console.log("Redirecting to:", redirectPath, "based on user_type:", profile.user_type);
+              navigate(redirectPath);
+            } else if (!profile && event === 'SIGNED_IN') {
+              // No profile yet, user might need to verify email
+              // If they're coming from signup, they'll already be on verification page
+              if (!window.location.pathname.includes('/verificar-email')) {
+                navigate('/verificar-email');
+              }
+            }
           }
         } else if (event === 'SIGNED_OUT') {
           handleAuthChange(null);
           setUserProfile(null);
           setIsServiceProvider(false);
+          
+          // Redirect to home page on sign out
+          navigate('/');
         }
       }
     );
