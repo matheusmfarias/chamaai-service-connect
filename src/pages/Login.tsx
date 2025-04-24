@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,18 +13,21 @@ import {
 } from "@/components/ui/card";
 import { useAuth } from "@/contexts/AuthContext";
 import Layout from "@/components/Layout";
+import { Loader2 } from "lucide-react";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loginInProgress, setLoginInProgress] = useState(false);
   const { signIn, isLoading, user } = useAuth();
   const navigate = useNavigate();
 
-  // Redirecionamento se já estiver autenticado
-  if (user) {
-    navigate("/dashboard");
-    return null;
-  }
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (user) {
+      navigate("/dashboard");
+    }
+  }, [user, navigate]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -33,8 +36,24 @@ const Login = () => {
       return;
     }
     
+    setLoginInProgress(true);
     await signIn(email, password);
+    setLoginInProgress(false);
   };
+
+  // Show loading state while checking auth status
+  if (isLoading && !loginInProgress) {
+    return (
+      <Layout>
+        <div className="container-custom py-12 flex items-center justify-center">
+          <div className="text-center">
+            <Loader2 className="h-8 w-8 animate-spin text-chamaai-blue mx-auto" />
+            <p className="mt-2 text-gray-600">Verificando autenticação...</p>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
 
   return (
     <Layout>
@@ -61,6 +80,7 @@ const Login = () => {
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
                       required
+                      disabled={loginInProgress}
                     />
                   </div>
                   <div className="space-y-2">
@@ -79,15 +99,21 @@ const Login = () => {
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
                       required
+                      disabled={loginInProgress}
                     />
                   </div>
                 </div>
                 <Button
                   type="submit"
                   className="w-full mt-6 bg-chamaai-blue hover:bg-chamaai-lightblue"
-                  disabled={isLoading}
+                  disabled={loginInProgress}
                 >
-                  {isLoading ? "Entrando..." : "Entrar"}
+                  {loginInProgress ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Entrando...
+                    </>
+                  ) : "Entrar"}
                 </Button>
               </form>
             </CardContent>

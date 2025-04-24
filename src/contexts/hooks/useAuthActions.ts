@@ -1,10 +1,10 @@
 
 import { useToast } from "@/hooks/use-toast";
 import { UserSignUpData } from "../types/auth";
+import { supabase } from "@/integrations/supabase";
 
 export const useAuthActions = (
-  handleAuth: (userId: string) => void,
-  handleSignOut: () => void,
+  handleAuthChange: (session: any) => void,
   setIsLoading: (loading: boolean) => void
 ) => {
   const { toast } = useToast();
@@ -12,20 +12,58 @@ export const useAuthActions = (
   const signUp = async (email: string, password: string, userData: UserSignUpData) => {
     try {
       setIsLoading(true);
-      await new Promise(resolve => setTimeout(resolve, 1000));
       
-      const userId = userData.user_type === 'prestador' ? 'provider-user' : 'client-user';
-      handleAuth(userId);
-      
-      toast({
-        title: "Cadastro realizado com sucesso!",
-        description: "Sua conta foi criada. Você foi automaticamente conectado.",
+      // Register the user with Supabase
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            full_name: userData.full_name,
+            user_type: userData.user_type || 'cliente'
+          }
+        }
       });
+      
+      if (error) throw error;
+      
+      if (data?.user) {
+        // Create profile record
+        const { error: profileError } = await supabase
+          .from('profiles')
+          .insert({
+            id: data.user.id,
+            full_name: userData.full_name,
+            phone: userData.phone || null,
+            city: userData.city || null,
+            state: userData.state || null,
+            user_type: userData.user_type || 'cliente',
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          });
+          
+        if (profileError) throw profileError;
 
+        if (data.session) {
+          handleAuthChange(data.session);
+        }
+        
+        toast({
+          title: "Cadastro realizado com sucesso!",
+          description: "Sua conta foi criada. Você foi automaticamente conectado.",
+        });
+      }
     } catch (error: any) {
+      let message = error.message;
+      
+      // More user-friendly error messages
+      if (error.message.includes("already registered")) {
+        message = "Este e-mail já está cadastrado.";
+      }
+      
       toast({
         title: "Erro ao criar conta",
-        description: error.message || "Ocorreu um erro ao criar sua conta. Tente novamente mais tarde.",
+        description: message || "Ocorreu um erro ao criar sua conta. Tente novamente mais tarde.",
         variant: "destructive",
       });
     } finally {
@@ -36,24 +74,35 @@ export const useAuthActions = (
   const signIn = async (email: string, password: string) => {
     try {
       setIsLoading(true);
-      await new Promise(resolve => setTimeout(resolve, 1000));
       
-      let userId = 'client-user';
-      if (email.includes('prestador') || email.includes('provider')) {
-        userId = 'provider-user';
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password
+      });
+      
+      if (error) throw error;
+      
+      if (data.session) {
+        handleAuthChange(data.session);
+        
+        // We'll fetch the profile and redirect in the AuthContext
+        
+        toast({
+          title: "Login realizado com sucesso!",
+          description: "Redirecionando para o dashboard...",
+        });
+      }
+    } catch (error: any) {
+      let message = error.message;
+      
+      // More user-friendly error messages
+      if (error.message.includes("Invalid login")) {
+        message = "E-mail ou senha incorretos.";
       }
       
-      handleAuth(userId);
-
-      toast({
-        title: "Login realizado com sucesso!",
-        description: "Redirecionando para o dashboard...",
-      });
-
-    } catch (error: any) {
       toast({
         title: "Erro ao fazer login",
-        description: error.message || "Ocorreu um erro ao fazer login. Tente novamente mais tarde.",
+        description: message || "Ocorreu um erro ao fazer login. Tente novamente mais tarde.",
         variant: "destructive",
       });
     } finally {
@@ -64,14 +113,10 @@ export const useAuthActions = (
   const signOut = async () => {
     try {
       setIsLoading(true);
-      await new Promise(resolve => setTimeout(resolve, 500));
       
-      handleSignOut();
-
-      toast({
-        title: "Desconectado com sucesso",
-        description: "Você foi desconectado com sucesso.",
-      });
+      const { error } = await supabase.auth.signOut();
+      
+      if (error) throw error;
 
     } catch (error: any) {
       toast({

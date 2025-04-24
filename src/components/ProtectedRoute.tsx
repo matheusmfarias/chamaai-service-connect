@@ -12,22 +12,24 @@ const ProtectedRoute = ({ children, requiresServiceProvider = false }: Protected
   const { user, isLoading, isServiceProvider } = useAuth();
   const location = useLocation();
   
-  // Se estiver carregando, mostra um spinner
+  // Show loading spinner while auth state is being checked
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <Loader2 className="h-8 w-8 animate-spin text-chamaai-blue" />
-        <span className="ml-2 text-lg text-chamaai-blue">Carregando...</span>
+        <div className="text-center">
+          <Loader2 className="h-8 w-8 animate-spin text-chamaai-blue mx-auto" />
+          <span className="mt-2 text-lg text-chamaai-blue">Verificando autenticação...</span>
+        </div>
       </div>
     );
   }
   
-  // Se não estiver autenticado, redireciona para login
+  // Redirect to login if not authenticated
   if (!user) {
     return <Navigate to="/login" state={{ from: location.pathname }} />;
   }
   
-  // Se a rota requer ser prestador e o usuário não é prestador, redireciona
+  // If the route requires the user to be a service provider and they're not, redirect
   if (requiresServiceProvider && !isServiceProvider) {
     return <Navigate to="/dashboard" />;
   }
