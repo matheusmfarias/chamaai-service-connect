@@ -1,6 +1,4 @@
-
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
-import { User, Session } from "@/types/auth";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import { AuthContextType, UserSignUpData } from "./types/auth";
@@ -22,7 +20,7 @@ interface AuthProviderProps {
 }
 
 // Mock user for development
-const mockUser: User = {
+const mockUser = {
   id: "mock-user-1",
   email: "user@example.com",
   user_metadata: {
@@ -34,7 +32,7 @@ const mockUser: User = {
 };
 
 // Mock session for development
-const mockSession: Session = {
+const mockSession = {
   access_token: "mock-token",
   token_type: "bearer",
   expires_in: 3600,
