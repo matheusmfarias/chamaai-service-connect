@@ -42,6 +42,7 @@ export type Database = {
           id: string
           phone: string | null
           state: string | null
+          updated_at: string | null
           user_type: string
         }
         Insert: {
@@ -52,6 +53,7 @@ export type Database = {
           id: string
           phone?: string | null
           state?: string | null
+          updated_at?: string | null
           user_type: string
         }
         Update: {
@@ -62,6 +64,7 @@ export type Database = {
           id?: string
           phone?: string | null
           state?: string | null
+          updated_at?: string | null
           user_type?: string
         }
         Relationships: []
@@ -290,7 +293,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      is_email_available: {
+        Args: { email: string }
+        Returns: boolean
+      }
     }
     Enums: {
       [_ in never]: never

@@ -15,6 +15,9 @@ export const useAuthActions = (
     try {
       setIsLoading(true);
       
+      // Store email in localStorage for verification page
+      localStorage.setItem('verification_email', email);
+      
       // Register the user with Supabase
       const { data, error } = await supabase.auth.signUp({
         email,
@@ -48,14 +51,13 @@ export const useAuthActions = (
           
         if (profileError) throw profileError;
 
-        // Navigate to verification page instead of logging in automatically
+        // Navigate to verification page
         toast({
           title: "Cadastro realizado com sucesso!",
           description: "Enviamos um link de verificação para o seu e-mail.",
         });
         
-        // Navigate to verification page
-        navigate("/verificar-email", { state: { email: email } });
+        navigate("/verificar-email");
       }
     } catch (error: any) {
       let message = error.message;
@@ -70,6 +72,9 @@ export const useAuthActions = (
         description: message || "Ocorreu um erro ao criar sua conta. Tente novamente mais tarde.",
         variant: "destructive",
       });
+
+      // Clear localStorage if signup fails
+      localStorage.removeItem('verification_email');
     } finally {
       setIsLoading(false);
     }
@@ -89,7 +94,18 @@ export const useAuthActions = (
       if (data.session) {
         handleAuthChange(data.session);
         
-        // We'll fetch the profile and redirect in the AuthContext
+        // Fetch user profile and redirect based on user type
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('user_type')
+          .eq('id', data.session.user.id)
+          .single();
+        
+        const redirectPath = profile?.user_type === 'prestador' 
+          ? '/dashboard/prestador' 
+          : '/dashboard/cliente';
+        
+        navigate(redirectPath);
         
         toast({
           title: "Login realizado com sucesso!",

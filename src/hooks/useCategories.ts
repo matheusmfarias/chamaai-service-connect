@@ -17,7 +17,6 @@ export const useCategories = () => {
   const { data: categories = [], isLoading, error } = useQuery({
     queryKey: ['categories'],
     queryFn: async () => {
-      console.log('Fetching categories from Supabase');
       const { data, error } = await supabase
         .from('categories')
         .select('*')
@@ -36,6 +35,8 @@ export const useCategories = () => {
       console.log('Categories fetched:', data);
       return data as Category[];
     },
+    // Enable retrying the query if it fails
+    retry: 2,
   });
 
   return {

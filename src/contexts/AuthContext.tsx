@@ -6,6 +6,7 @@ import { useAuthActions } from "./hooks/useAuthActions";
 import { useProfile } from "./hooks/useProfile";
 import { useServiceProvider } from "./hooks/useServiceProvider";
 import { supabase } from "@/integrations/supabase";
+import { useNavigate } from "react-router-dom";
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -22,6 +23,7 @@ interface AuthProviderProps {
 }
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
+  const navigate = useNavigate();
   const {
     user,
     session,
@@ -30,8 +32,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     handleAuthChange,
     handleSignOut,
     restoreSession,
-    navigate,
-    toast
   } = useAuthState();
 
   const { userProfile, setUserProfile, fetchUserProfile, updateProfile } = useProfile();
@@ -65,7 +65,14 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           handleAuthChange(sessionData as any);
           
           if (sessionData?.user) {
-            await fetchUserProfile(sessionData.user.id);
+            const profile = await fetchUserProfile(sessionData.user.id);
+            
+            // Redirect based on user type
+            const redirectPath = profile?.user_type === 'prestador' 
+              ? '/dashboard/prestador' 
+              : '/dashboard/cliente';
+            
+            navigate(redirectPath);
           }
         } else if (event === 'SIGNED_OUT') {
           handleAuthChange(null);
@@ -79,37 +86,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     return () => {
       subscription.unsubscribe();
     };
-  }, [restoreSession, handleAuthChange, fetchUserProfile, setUserProfile, setIsServiceProvider]);
-
-  // Handle user redirection after authentication
-  useEffect(() => {
-    const handleRedirection = async () => {
-      if (user && userProfile && !isLoading && isAuthReady) {
-        console.log("Handle redirection with userProfile:", userProfile);
-        
-        // Check if user is a service provider
-        const isProvider = await checkIsServiceProvider();
-        
-        // Get the current path
-        const currentPath = window.location.pathname;
-        
-        // Only redirect if on certain pages
-        const shouldRedirect = ["/", "/login", "/cadastro", "/verificar-email"].includes(currentPath);
-        
-        if (shouldRedirect) {
-          // Determine redirect path based on user type
-          const redirectPath = userProfile.user_type === 'prestador' || userProfile.user_type === 'provider' 
-            ? "/dashboard" 
-            : "/dashboard";
-          
-          console.log(`Redirecting user (${userProfile.user_type}) to ${redirectPath}`);
-          navigate(redirectPath);
-        }
-      }
-    };
-    
-    handleRedirection();
-  }, [user, userProfile, isLoading, isAuthReady, navigate, checkIsServiceProvider]);
+  }, [restoreSession, handleAuthChange, fetchUserProfile, setUserProfile, setIsServiceProvider, navigate]);
 
   const value: AuthContextType = {
     user,
