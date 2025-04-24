@@ -1,4 +1,24 @@
-import { User, Session } from "@supabase/supabase-js";
+
+import { ReactNode } from "react";
+
+export interface User {
+  id: string;
+  email: string;
+  user_metadata: {
+    full_name: string;
+  };
+  app_metadata: Record<string, any>;
+  aud: string;
+  created_at: string;
+}
+
+export interface Session {
+  access_token: string;
+  token_type: string;
+  expires_in: number;
+  refresh_token: string;
+  user: User;
+}
 
 export interface UserProfile {
   id: string;
