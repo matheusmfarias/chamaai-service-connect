@@ -1,5 +1,4 @@
-
-import { createContext, useContext, useEffect } from "react";
+import React, { createContext, useContext, useEffect } from "react";
 import { AuthContextType } from "./types/auth";
 import { useAuthState } from "./hooks/useAuthState";
 import { useAuthActions } from "./hooks/useAuthActions";
@@ -17,7 +16,7 @@ export const useAuth = (): AuthContextType => {
 };
 
 interface AuthProviderProps {
-  children: ReactNode;
+  children: React.ReactNode;
 }
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
@@ -65,3 +64,4 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
+export default AuthProvider;
