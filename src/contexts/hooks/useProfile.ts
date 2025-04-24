@@ -32,7 +32,6 @@ export const useProfile = () => {
 
   const fetchUserProfile = async (userId: string) => {
     try {
-      // Simulate API delay
       await new Promise(resolve => setTimeout(resolve, 300));
       
       const mockProfile = mockProfiles[userId];
@@ -54,7 +53,6 @@ export const useProfile = () => {
     if (!userId) return null;
 
     try {
-      // Simulate API delay
       await new Promise(resolve => setTimeout(resolve, 800));
       
       const updatedProfile = {

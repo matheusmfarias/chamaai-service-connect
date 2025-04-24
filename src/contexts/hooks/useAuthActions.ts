@@ -1,7 +1,6 @@
 
 import { useToast } from "@/hooks/use-toast";
-import { UserSignUpData, ServiceProviderData } from "../types/auth";
-import { mockUsers } from "../utils/mockAuthData";
+import { UserSignUpData } from "../types/auth";
 
 export const useAuthActions = (
   handleAuth: (userId: string) => void,
@@ -91,4 +90,3 @@ export const useAuthActions = (
     signOut
   };
 };
-

@@ -3,7 +3,6 @@ import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { ServiceProviderData } from "../types/auth";
 
-// Mock service provider data
 const mockServiceProviders: Record<string, ServiceProviderData> = {
   "provider-user": {
     category: "limpeza",
@@ -19,7 +18,6 @@ export const useServiceProvider = () => {
 
   const checkServiceProviderStatus = async (userId: string) => {
     try {
-      // Simulate API delay
       await new Promise(resolve => setTimeout(resolve, 300));
       
       const mockProvider = mockServiceProviders[userId];
@@ -33,11 +31,8 @@ export const useServiceProvider = () => {
 
   const createServiceProvider = async (data: ServiceProviderData) => {
     try {
-      // Simulate API delay
       await new Promise(resolve => setTimeout(resolve, 800));
       
-      // In a real app, we'd save this to the database
-      // For now, we just update our mock data
       const mockUserId = "provider-user";
       mockServiceProviders[mockUserId] = {
         ...data,
@@ -64,10 +59,8 @@ export const useServiceProvider = () => {
 
   const checkIsServiceProvider = async (): Promise<boolean> => {
     try {
-      // Simulate API delay
       await new Promise(resolve => setTimeout(resolve, 300));
       
-      // For mock purposes, we'll check if provider-user exists in mockServiceProviders
       const mockProvider = mockServiceProviders["provider-user"];
       setIsServiceProvider(!!mockProvider);
       return !!mockProvider;
@@ -79,7 +72,6 @@ export const useServiceProvider = () => {
 
   const updateServiceProviderInfo = async (data: Partial<ServiceProviderData>) => {
     try {
-      // Simulate API delay
       await new Promise(resolve => setTimeout(resolve, 800));
       
       const mockUserId = "provider-user";

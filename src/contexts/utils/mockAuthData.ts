@@ -42,4 +42,3 @@ export const mockSessions: Record<string, Session> = {
     user: mockUsers["provider-user"]
   }
 };
-

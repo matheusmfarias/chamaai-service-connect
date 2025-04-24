@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { User, Session, UserProfile } from "../types/auth";
+import { User, Session } from "../types/auth";
 import { useToast } from "@/hooks/use-toast";
 import { useNavigate } from "react-router-dom";
 import { mockUsers, mockSessions } from "../utils/mockAuthData";
@@ -33,4 +33,3 @@ export const useAuthState = () => {
     navigate
   };
 };
-
