@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { 
   Card, 
@@ -99,13 +100,13 @@ const mockAcceptedProposals: ServiceProposal[] = [
       client_id: 'client-1',
       title: 'Limpeza de apartamento',
       description: 'Apartamento com 2 quartos',
+      category_id: null,
       category: 'limpeza',
       status: 'pending',
       is_public: true,
-      estimated_price: null,
+      location: null,
       scheduled_date: new Date(Date.now() + 172800000).toISOString(),
       created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString(),
       profiles: {
         full_name: 'Ana Santos'
       }
@@ -128,13 +129,13 @@ const mockCompletedProposals: ServiceProposal[] = [
       client_id: 'client-3',
       title: 'Limpeza pós obra',
       description: 'Limpeza pós reforma de cozinha',
+      category_id: null,
       category: 'limpeza',
       status: 'completed',
       is_public: true,
-      estimated_price: 200,
+      location: null,
       scheduled_date: new Date(Date.now() - 518400000).toISOString(),
       created_at: new Date(Date.now() - 604800000).toISOString(),
-      updated_at: new Date(Date.now() - 518400000).toISOString(),
       profiles: {
         full_name: 'Carlos Mendes'
       }
